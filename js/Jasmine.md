@@ -102,15 +102,71 @@ Create an expectation for a spec.
 
 |Name|Type|Description|Return|
 |:---|:---|:---|:---|  
-|actual|Object|Actual computed value to test expectations against.|matchers
+|actual|Object|Actual computed value to test expectations against.|matchers|
+
+#### `matchers` API
+* toBe(expected)
+* toBeFalsy() && toBeTruthy()
+* toBeGreaterThan(expected) && toBeGreaterThanOrEqual(expected)
+* toBeLessThan(expected) && toBeLessThanOrEqual(expected)
+* toBeNaN() && toBeNull() && toBeUndefined()
+* toContain(expected)
+* toEqual(expected)
+* toHaveBeenCalled() && toHaveBeenCalledWith(...args)
+* toHaveBeenCalledBefore(expected)
+* toHaveBeenCalledTimes(expected)
+* toThrow(expected) && toThrowError(expected, message)
+
 #### expectAsync(actual) → {async-matchers}
 
-
-### afterAll (function, timeout)
-### afterEach (function, timeout)
 ### beforeAll (function, timeout)
 ### beforeEach (function, timeout)
-thoes will be executed for each inner describe spec too
+### afterEach (function, timeout)
+### afterAll (function, timeout)
+thoes will be executed for each inner describe spec too.  
+excute order: `beforeAll`->`beforeEach`->`afterEach`->`afterAll`  
+
+### this
+对于每一个 `beforeEach`-`it`-`afterEach` 的组合，共享一个`this`，即不同的`it`之间的`this`是不同的
+
+### fail (errorMsg)
+Explicitly mark a spec as failed.  
+**Parameters:**
+
+|Name|Type|Attributes|Description|
+|:---|:---|:---|:---|  
+|errorMsg|String/Error|optional|Reason for the failure.|
+
+### xdescribe (description, specDefinitions)
+A temporarily disabled describe.  
+Specs within an xdescribe will be marked pending and not executed.  
+`beforeAll`,`beforeEach`,`afterEach`,`afterAll` all will not work  
+**Parameters:**
+
+|Name|Type|Description|
+|:---|:---|:---|  
+|description|String|Textual description of the group|
+|specDefinitions|function|Function for Jasmine to invoke that will define inner suites and specs|
+
+### xit (description, testFunction)
+A temporarily disabled it  
+The spec will report as pending and will not be executed.
+`beforeAll`,`beforeEach`,`afterEach`,`afterAll` all will not work  
+**Parameters:**
+
+|Name|Type|Attributes|Description|
+|:---|:---|:---|:---|
+|description|String||Textual description of what this spec is checking.|
+|testFunction|implementationCallback|optional|Function that contains the code of your test. Will not be executed.|
+
+### pending (reasonMsg)
+Mark a spec as pending, expectation results will be ignored.   
+`beforeAll`,`beforeEach`,`afterEach`,`afterAll` are woring, but expectations are not working
+**Parameters:**
+
+|Name|Type|Attributes|Description|
+|:---|:---|:---|:---|
+|message|String|optional|Reason the spec is pending.|
 
 ### spyOn (obj, methodName) → {Spy}
 Install a spy onto an existing object.  
@@ -121,10 +177,22 @@ Install a spy onto an existing object.
 |obj|Object|The object upon which to install the Spy.|
 |methodName|String|The name of the method to replace with a Spy.|Spy|
 
-### fail (errorMsg)
-Explicitly mark a spec as failed.  
-**Parameters:**
+### Class: Spy
+**namespace**：call, and
+#### `call` API:
+* any()
+* saveArgumentsByValue()
+* first()
+* all()
+* allArgs()
+* argsFor(index)
+* count()
+* mostRecent()
+* reset()
 
-|Name|Type|Attributes|Description|
-|:---|:---|:---|:---|  
-|errorMsg|String/Error|optional|Reason for the failure.|
+#### `and` API
+* returnValue(value)
+* returnValues(…values)
+* throwError(something)
+* identity()
+* exec()
