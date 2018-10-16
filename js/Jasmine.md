@@ -196,3 +196,148 @@ Install a spy onto an existing object.
 * throwError(something)
 * identity()
 * exec()
+
+## static API
+### jasmine.createSpy (name, originalFn)
+Create a bare Spy object. This won't be installed anywhere and will not have any implementation behind it.  
+**Parameters:**
+
+|Name|Type|Attributes|Description|
+|:---|:---|:---|:---|  
+|name|String|optional|Name to give the spy. This will be displayed in failure messages.|
+|originalFn|function|optional|Function to act as the real implementation.|
+```javascript
+describe("A spy, when created manually", () => {
+    let whatAmI
+    beforeEach(() => {
+        whatAmI = jasmine.createSpy('myName')
+        // "myName" will be showed when spec fails
+    })
+    it("tracks that the spy was called", () => {
+        whatAmI("I", "am", "a", "spy")
+        expect(whatAmI).toHaveBeenCalledTimes(2)
+    })
+})
+```
+
+### jasmine.createSpyObj (name, methodNames) → {Object}
+Create an object with multiple Spys as its members.  
+**Parameters:**
+
+|Name|Type|Attributes|Description|
+|:---|:---|:---|:---|  
+|name|String|optional|Base name for the spies in the object.|
+|methodNames|Array.[String]/Object|	|Array of method names to create spies for, or Object whose keys will|
+```javascript
+describe("Multiple spies, created by createSpyObj", () => {
+    let tape = jasmine.createSpyObj('tapeName', ['play', 'pause', 'stop'])
+    it("creates spies for each requested function", () => {
+        tape.play()
+        tape.pause(1)
+        tap.stop()
+        expect(tape.play).toBeDefined()
+        expect(tape.pause).toBeDefined()
+        expect(tape.stop).toHaveBeenCalled()
+    })
+})
+```
+
+### jasmine.any (clazz)
+Sometimes you don't want to match with exact equality.   
+Get a matcher, usable in any matcher that uses Jasmine's equality (*e.g.* `toEqual`, `toContain`, or `toHaveBeenCalledWith`), that will succeed if the actual value being compared is an instance of the specified class/constructor(*e.g.* `String`, `Number`,`Boolean` or `Object`).  
+**Parameters:**
+
+|Name|Type|Description|
+|:---|:---|:---|  
+|clazz|Constructor|The constructor to check against.|
+
+```javascript
+class Person {
+    constructor(name) {
+        this.name = name
+    }
+}
+describe("jasmine.any", () => {
+    it("matches any value", () => {
+        let quinn = new Person("Quinn")
+        expect({}).toEqual(jasmine.any(Object))
+        expect(12).toEqual(jasmine.any(Number))
+        expect(true).toEqual(jasmine.any(Boolean))
+        expect(quinn).toEqual(jasmine.any(Person))
+    })
+    describe("when used with a spy", () => {
+        it("is useful for comparing arguments", () => {
+            var foo = jasmine.createSpy('foo')
+            foo(12, () => true )
+            expect(foo).toHaveBeenCalledWith(jasmine.any(Number), jasmine.any(Function))
+        })
+    })
+})
+```
+
+### jasmine.anything()
+Get a matcher, usable in any matcher that uses Jasmine's equality (*e.g.* `toEqual`, `toContain`, or `toHaveBeenCalledWith`), that will succeed if the actual value being compared is not `null` and not `undefined`.
+
+```javascript
+describe("jasmine.anything", () => {
+    it("matches anything", () => {
+        expect(1).toEqual(jasmine.anything())
+    })
+    it("matcher to null or undefined", () => {
+        expect(null).not.toEqual(jasmine.anything())
+        expect(undefined).not.toEqual(jasmine.anything())
+    })
+    describe("when used with a spy", () => {
+        it("is useful when the argument can be ignored", () => {
+            var foo = jasmine.createSpy('foo')
+            foo(12, () => false )
+            expect(foo).toHaveBeenCalledWith(12, jasmine.anything())
+        })
+    })
+})
+```
+### jasmine.objectContaining (keyValueObj)
+varify specific key/value pairs in the given Json object.  
+jasmine.objectContaining is for those times when an expectation only cares about certain key/value pairs in the actual.  
+Return an object with given key/value pair.
+
+```javascript
+describe("jasmine.objectContaining", () => {
+    var foo = { a: 1, b: 2, bar: "baz" }
+    it("matches objects with the expect key/value pairs", () => {
+        expect(foo).toEqual(jasmine.objectContaining({bar: "baz"}))
+        expect(foo).not.toEqual(jasmine.objectContaining({b: 3}))
+    })
+    describe("when used with a spy", () => {
+        it("is useful for comparing arguments", () => {
+            var callback = jasmine.createSpy('callback')
+            callback({bar: "baz"})
+            expect(callback).toHaveBeenCalledWith(jasmine.objectContaining({bar: "baz"}))
+        })
+    })
+})
+```
+
+
+### jasmine.arrayContaining (array)
+varify specific array  all within the given array.  
+jasmine.arrayContaining is for those times when an expectation only cares about some of the values in an array.  
+Return a Array with the given sub-array.  
+```javascript
+describe("jasmine.arrayContaining", () => {
+    var foo = [1, 2, 3, 4]
+    it("matches arrays with some of the values", () => {
+        expect(foo).toEqual(jasmine.arrayContaining([3, 1]))
+        expect(foo).not.toEqual(jasmine.arrayContaining([6, 4]))
+        expect(foo).toEqual(jasmine.arrayContaining([6, 4]))
+    })
+    describe("when used with a spy", () => {
+        it("is useful when comparing arguments", () => {
+            var callback = jasmine.createSpy('callback')
+            callback([1, 2, 3, 4])
+            expect(callback).toHaveBeenCalledWith(jasmine.arrayContaining([4, 2, 3]))
+            expect(callback).not.toHaveBeenCalledWith(jasmine.arrayContaining([5, 2]))
+        })
+    })
+})
+```
