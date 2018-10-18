@@ -293,6 +293,7 @@ describe("Multiple spies, created by createSpyObj", () => {
 
 Sometimes you don't want to match with exact equality.  
 Get a matcher, usable in any matcher that uses Jasmine's equality (_e.g._ `toEqual`, `toContain`, or `toHaveBeenCalledWith`), that will succeed if the actual value being compared is an instance of the specified class/constructor(_e.g._ `String`, `Number`,`Boolean` or `Object`).  
+It can't be use in `toBe` but `toEqual` is OK.  
 **Parameters:**
 
 | Name  | Type        | Description                       |
@@ -328,7 +329,8 @@ describe("jasmine.any", () => {
 
 ### jasmine.anything()
 
-Get a matcher, usable in any matcher that uses Jasmine's equality (_e.g._ `toEqual`, `toContain`, or `toHaveBeenCalledWith`), that will succeed if the actual value being compared is not `null` and not `undefined`.
+Get a matcher, usable in any matcher that uses Jasmine's equality (_e.g._ `toEqual`, `toContain`, or `toHaveBeenCalledWith`), that will succeed if the actual value being compared is not `null` and not `undefined`.  
+It can't be use in `toBe` but `toEqual` is OK.   
 
 ```javascript
 describe("jasmine.anything", () => {
@@ -529,3 +531,37 @@ describe("Mocking the Date object", () => {
     })
 })
 ```
+
+## Asynchronous Support
+### Using callbacks
+Calls to beforeAll, afterAll, beforeEach, afterEach, and it can take an optional single argument that should be called when the async work is complete.Usually the single argument is named `done`.  
+1. This `it spec` will not start until the `done` function is called in the call to `beforeEach` above.  
+2. And this spec will not complete until its `done` is called.
+3. It means we call `done` in callback function and it should also call `done` in the end of spec.
+```javascript
+// callback and done
+  describe("Using callbacks", () => {
+    beforeEach(function(done) {
+        let value = 1
+      setTimeout(() => {
+        value = 2
+        // it spec will execute until done is called
+        done()
+        // console.log() will be excuted after spec
+        console.log("beforeEach")
+      }, 1)
+    })
+    // This spec will not start until the done function is called in the call to beforeEach above.
+    it("should support async execution of test preparation and expectations", function(done) {
+      value++
+      expect(value).toBeGreaterThan(2)
+      // And this spec will not complete until its done is called.
+      done()
+    })
+  })
+```
+4. The `done.fail(msg)` function fails the spec and indicates that it has completed.
+
+### Promises
+
+### async/await
