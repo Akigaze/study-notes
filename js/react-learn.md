@@ -88,3 +88,37 @@ class Controller extends React.Component{
 }
 这里的两个输入框的值，是无法通过在页面进行输入来操作的，因此在输入框中输入但是页面是不会变化的，因为没有引起虚拟DOM的改变，因而页面不会自动渲染
 ```
+
+# create by webpack
+## 准备工作
+1. 安装NodeJS
+2. 安装 `webpack`
+> npm install -g webpack  
+npm install -g webpack-cli
+
+3. 初始化项目
+> npm init -y
+
+4. 创建项目目录
+* node_module
+* src
+    * mian.js
+* dist
+    * bundle.js
+* index.html
+* package.json
+* webpack.config.js
+
+5. 配置`webpack.config.js`
+```javascript
+const path = require('path');
+module.exports={
+    entry: './src/main.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js'
+    },
+    watch:true,
+    mode:"development"
+}
+```
