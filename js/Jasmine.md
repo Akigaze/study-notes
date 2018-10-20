@@ -580,3 +580,36 @@ Download the `mock-ajax.js` file and add it to your jasmine `helpers` so it gets
 ### Promises
 
 ### async/await
+
+
+# test report in browser
+### Need:
+* node_modules/jasmine-core/images/`jasmine_favicon.png`
+* node_modules/jasmine-core/lib/jasmine-core/`jasmine.css`
+* node_modules/jasmine-core/lib/jasmine-core/`jasmine.js`
+* node_modules/jasmine-core/lib/jasmine-core/`jasmine-html.js`
+* node_modules/jasmine-core/lib/jasmine-core/`boot.js`
+* my spec test js files
+
+```html
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner Report</title>
+
+  <link rel="shortcut icon" type="image/png" href="./node_modules/jasmine-core/images/jasmine_favicon.png">
+  <link rel="stylesheet" href="./node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+
+  <script src="./node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+  <script src="./node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+  <script src="./node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+  <script src="./spec/tests/any.spec.js"></script>
+  <script src="./spec/tests/pending.spec.js"></script>
+
+</head>
+
+<body>
+</body>
+</html>
+```
