@@ -7,7 +7,7 @@
 
     > npm install --save-dev jasmine
 
-        **use global install**
+    **use global install**
 
     > npm install -g jasmine
 
@@ -473,11 +473,13 @@ It can deal with `setTimeout` and `setInterval` those async function.
 ### Clock API
 * install() → {Clock}  
 Install the mock clock over the built-in methods.
+It will listen to timers and know when they starting.
 * uninstall()  
 Uninstall the mock clock, returning the built-in methods to their places.
 * tick(millis)  
 Tick the Clock forward, running any enqueued timeouts along the way.  
 Simulatie the time forward.  
+Timers forwarding just base on the `tick` time.  
 * mockDate(initialDate)  
 Instruct the installed Clock to also mock the date returned by `new Date()`.  
 If you do not provide a initial time, it will use the current date.  
@@ -538,6 +540,9 @@ Calls to beforeAll, afterAll, beforeEach, afterEach, and it can take an optional
 1. This `it spec` will not start until the `done` function is called in the call to `beforeEach` above.  
 2. And this spec will not complete until its `done` is called.
 3. It means we call `done` in callback function and it should also call `done` in the end of spec.
+4. I a spec, we called `done` to indicate the asynchronous function ended.
+5. The default time out of Jasmine is 5s, and set `jasmine.DEFAULT_TIMEOUT_INTERVAL` to change it.
+
 ```javascript
 // callback and done
   describe("Using callbacks", () => {
@@ -560,7 +565,17 @@ Calls to beforeAll, afterAll, beforeEach, afterEach, and it can take an optional
     })
   })
 ```
-4. The `done.fail(msg)` function fails the spec and indicates that it has completed.
+6. The `done.fail(msg)` function fails the spec and indicates that it has completed.
+
+### test Ajax
+We have written a plugin called `jasmine-ajax` that allows ajax calls to be mocked out in tests.  
+**1. for npm**  
+> npm install --save-dev jasmine-ajax  
+
+`require('jasmine-ajax')` inside test-suite and access it via the jasmine global.   
+
+**2. for browser**  
+Download the `mock-ajax.js` file and add it to your jasmine `helpers` so it gets loaded before any specs that use it.
 
 ### Promises
 
