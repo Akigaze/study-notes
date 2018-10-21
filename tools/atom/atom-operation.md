@@ -10,3 +10,15 @@ package -> keybinding resolver -> toggle (`ctrl-.`)
 Atom的`core packages`中，有一个`autosave`的插件，在插件的`settings`中勾选`enabled`即可  
 
 ---
+
+# 常用快捷键
+### ctrl + d
+在有选中的状态下，快速选中下一个，相当于IntelliJ IDEA的 alt + j
+### ctrl + k
+在有选中的状态下，跳过当前选中，配合 ctrl + d 使用
+### ctrl + g
+进入行号跳转面板，输入行号跳转到当前文件对应行
+# Link
+## Atom China
+Atom 常用快捷键  
+https://atom-china.org/t/atom/147  
