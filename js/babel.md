@@ -47,9 +47,21 @@ $ npm install --save-dev babel-preset-stage-3
         "react",
         "stage-2"
     ],
-    "plugins": []
+    "plugins": [
+        "transform-class-properties",
+        "es2015-arrow-functions",
+        "transform-decorators-legacy"
+    ]
 }
 ```
+
+可以说，`presets`是`plugins`的集成，为了引入方便，Babel团队将ES2015的很多个transform plugin集成到babel-preset-es2015，所以你这需要引入es2015，大大降低了引入成本
+
+plugin和preset运行顺序：
+* plugin 会运行在 preset 之前
+* plugin 会从第一个开始顺序执行
+* preset 的顺序则刚好相反(从最后一个逆序执行)
+
 ## babel-cli
 命令行转码`babel-cli`，用于在命令行使用命令对文件进行转码
 
@@ -206,6 +218,69 @@ require('babel-polyfill')
 
 Babel默认不转码的API非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的`definitions.js` (https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/definitions.js)。
 
+## babel-runtime
+babel-runtime和babel-polyfill有点类似，都是去兼容新API的"垫片"，它和babel-polyfill最大的不同就是可以做到`按需引用`，哪里需要什么就用什么，在`babel-runtime/core-js/`的路路径后面跟上所需要的API。比如我需要Promise。一般在生成环境，首先安装依赖，然后引入：
+
+> npm install --save babel-runtime
+
+```javascript
+import Promise from 'babel-runtime/core-js/promise';
+```
+
+`babel-plugin-transform-runtime`是babel-runtime的一个插件，可以减少相同API的重复引入，使用时只需安装，配置到plugins中即可
+
+```json
+// .babelrc
+{
+  "plugins": [
+    "transform-runtime"
+  ]
+}
+```
+
+## babel-preset-env
+babel-preset-env是一个新的preset，可以根据配置的目标运行环境（environment）自动启用需要的babel插件。
+
+Babel是每个Node.js的使用者都会使用的一个代码转换器，它可以把ES6、ES7等语法转换成ES5的语法，使其能在更多环境下运行。
+
+但是随着浏览器和Node.js的版本迭代，他们对新语法的支持也越来越好。但是非常尴尬的是，我们总是使用Babel把所有代码一股脑转换成ES5。这意味着我们抛弃了性能优秀的let、const关键字，放弃了简短的代码，而选择了又长又丑像坨屎的经过变换后的代码。
+
+目前我们写javascript代码时，需要使用N个preset，比如：babel-preset-es2015、babel-preset-es2016。babel-preset-latest可以编译stage 4进度的ECMAScript代码。
+
+问题是我们几乎每个项目中都使用了非常多的preset，包括不必要的。例如很多浏览器支持ES6的generator，如果我们使用babel-preset-es2015 的话，generator函数就会被编译成ES5代码。
+
+babel-preset-env的工作方式类似babel-preset-latest，唯一不同的就是babel-preset-env会根据配置的env只编译那些还不支持的特性。
+
+使用这个插件，就再也不需要使用 es20xx presets 了。
+
+> npm install --save-dev babel-preset-env
+
+babel-preset-env 在presets中可以添加许多配置项，用于配置运行环境
+
+当没有配置项将会运行所有转换
+
+```json
+{
+    "presets": ["env"]
+}
+```
+
+使用`{"targets":{},...}`配置运行环境
+
+```javascript
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7"],
+        "node": "6.10" // "node": "current"
+      }
+    }]
+  ]
+}
+```
+
+
 ## 浏览器环境使用Babel
 Babel也可以用于浏览器环境。但是，从`Babel 6.0`开始，不再直接提供浏览器版本，而是要用构建工具构建出来。如果你没有或不想使用构建工具，可以通过安装`5.x`版本的`babel-core`模块获取。
 
@@ -263,11 +338,25 @@ https://babeljs.io/repl/
 ### 阮一峰
 Babel 入门教程  
 http://www.ruanyifeng.com/blog/2016/01/babel.html
+
 ### 官网
 中文官网  
 https://babel.docschina.org/  
 英文官网    
-https://babeljs.io/  
-### 博客园
+https://babeljs.io/   
+Env preset  
+https://www.babeljs.cn/docs/plugins/preset-env/
+
+### Blog
 REPL环境  
 https://www.cnblogs.com/AnnieShen/p/6028304.html
+天天の記事簿 —— Node.js神器之babel-preset-env  
+http://blog.ttionya.com/article-1695.html
+
+### 掘金
+谈谈常用Babel配置与babel-preset-env  
+https://juejin.im/entry/5b5e69246fb9a04fac0d2202
+
+### fly63前端网
+babel-preset-env：一个帮你配置babel的preset  
+http://www.fly63.com/article/detial/609
