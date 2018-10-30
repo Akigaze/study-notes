@@ -62,6 +62,22 @@ plugin和preset运行顺序：
 * plugin 会从第一个开始顺序执行
 * preset 的顺序则刚好相反(从最后一个逆序执行)
 
+## babel tools
+* babel-cli
+* babel-core
+* babel-register
+* babel-polyfill
+* babel-runtime
+* babel-loader
+
+## babel presets
+* babel-preset-env
+* babel-preset-es2015
+* babel-preset-react
+* babel-preset-stage-0 (0-3)
+
+## babel plugins
+
 ## babel-cli
 命令行转码`babel-cli`，用于在命令行使用命令对文件进行转码
 
@@ -73,19 +89,19 @@ plugin和preset运行顺序：
 // 转码结果输出到标准输出
 $ babel example.js
 
-// 转码结果写入一个文件，--out-file 或 -o 参数指定输出文件
+// 转码结果写入一个文件，--out-file (-o) 参数指定输出文件
 $ babel example.js --out-file compiled.js
-$ babel example.js -o compiled.js
 
-// 整个目录转码， --out-dir 或 -d 参数指定输出目录
+// 整个目录转码， --out-dir (-d) 参数指定输出目录
 $ babel src --out-dir lib
-$ babel src -d lib
+// 整个目录转码， --out-file (-o) 参数指定输出到一个文件
+$ babel src --out-dir lib/bundle.js
 
 // -s 参数生成source map文件
 $ babel src -d lib -s
 ```
 
-在`package.json`中配置`babel`de script可以使用npm命令转码。
+在`package.json`中配置`babel`的 script可以使用npm命令转码。
 
 将`babel-cli`安装在项目之中:
 
@@ -219,7 +235,7 @@ require('babel-polyfill')
 Babel默认不转码的API非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的`definitions.js` (https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/definitions.js)。
 
 ## babel-runtime
-babel-runtime和babel-polyfill有点类似，都是去兼容新API的"垫片"，它和babel-polyfill最大的不同就是可以做到`按需引用`，哪里需要什么就用什么，在`babel-runtime/core-js/`的路路径后面跟上所需要的API。比如我需要Promise。一般在生成环境，首先安装依赖，然后引入：
+babel-runtime和babel-polyfill有点类似，都是去兼容新API的"垫片"，它和babel-polyfill最大的不同就是可以做到`按需引用`，哪里需要什么就用什么，在`babel-runtime/core-js/`的路径后面跟上所需要的API。比如我需要Promise。一般在生成环境，首先安装依赖，然后引入：
 
 > npm install --save babel-runtime
 
@@ -249,7 +265,7 @@ Babel是每个Node.js的使用者都会使用的一个代码转换器，它可�
 
 问题是我们几乎每个项目中都使用了非常多的preset，包括不必要的。例如很多浏览器支持ES6的generator，如果我们使用babel-preset-es2015 的话，generator函数就会被编译成ES5代码。
 
-babel-preset-env的工作方式类似babel-preset-latest，唯一不同的就是babel-preset-env会根据配置的env只编译那些还不支持的特性。
+babel-preset-env的工作方式类似babel-preset-latest，唯一不同的就是babel-preset-env会根据配置的env, 只编译那些还不支持的特性。
 
 使用这个插件，就再也不需要使用 es20xx presets 了。
 
@@ -348,9 +364,11 @@ https://www.babeljs.cn/docs/plugins/preset-env/
 
 ### Blog
 REPL环境  
-https://www.cnblogs.com/AnnieShen/p/6028304.html
+https://www.cnblogs.com/AnnieShen/p/6028304.html  
 天天の記事簿 —— Node.js神器之babel-preset-env  
-http://blog.ttionya.com/article-1695.html
+http://blog.ttionya.com/article-1695.html  
+babel 7 教程  
+https://blog.zfanw.com/babel-js/
 
 ### 掘金
 谈谈常用Babel配置与babel-preset-env  
