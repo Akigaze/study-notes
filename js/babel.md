@@ -1,5 +1,6 @@
 # Babel
 Babel是一个广泛使用的转码器，可以将ES6代码转为ES5代码  
+而"`export`, `improt`等nodeJS成分为浏览器能够识别"是`webpack`的功能
 
 ```javascript
 // 转码前

@@ -5,7 +5,6 @@
 * util
 * fs
 
-
 # 导出模块
 ## module.exports
 1. 以对象形式导出  
