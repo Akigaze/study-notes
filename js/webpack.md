@@ -47,6 +47,146 @@ webpack-demo
   |- main.js  
 ```
 
+# 概念(Concept)
+本质上，webpack 是一个现代 JavaScript 应用程序的静态模块打包器(module bundler)。当 webpack 处理应用程序时，它会`递归`地构建一个`依赖关系图`(dependency graph)，其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个 bundle。  
+
+At its core, webpack is a static module bundler for modern JavaScript applications. When webpack processes your application, it internally builds a dependency graph which maps every module your project needs and generates one or more bundles.
+
+四个核心概念：
+* 入口(entry)
+* 输出(output)
+* loader
+* 插件(plugins)
+
+## 入口(entry)
+入口起点(entry point)指示 webpack 应该使用哪个模块，来作为构建其内部依赖图的开始，即代码打包的起点。  
+在webpack的配置文件中，使用 `entry` 属性指定入口，默认为 `./src` 目录。
+
+### 单个入口（简写）语法
+用法：`entry: string|Array<string>`
+
+```javascript
+module.exports = {
+  entry: './path/to/my/entry/file.js'
+};
+```
+
+完整的写法如下：
+```javascript
+module.exports = {
+  entry: {
+    main: './path/to/my/entry/file.js'
+  }
+};
+```
+
+### 对象语法
+用法：`entry: {[entryChunkName: string]: string|Array<string>}`
+
+这种方式可以生成多个依赖图，每个依赖图是彼此完全分离、互相独立的。每个入口称为一个`chunk`。
+
+```javascript
+module.exports = {
+  entry: {
+    app: './src/app.js',
+    vendors: './src/vendors.js'
+  }
+};
+```
+
+## 出口(output)
+output 属性告诉 webpack 在哪里输出它所创建的 bundles，包括路径和文件名，默认为`./dist/bundle.js`。  
+可以存在多个入口起点，但只指定一个输出配置。
+配置出口需要用到 `output` 属性，其 `path` 和 `filename` 子属性用于指定出口目录和输出文件名。
+
+### 单个入口的输出
+```javascript
+const path = require('path');
+
+module.exports = {
+  entry: './path/to/my/entry/file.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'my-first-webpack.bundle.js'
+  }
+};
+```  
+
+## 多个入口起点的输出
+如果配置创建了多个单独的 `chunk`，则应该使用占位符(substitutions)来确保每个文件具有唯一的名称。
+```javascript
+{
+    entry: {
+        app: './src/app.js',
+        search: './src/search.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: __dirname + '/dist'
+    }
+}
+// 写入到硬盘：./dist/app.js, ./dist/search.js
+```
+
+## loader
+loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只理解 JavaScript）。loader 可以将所有类型的文件转换为 webpack 能够处理的有效模块，然后你就可以利用 webpack 的打包能力，对它们进行处理。  
+
+loader 能够 import 导入任何类型的模块（例如 .css 文件），这是 webpack 特有的功能。  
+本质上，webpack loader 将所有类型的文件，转换为应用程序的依赖图（和最终的 bundle）可以直接引用的模块。
+
+在webpack配置文件的 module.rules 属性中可配置多个 loader ， 每个loader由两部分组成：
+1. test ：用于标识出应该被对应的 loader 进行转换的某个或某些文件。
+2. use ：表示进行转换时，应该使用哪个 loader。
+
+```javascript
+//webpack.config.js
+
+const path = require('path');
+
+module.exports = {
+  output: {
+    filename: 'my-first-webpack.bundle.js'
+  },
+  module: {
+    rules: [
+      { test: /\.txt$/, use: 'raw-loader' }
+    ]
+  }
+};
+```
+翻译上述配置：
+> “嘿，webpack 编译器，当你碰到「在 require()/import 语句中被解析为 '.txt' 的路径」时，在你对它打包之前，先使用 raw-loader 转换一下。”
+
+## 插件(plugins)
+loader 被用于转换某些类型的模块，而插件则可以用于执行范围更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。插件接口功能极其强大，可以用来处理各种各样的任务。
+
+想要使用一个插件，你只需要 require() 它，然后把它添加到 plugins 数组中。多数插件可以通过选项(option)自定义。因为不同目的需要多次使用同一个插件时，需要通过使用 new 来创建它的一个实例。
+```javascript
+//webpack.config.js
+
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // 通过 npm 安装
+const webpack = require('webpack'); // 用于访问内置插件
+
+module.exports = {
+  module: {
+    rules: [
+      { test: /\.txt$/, use: 'raw-loader' }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({template: './src/index.html'})
+  ]
+};
+```
+
+## 模式
+通过选择 `development` 或 `production` 之中的一个，来设置 `mode` 参数，你可以启用相应模式下的 webpack 内置的优化
+```javascript
+module.exports = {
+    mode: 'production'
+};
+```
+
 ## webpack.config.js
 * 使用`webpack.config.js`文件配置管理webpack的工作
 * 在项目根目录下创建该文件
@@ -68,13 +208,13 @@ module.exports = {
 };
 ```
 
-执行打包命令时，可以使用`--config`选项指定打包的配置文件，该文件可以使任何文件格式，而默认情况下会找`webpack.config.js`
+执行打包命令时，可以使用`--config`选项指定打包的配置文件，该文件可以使任何格式，而默认情况下会找`webpack.config.js`
 
 > npx webpack --config webpack.config.js
 
 ## 配置babel
 babel主要用于JS文件打包时的语法翻译，可将ES版本高的代码翻译成低版本的代码，以兼容IE等浏览器  
-**相关依赖**：`babel=-core`, `babel-loader`, `babel-preset-env`
+**相关依赖**：`babel-core`, `babel-loader`, `babel-preset-env`
 > npm install --save-dev babel-core
 npm install --save-dev babel-loader
 npm install --save-dev babel-preset-env
