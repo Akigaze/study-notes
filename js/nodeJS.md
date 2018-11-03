@@ -52,6 +52,13 @@ export default function() {};
 var greet = require('./hello');
 ```
 模块名不用带扩展名，而且要使用相对路径的形式
+
+由于 require 导入的是 `module.exports` 对象，若要使用 目标模块的多个对象的话，就要使用JS的结构赋值
+
+```javascript
+const {a, b} = require('module');
+```
+
 2. ES6的导入方式
 ```javascript
 import App from './App';

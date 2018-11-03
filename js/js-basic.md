@@ -125,15 +125,20 @@ JavaScript是一种 *弱类型* 或者说 *动态语言*
     }
   ```
 * switch语句
-  ```javascript
-    switch(n){
-      case n1:
-        执行代码块 1
-        break;
-      case n2:
-        执行代码块 2
-        break;
-      default:
-        与 case n1 和 case n2 不同时执行的代码块3
-    }
-  ```
+```javascript
+switch(n){
+    case n1:
+    //执行代码块 1
+    break;
+    case n2:
+    //执行代码块 2
+    break;
+    default:
+    //与 case n1 和 case n2 不同时执行的代码块3
+}
+```
+
+## 判断一个对象是否为空对象
+无法使用 obj === {} 进行判断，对象是引用类型，是根据地址判断的。
+1. `JSON.stringify(obj) === "{}"`
+2. `Object.keys(obj) === 0`

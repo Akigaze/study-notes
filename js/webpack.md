@@ -29,6 +29,13 @@
  }
 ```
 
+可以使用`--watch`命令，让webpack持续监视entry，只要有变化就自动打包
+```json
+"scripts": {
+    "build": "webpack --watch"
+ }
+```
+
 ```js
 // 打包前的项目结构
 webpack-demo
@@ -46,6 +53,34 @@ webpack-demo
 |- /dist
   |- main.js  
 ```
+
+## webpack.config.js
+* 使用`webpack.config.js`文件配置管理webpack的工作
+* 在项目根目录下创建该文件
+* 使用nodeJS语法编写配置信息
+
+```javascript
+const path = require('path');
+
+module.exports = {
+    //打包的入口文件
+    entry: './src/index.js',
+    //打包的出口文件
+    output: {
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist')
+    },
+    //监听修改，自动打包
+    watch:true
+};
+```
+
+执行打包命令时，可以使用`--config`选项指定打包的配置文件，该文件可以使任何格式，而默认情况下会找`webpack.config.js`
+
+> npx webpack --config webpack.config.js
+
+---
+由于`webpack.config.js`采用的是CommonJS的语法，因此可以灵活使用JS的语法构建配置对象，以支持开发，生产等不同环境的需要。
 
 # 概念(Concept)
 本质上，webpack 是一个现代 JavaScript 应用程序的静态模块打包器(module bundler)。当 webpack 处理应用程序时，它会`递归`地构建一个`依赖关系图`(dependency graph)，其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个 bundle。  
@@ -112,21 +147,27 @@ module.exports = {
 };
 ```  
 
-## 多个入口起点的输出
+## 多个入口的输出
 如果配置创建了多个单独的 `chunk`，则应该使用占位符(substitutions)来确保每个文件具有唯一的名称。
 ```javascript
 {
     entry: {
-        app: './src/app.js',
+        home: './src/app.js',
         search: './src/search.js'
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].bundle.js',
         path: __dirname + '/dist'
     }
 }
-// 写入到硬盘：./dist/app.js, ./dist/search.js
+// 写入到硬盘：./dist/home.bundle.js, ./dist/search.bundle.js
 ```
+
+占位符`[name]`指代的是entry中每个`chunk`的名字(home,search).
+
+当存在多个入口时，不能只有一个出口，不然会打包失败，必须为每个入口分配一个出口，即使用占位符`[name]`
+> Conflict: Multiple chunks emit assets to the same filename bundle.js (chunks 0 and 1)
+
 
 ## loader
 loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只理解 JavaScript）。loader 可以将所有类型的文件转换为 webpack 能够处理的有效模块，然后你就可以利用 webpack 的打包能力，对它们进行处理。  
@@ -157,6 +198,48 @@ module.exports = {
 翻译上述配置：
 > “嘿，webpack 编译器，当你碰到「在 require()/import 语句中被解析为 '.txt' 的路径」时，在你对它打包之前，先使用 raw-loader 转换一下。”
 
+loader 可以将文件从不同的语言（如 TypeScript）转换为 JavaScript，或将内联图像转换为 `data URL`。loader 甚至允许你直接在 JavaScript 模块中 `import CSS`文件！
+
+示例：打包CSS
+```javascript
+> npm install -D css-loader style-loader
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      }
+    ]
+  }
+}
+```
+
+`use` 是从后往前加载loader列表，越往后的loader越先加载
+
+### 使用 loader 三种的方式：
+
+1. 配置（推荐）：在 webpack.config.js 文件中指定 loader。
+2. 内联：在每个 import 语句中显式指定 loader。
+3. CLI：在 shell 命令中指定它们。
+
+#### 内联
+可以在 import 语句或任何等效于 "import" 的方式中指定 loader。使用 ! 将资源中的 loader 分开。分开的每个部分都相对于当前目录解析。
+
+使用 `!` 分隔loader，使用 `?` 可以传递查询参数，例如 `?key=value&foo=bar`，或者一个 JSON 对象，例如
+`?{"key":"value","foo":"bar"}`。
+
+```javascript
+import Styles from 'style-loader!css-loader?modules!./styles.css';
+```
+
+#### CLI
+通过 CLI 使用 loader：
+> webpack --module-bind jade-loader --module-bind 'css=style-loader!css-loader'
+
+这会对 `.jade` 文件使用 jade-loader，对 `.css` 文件使用 style-loader 和 css-loader。
+
 ## 插件(plugins)
 loader 被用于转换某些类型的模块，而插件则可以用于执行范围更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。插件接口功能极其强大，可以用来处理各种各样的任务。
 
@@ -179,44 +262,49 @@ module.exports = {
 };
 ```
 
-## 模式
-通过选择 `development` 或 `production` 之中的一个，来设置 `mode` 参数，你可以启用相应模式下的 webpack 内置的优化
+插件目的在于解决 loader 无法实现的其他事。
+
+webpack 插件是一个具有 `apply` 属性的 JavaScript 对象。apply 属性会被 webpack compiler 调用，并且 compiler 对象可在整个编译生命周期访问。
+
+示例：ConsoleLogOnBuildWebpackPlugin.js
+```javascript
+const pluginName = 'ConsoleLogOnBuildWebpackPlugin';
+
+class ConsoleLogOnBuildWebpackPlugin {
+    apply(compiler) {
+        compiler.hooks.run.tap(pluginName, compilation => {
+            console.log("webpack 构建过程开始！");
+        });
+    }
+}
+```
+`compiler.hook` 的 `tap` 方法的第一个参数，应该是驼峰式命名的插件名称。建议为此使用一个常量，以便它可以在所有 hook 中复用。
+
+## 模式(mode)
+通过选择 `development` 或 `production` 之中的一个，来设置 `mode` 参数，你可以启用相应模式下的 webpack 内置的优化  
+用法：`mode: "development"|"production"`
+
 ```javascript
 module.exports = {
     mode: 'production'
 };
 ```
 
-## webpack.config.js
-* 使用`webpack.config.js`文件配置管理webpack的工作
-* 在项目根目录下创建该文件
-* 使用nodeJS语法编写配置信息
+也可以从 CLI 参数中传递：
+> webpack --mode=production
 
-```javascript
-const path = require('path');
+参数描述：
 
-module.exports = {
-    //打包的入口文件
-    entry: './src/index.js',
-    //打包的出口文件
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    //监听修改，自动打包
-    watch:true
-};
-```
-
-执行打包命令时，可以使用`--config`选项指定打包的配置文件，该文件可以使任何格式，而默认情况下会找`webpack.config.js`
-
-> npx webpack --config webpack.config.js
+|选项|描述|  
+|:---|:---|  
+|development|会将 `process.env.NODE_ENV` 的值设为 development。启用 `NamedChunksPlugin` 和 `NamedModulesPlugin`|
+|production|会将 `process.env.NODE_ENV` 的值设为 production。启用 `FlagDependencyUsagePlugin`, `FlagIncludedChunksPlugin`, `ModuleConcatenationPlugin`, `NoEmitOnErrorsPlugin`, `OccurrenceOrderPlugin`, `SideEffectsFlagPlugin` 和 `UglifyJsPlugin`|
 
 ## 配置babel
 babel主要用于JS文件打包时的语法翻译，可将ES版本高的代码翻译成低版本的代码，以兼容IE等浏览器  
 **相关依赖**：`babel-core`, `babel-loader`, `babel-preset-env`
-> npm install --save-dev babel-core
-npm install --save-dev babel-loader
+> npm install --save-dev babel-core  
+npm install --save-dev babel-loader  
 npm install --save-dev babel-preset-env
 
 ## webpack-dev-server配置虚拟服务
@@ -236,3 +324,6 @@ https://webpack.js.org/
 ### Blog
 陈三 —— webpack 4 教程  
 https://blog.zfanw.com/webpack-tutorial/
+### 表严肃
+Webpack精讲 - 表严肃讲Webpack  
+http://biaoyansu.com/21.x  
