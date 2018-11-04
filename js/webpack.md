@@ -391,6 +391,58 @@ poll: 1000 // 每秒检查一次变动
 
 > webpack --watch --progress
 
+# loader
+## babel-loader
+
+- babel-core
+- babel-cli
+- babel-loader
+- babel-preset-env
+
+> npm install --save-dev babel-core babel-cli babel-loader@7 babel-preset-env
+
+```javascript
+module: {
+  rules: [
+    {
+      test: /\.js/,
+      use: {
+        loader: "babel-loader",
+        options: {
+          presets: ["env",...]
+        }
+      },
+      exclude: /(node_modules|bower_components)/
+    }
+  ]
+}
+```
+
+`use`属性使用对象赋值，可以添加`options` 属性添加babel的配置，也可以另外配置`.babelrc`文件
+
+## 样式
+* css-loader：遍历加载CSS文件
+* style-loader：生成style标记
+
+> npm install --save-dev css-loader style-loader
+
+```javascript
+//webpack.config.js
+module: {
+    rules: [
+        {
+            test: /\.css/,
+            use: ["style-loader", "css-loader"],
+            exclude: /(node_modules|bower_components)/
+        }
+    ]
+}
+```
+
+`use` 必须将`css-loader`放在最后，因为use对loader的加载顺序是从后往前的，先遍历加载CSS资源，再生成style标记。
+
+
+
 
 # Link
 ### 官网
