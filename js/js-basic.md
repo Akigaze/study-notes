@@ -142,3 +142,9 @@ switch(n){
 无法使用 obj === {} 进行判断，对象是引用类型，是根据地址判断的。
 1. `JSON.stringify(obj) === "{}"`
 2. `Object.keys(obj) === 0`
+
+## 正则表达式
+在JS中正则表达式是一种对象，不是字符串，所以使用时不加引号，而是用斜杠(/)表示，如：
+```javascript
+const regx = /\.js$/;
+```

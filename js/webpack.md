@@ -178,6 +178,7 @@ loader 能够 import 导入任何类型的模块（例如 .css 文件），这�
 在webpack配置文件的 module.rules 属性中可配置多个 loader ， 每个loader由两部分组成：
 1. test ：用于标识出应该被对应的 loader 进行转换的某个或某些文件。
 2. use ：表示进行转换时，应该使用哪个 loader。
+3. exclude : 排除项目中不需要转码加载的模块
 
 ```javascript
 //webpack.config.js
@@ -190,13 +191,33 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.txt$/, use: 'raw-loader' }
+      {
+          test: /\.txt$/,
+          use: 'raw-loader',
+          exclude: /(node_modules|bower_components)/
+       }
     ]
   }
 };
 ```
 翻译上述配置：
 > “嘿，webpack 编译器，当你碰到「在 require()/import 语句中被解析为 '.txt' 的路径」时，在你对它打包之前，先使用 raw-loader 转换一下。”
+
+use 属性也可以配置成对象的形式，通过 `loader` 属性指定Loader，`options` 为该Loader添加设置项，如使用 babel-loader 时，可以添加 babel 的配置，因此可以不需要`.babelrc`这些babel的配置文件，直接在`webpack.config.js`中配置即可。
+```javascript
+module: {
+    rules: [{
+        test: /\.js/,
+        use: {
+            loader:"babel-loader",
+            options:{
+                presets: ["env", "react"]
+            }
+        },
+        exclude: /(node_modules|bower_components)/
+    }]
+},
+```
 
 loader 可以将文件从不同的语言（如 TypeScript）转换为 JavaScript，或将内联图像转换为 `data URL`。loader 甚至允许你直接在 JavaScript 模块中 `import CSS`文件！
 
@@ -313,6 +334,62 @@ npm install --save-dev babel-preset-env
 
 在`webpack.config.js`的`output`参数中添加一项：
 > publicPath:自定义虚拟路径
+
+# 配置项
+## watch 和 watchOptions
+### watch
+用法：`watch ：boolean`
+
+启用 Watch 模式。这意味着在初始构建之后，webpack 将继续监听任何已解析文件的更改。Watch 模式默认关闭(false)。
+
+> webpack-dev-server 和 webpack-dev-middleware 里 Watch 模式默认开启。
+
+# watchOptions
+使用对象的形式来定制 Watch 模式。
+用法：`watchOptions ：object`
+
+```javascript
+
+watchOptions: {
+  aggregateTimeout: 300,
+  ignored: "/node_modules/",
+  poll: 1000
+}
+```
+
+#### watchOptions.aggregateTimeout
+`aggregateTimeout : number`
+
+当第一个文件更改，会在重新构建前增加延迟。这个选项允许 webpack 将这段时间内进行的任何其他更改都聚合到一次重新构建里。以毫秒为单位：
+```javascript
+aggregateTimeout: 300 // 默认值
+```
+
+#### watchOptions.ignored
+对于某些系统，监听大量文件系统会导致大量的 CPU 或内存占用。这个选项可以排除一些巨大的文件夹，例如 node_modules：
+```javascript
+ignored: "/node_modules/"
+```
+
+也可以使用 anymatch 模式：
+```javascript
+ignored: "files/**/*.js"
+```
+
+#### watchOptions.poll
+`poll : boolean|number`
+
+通过传递 true 开启 polling，或者指定毫秒为单位进行轮询。
+```javascript
+poll: 1000 // 每秒检查一次变动
+```
+
+### CLI启用 Watch 模式
+在CLI命令加上`--watch`选项可以启动 Watch 模式。
+
+在运行 webpack 时，通过使用 `--progress` 标志，来验证文件修改后，是否没有通知 webpack。如果进度显示保存，但没有输出文件，则可能是配置问题，而不是文件监视问题。
+
+> webpack --watch --progress
 
 
 # Link
