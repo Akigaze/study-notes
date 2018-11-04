@@ -121,7 +121,7 @@ class Controller extends React.Component{
 - babel-preset-env
 - babel-preset-react
 
-> npm install --save-dev babel-core babel-cli babel-loader@7 babel-preset-env babel-preset-react
+> npm install --save babel-core babel-cli babel-loader@7 babel-preset-env babel-preset-react
 
 由于默认安装的 babel-core 和 babel-cli 是`6.x`的版本，而 babel-loader 是`8.x`的版本，这个版本的 babel-loader 需要`7.x`以上的 babel-core，因此要降低 babel-loader 的版本到`7.x`，以适应 babel-core 和 babel-cli。
 
@@ -129,6 +129,10 @@ class Controller extends React.Component{
 - react-dom
 
 > npm install --save react react-dom
+
+对于bable的模块，若使用`--save-dev`安装，在使用webpack命令打包项目时，很可能出现`babel-loader`找不到的异常而打包失败，此时可以将babel的所有模块卸载，重新使用`--save`选项安装，此时就可以成功执行webpack打包。然后再将所有babel模块重新用`--save-dev`安装，也可以正常工作了。
+
+对于`css-loader`和`style-loader`也有上述的发现。
 
 ## 2.项目结构
 
