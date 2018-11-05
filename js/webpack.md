@@ -441,8 +441,61 @@ module: {
 
 `use` 必须将`css-loader`放在最后，因为use对loader的加载顺序是从后往前的，先遍历加载CSS资源，再生成style标记。
 
+## webpack-dev-server
+webpack-dev-server是一个小型的node.js Express服务器,它使用webpack-dev-middleware中间件来为通过webpack打包生成的资源文件提供Web服务。它还有一个通过Socket.IO连接着webpack-dev-server服务器的小型运行时程序。webpack-dev-server发送关于编译状态的消息到客户端，客户端根据消息作出响应。
+
+webpack-dev-server 可以用于搭建本地服务器，比实现实时打包部署，动态更新。而webpack-dev-server生成的项目包并没有放在你的真实目录中，而是放在了内存中。默认的server地址是 `http://localhost:8080`，自动打开 `index.html` 为首页。
+
+貌似使用了webpack-dev-server，就不再需要 `Watch` 模式了。
+
+> Use webpack with a development server that provides live reloading. This should be used for development only. It uses webpack-dev-middleware under the hood, which provides fast in-memory access to the webpack assets.
+
+### 安装
+在项目中安装 webpack-dev-server :
+> npm install --save-dev webpack-dev-server
+
+### 启动
+local install  
+> node_modules/.bin/webpack-dev-server
+
+globa install
+> webpack-dev-server
+
+配置npm命令，通常是使用`start`命令：
+```json
+{
+    "script":{
+        "start":"webpack-dev-server"
+    }
+}
+```
+
+> npm start 或 npm run start
+
+`--open`选项可以在启动server的同时自动打开浏览器加载首页
+
+### 配置(devServer)
+webpack-dev-server 的相关配置是配置在 webpack.config.js 的 `devServer` 对象中  
+用法：`devServer : object`
+
+运行 webpack-dev-server 需要有一个server的目录，默认是在当前目录(webpack.config.js所在目录)，这个目录也可以在`contentBase`选项中设置
+#### 项目目录(contentBase)
+用法：`contentBase : boolean | string | array`
+
+```javascript
+devServer: {
+    contentBase: "./dist"
+}
+```
+
+也可以通过CLI配置：
+> webpack-dev-server --content-base dist
 
 
+作者：tsyeyuanfeng
+链接：https://www.jianshu.com/p/941bfaf13be1
+來源：简书
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
 
 # Link
 ### 官网
@@ -456,3 +509,14 @@ https://blog.zfanw.com/webpack-tutorial/
 ### 表严肃
 Webpack精讲 - 表严肃讲Webpack  
 http://biaoyansu.com/21.x  
+### SegmentFault
+详解webpack-dev-server的使用  
+https://segmentfault.com/a/1190000006964335
+### 简书
+WEBPACK DEV SERVER  
+https://www.jianshu.com/p/941bfaf13be1
+### Github
+https://github.com/webpack/webpack-dev-server
+### 阮一峰
+JavaScript Source Map 详解  
+http://www.ruanyifeng.com/blog/2013/01/javascript_source_map.html
