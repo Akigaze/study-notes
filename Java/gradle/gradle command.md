@@ -11,3 +11,7 @@
 > gradle init --type java-application  
 
 创建一个Java的gradle项目，包含了 `src`，`main`，`test` 等目录
+
+# Link
+Wrapper (gradlew)  
+https://www.zybuluo.com/xtccc/note/275168

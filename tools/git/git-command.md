@@ -59,3 +59,34 @@ git remote set-url origin https://**user**:**password** @github.com/Akigaze/musi
 
 4. 使用`abort`参数终止rebase的操作，还原当前分支
 > git rebase --abort
+
+## 5. stash(储藏)
+储藏工作区和缓存区的修改：
+> git stash
+
+储藏工作区和缓存区的修改并添加备注信息
+> git stash save "message"
+
+查看储藏区的记录：
+> git stash list  
+stash@{0}: WIP on master: 049d078 added the index file  
+stash@{1}: WIP on master: c264051 Revert "added file_size"  
+stash@{2}: WIP on master: 21d80a5 added number to log  
+
+应用储藏区的修改：
+> git stash apply stash@{2}
+
+`stash@{2}`是通过 `git stash list`查看到的每个储藏记录的索引，如果不带索引，则默认应用最新的一次stash记录
+
+`--index`选项运行应用stash起来的缓存区修改释放出来，因为`git stash apply`默认只应用工作目录的修改
+
+应用最近的stash的同时，将其移出储藏区：
+> git stash pop
+
+移除储藏区的修改：
+> git stash drop stash@{0}
+
+# Link
+### Git-book
+Git 工具 - 儲藏 (Stashing)
+https://git-scm.com/book/zh-tw/v1/Git-%E5%B7%A5%E5%85%B7-%E5%84%B2%E8%97%8F-Stashing
