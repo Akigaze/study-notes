@@ -491,6 +491,17 @@ devServer: {
 也可以通过CLI配置：
 > webpack-dev-server --content-base dist
 
+#### server host && port
+```json
+"devServer": {
+    "host": "localhost",
+    "port": 8080
+}
+```
+
+CLI配置  
+> webpack-dev-server --host 127.0.0.1
+> webpack-dev-server --port 8080
 
 作者：tsyeyuanfeng
 链接：https://www.jianshu.com/p/941bfaf13be1
@@ -503,6 +514,8 @@ devServer: {
 https://www.webpackjs.com/  
 英文官网  
 https://webpack.js.org/  
+开发中 Server(devServer)  
+https://www.webpackjs.com/configuration/dev-server/
 ### Blog
 陈三 —— webpack 4 教程  
 https://blog.zfanw.com/webpack-tutorial/
