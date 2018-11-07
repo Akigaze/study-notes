@@ -27,6 +27,22 @@
 ## 降低模块版本
 > npm install <package>@version
 
+## 合并多个命令
+在`package.json`的`script`属性中可以定制用户的npm命令，在一个若想在一个script中同时执行多个命令，并且命令有前后顺序，后一个命令必须等待前一个命令，本可以使用 `&` 连接过个命令
+```json
+{
+    "script": {
+        "gptp": "git pull -r & jasmine & git push"
+    }
+}
+```
+
+> npm run gptp
+
+windows 合并命令的 & 与 && 的区别
+`&&`: will execute command 2 when command 1 is complete providing it didn't fail.(若有一个命令执行的结果是fail，包括测试结果，则后面的命令不在执行)  
+`&` : will execute regardless.
+
 # Link
 ### 表严肃
 npm常用命令速查表  
