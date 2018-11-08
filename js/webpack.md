@@ -519,12 +519,16 @@ https://www.webpackjs.com/configuration/dev-server/
 ### Blog
 陈三 —— webpack 4 教程  
 https://blog.zfanw.com/webpack-tutorial/
+CHENG'S BLOG  
+http://cheng.logdown.com/posts/2016/03/25/679045
 ### 表严肃
 Webpack精讲 - 表严肃讲Webpack  
 http://biaoyansu.com/21.x  
 ### SegmentFault
 详解webpack-dev-server的使用  
 https://segmentfault.com/a/1190000006964335
+webpack sourcemap 选项多种模式的一些解释  
+https://segmentfault.com/a/1190000004280859
 ### 简书
 WEBPACK DEV SERVER  
 https://www.jianshu.com/p/941bfaf13be1
