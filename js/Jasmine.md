@@ -613,3 +613,7 @@ Download the `mock-ajax.js` file and add it to your jasmine `helpers` so it gets
 </body>
 </html>
 ```
+
+# Link
+### Writing Jasmine Unit Tests In ES6
+http://www.syntaxsuccess.com/viewarticle/writing-jasmine-unit-tests-in-es6

@@ -86,6 +86,10 @@ stash@{2}: WIP on master: 21d80a5 added number to log
 移除储藏区的修改：
 > git stash drop stash@{0}
 
+## 6. remote(远程仓库)
+查看所有远程仓库的url  
+> git remote -v
+
 # Link
 ### Git-book
 Book Index  
