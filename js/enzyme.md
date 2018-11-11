@@ -157,6 +157,218 @@ configure({ adapter: new Adapter() });
 
 然后就可以使用enzyme的API进行测试了
 
+# Render mode
+-  Shallow Rendering
+-  Full Rendering
+-  Static Rendering
+
+## Shallow Rendering
+> Shallow rendering is useful to constrain yourself to testing a component as a unit, and to ensure that your tests aren't indirectly asserting on behavior of child components.
+
+### shallow(node[, options]) => ShallowWrapper
+`shallow` API does call React lifecycle methods such as `componentDidMount` and `componentDidUpdate`.
+
+`shallow`函数时Enzyme进行的浅渲染的函数，它不会对子组件进行渲染，因而可避免子组件对父组件的测试干扰
+
+`ShallowWrapper`对象可以是单个值，也可以是数组的形式
+
+Arguments：
+1. node (ReactElement): The node to render
+2. options (Object [optional]):
+    - options.context: (Object [optional]): Context to be passed into the component
+    - options.disableLifecycleMethods: (Boolean [optional]): If set to true, `componentDidMount` is not called on the component, and `componentDidUpdate` is not called after `setProps` and `setContext`. Default to false.
+
+### ShallowWrapper API
+#### .find(selector) => ShallowWrapper
+Arguments：  
+- selector (EnzymeSelector): The selector to match.
+
+selector的类别:
+
+1. CSS Selectors:
+
+    ```javascript
+    const wrapper = shallow(<MyComponent />);
+    // class select
+    wrapper.find('.foo')
+    wrapper.find('.bar')
+
+    // id selector
+    wrapper.find('#foo')
+
+    // compound selector
+    wrapper.find('div.some-class')
+    ```
+
+2. Component Constructors:
+```javascript
+import Foo from '../components/Foo';
+wrapper.find(Foo)
+```
+
+3. Component Display Name:
+```javascript
+const wrapper = shallow(<MyComponent />);
+expect(wrapper.find('Foo').length).toBe(1);
+```
+4. Object Property Selector:
+```javascript
+const wrapper = shallow(<MyComponent />);
+expect(wrapper.find({ prop: 'value' })).not.toExist();
+```
+
+#### .findWhere(fn) => ShallowWrapper
+
+类似于Array.filterde API ?????  
+在Enzyme中也有一个`filterWhere`的API，但这两个貌似功能是一样的 ???
+
+```javascript
+const wrapper = shallow(<DemoList />)
+let items = wrapper.find(DemoItem);
+let enzymes = items.findWhere(i => i.prop("text").includes("Enzyme"));
+expect(enzymes.length).toEqual(2);
+```
+
+#### .filter(selector) => ShallowWrapper
+与`find`相似，一般在find之后使用
+
+#### .filterWhere(predicate) => ShallowWrapper
+与`findWhere`相似，一般在find之后使用
+
+### .not(selector) => ShallowWrapper
+筛选恰好与filter，选出不符合的内容，一般在find之后使用
+
+#### .hostNodes() => ShallowWrapper
+> Removes nodes that are not host nodes; e.g., this will only return HTML nodes.
+
+应该是返回原生HTML的标签的对象
+```javascript
+const wrapper = shallow((
+    <div>
+        <DemoItem className="foo" test="foo" />
+        <p className="foo" id="haha"/>
+        <div className="foo" id="hoho"/>
+    </div>
+));
+expect(wrapper.find(".foo").hostNodes().length).toBe(2);
+```
+
+#### .contains(nodeOrNodes) => Boolean
+Arguments
+- nodeOrNodes (ReactElement|Array<ReactElement>): The node or array of nodes whose presence you are detecting in the current instance's render tree.
+
+只有当wrapper对象包含参数中的所有Node元素，才返回true
+
+```javascript
+// one ReactElement
+expect(wrapper.contains(<div data-foo="foo">Hello</div>)).toEqual(true);
+// ReactElement array
+expect(wrapper.contains([
+  <span>Hello</span>,
+  <div>Goodbye</div>,
+])).toEqual(true);
+```
+
+#### .first() => ShallowWrapper
+取匹配过后的节点集中的第一个
+
+```javascript
+expect(wrapper.find("DemoItem").first().length).toBe(1);
+expect(wrapper.find(DemoItem).first().prop("text")).toBe("React");
+```
+
+#### .prop(key) => Any
+
+根据指定的key，获取wrapper对象想要`props`中的属性值，只用于单一的node节点
+
+> .prop(key) only returns values for props that exist in the root node.
+
+`prop`函数只能获取组件render是使用的props属性，而没有被使用到的无法返回得到；且只有在调用的wrapper对象的跟节点上的属性才能被读取到
+
+#### .props() => Object
+
+返回组件的props属性对象，但并不是完整的对象，只有在组件的render方法中使用的prop才会返回
+
+若要会去完整的props，要使用`wrapper.instance().props`
+
+#### .state([key]) => Any
+根据key返回state中相应的属性值，若不指定key，则是返回整个state对象
+```javascript
+const wrapper = shallow(<MyComponent />);
+expect(wrapper.state().foo).to.equal(10);
+expect(wrapper.state('foo')).to.equal(10);
+```
+
+#### .text() => String
+返回整个组件中所有的字符串
+
+```javascript
+let wrapper = shallow(<div><b>important</b></div>);
+expect(wrapper.text()).to.equal('important');
+
+wrapper = shallow(<div>it is <b>important</b>.</div>);
+expect(wrapper.text()).to.equal('it is important.');
+```
+
+#### .map(fn) => Array<Any>
+相当于Array.map
+
+#### .forEach(fn) => Self
+相当于Array.forEach
+
+#### .at(index) => ShallowWrapper
+获取一个node 集合中指定索引的对象
+
+#### .get(index) => ReactElement
+功能与`at`相似，但返回的结果是一个`ReactElement`，无法再使用`find`等方法，但`at`方法依然适用
+```javascript
+const wrapper = shallow(
+  <div>
+    <ul>
+      <li>1</li>
+    </ul>
+    <ul>
+      <li>3</li>
+    </ul>
+  </div>
+);
+let ul_2 = wrapper.find("ul").get(1);
+expect(ul_2.find).toBe(undefined);
+let lis = wrapper.find("li");
+expect(lis.at(2).text()).toBe("3");
+```
+
+#### .context([key]) => Any
+
+#### .equals(node) => Boolean
+判断当前wrapper是否为指定的node，参数必须是一个ReactElement对象，即JSX的HTML对象
+```javascript
+const wrapper = shallow(<MyComponent />);
+expect(wrapper.equals(<div className="foo bar" />)).toEqual(true);
+```
+
+#### .setProps(nextProps[, callback]) => Self
+> A method that sets the props of the root component, and re-renders. Useful for when you are wanting to test how the component behaves over time with changing props. Calling this, for instance, will call the `componentWillReceiveProps` lifecycle method.
+
+> Similar to setState, this method accepts a props object and will merge it in with the already existing props.
+
+修改props的值，并且会自动进行render，触发`componentWillReceiveProps`生命周期方法
+
+只能用于直接shallow生成的对象
+
+Arguments
+- nextProps (Object): An object containing new props to merge in with the current props
+- callback (Function [optional]): If provided, the callback function will be executed once `setProps` has completed
+
+#### .instance() => ReactComponent
+> Gets the instance of the component being rendered as the root node passed into shallow()
+
+生成react的组件对象示例，但只有直接通过`shallow()`获得的wrapper才有效
+
+> can only be called on a wrapper instance that is also the root instance. With React 16.x, instance() returns null for stateless React component/stateless functional components.
+
+在 React16.x之后，只有class级别的组件才能成功返回组件对象实例，而function级别的返回null
+
 # Link
 ### Github
 FormidableLabs/enzyme-matchers/packages/jasmine-enzyme
