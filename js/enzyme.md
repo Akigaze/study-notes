@@ -31,6 +31,7 @@ Jasmine似乎不支持ES6的一些语法(import)，所以在测试文件开头�
 - babel setup
 - enzyme setup
 - jsdom setup
+- style setup
 
 这些配置都是在测试的前期准备，可以理解为`beforeEach`，通过创建相应的配置文件，配置到`jasmine.json`的`helpers`列表中即可  
 
@@ -91,6 +92,17 @@ global.window = dom.window;
 global.navigator = dom.window.navigator;
 ```
 
+### style setup
+对于Enzyme模拟的组件来说，真正去加载组件中的图片或CSS样式是比较消耗资源，也是没有必要的，因此有一些文件是必须被忽略掉的，否则
+
+`ignore-styles`这么包可以忽略文件中导入的样式文件
+> npm install --save-dev ignore-styles
+
+在测试文件中直接导入该模块即可自动忽略CSS样式文件的加载
+```javascript
+import "ignore-styles";
+```
+
 ### jasmine.json helpers
 将所有setup文件依次添加到jasmine.json的helpers列表中
 
@@ -129,6 +141,22 @@ describe("todo list", () => {
 });
 ```
 
+# 脚手架React项目使用enzyme测试
+使用`create-react-app`搭建的项目需要将测试文件编写在src目录下，且以`.test.js`为后缀名  
+
+`create-react-app`搭建的react项目默认使用Jest测试框架，要使用Enzyme是需要下载相关依赖：
+> npm install --save enzyme enzyme-adapter-react-16 react-test-renderer
+
+再在src目录下放置一个`setupTests.js`文件，类似jasmine的`enzyme.setup.js`:
+```javascript
+import { configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+configure({ adapter: new Adapter() });
+```
+
+然后就可以使用enzyme的API进行测试了
+
 # Link
 ### Github
 FormidableLabs/enzyme-matchers/packages/jasmine-enzyme
@@ -140,3 +168,6 @@ Testing a React app with Jasmine npm
 https://jasmine.github.io/tutorials/react_with_npm
 ### Enzyme Document
 https://airbnb.io/enzyme/
+### Create React App Official
+test  
+https://facebook.github.io/create-react-app/docs/running-tests

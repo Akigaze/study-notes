@@ -223,6 +223,11 @@ webpack打包项目的命令
 ![app.js](pic/react/app-js-4.png)
 
 ---
+## create-react-app
+> npx create-react-app dir
+
+若已安装全局的`create-react-app`模块，则不用npx
+> create-react-app dir
 
 ## 准备工作
 
@@ -261,3 +266,14 @@ module.exports = {
   mode: "development"
 };
 ```
+
+# Link
+### React Official
+https://reactjs.org/
+### Create React App Official
+https://facebook.github.io/create-react-app/  
+test  
+https://facebook.github.io/create-react-app/docs/running-tests
+### Github
+facebook/create-react-app  
+https://github.com/facebook/create-react-app
