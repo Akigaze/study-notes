@@ -90,6 +90,12 @@ stash@{2}: WIP on master: 21d80a5 added number to log
 查看所有远程仓库的url  
 > git remote -v
 
+### 删除远程仓库
+> git remote rm <name>
+
+### 添加远程仓库
+> git remote add <name> <url>
+
 # Link
 ### Git-book
 Book Index  

@@ -141,6 +141,10 @@ describe("todo list", () => {
 });
 ```
 
+## react的jasmine-enzyme开发技术栈
+GitHub：https://github.com/Akigaze/react-jasmine-dev-stack
+
+----------------------------
 # 脚手架React项目使用enzyme测试
 使用`create-react-app`搭建的项目需要将测试文件编写在src目录下，且以`.test.js`为后缀名  
 
@@ -157,6 +161,7 @@ configure({ adapter: new Adapter() });
 
 然后就可以使用enzyme的API进行测试了
 
+----------------------------------
 # Render mode
 -  Shallow Rendering
 -  Full Rendering
@@ -236,7 +241,7 @@ expect(enzymes.length).toEqual(2);
 与`findWhere`相似，一般在find之后使用
 
 ### .not(selector) => ShallowWrapper
-筛选恰好与filter，选出不符合的内容，一般在find之后使用
+筛选恰好与`filter`，选出不符合的内容，一般在find之后使用
 
 #### .hostNodes() => ShallowWrapper
 > Removes nodes that are not host nodes; e.g., this will only return HTML nodes.
@@ -283,13 +288,13 @@ expect(wrapper.find(DemoItem).first().prop("text")).toBe("React");
 
 > .prop(key) only returns values for props that exist in the root node.
 
-`prop`函数只能获取组件render是使用的props属性，而没有被使用到的无法返回得到；且只有在调用的wrapper对象的跟节点上的属性才能被读取到
+`prop`函数只能获取组件render是使用的props属性，而没有被使用到的无法返回得到；且只有在调用的wrapper对象的根节点上的属性才能被读取到
 
 #### .props() => Object
 
 返回组件的props属性对象，但并不是完整的对象，只有在组件的render方法中使用的prop才会返回
 
-若要会去完整的props，要使用`wrapper.instance().props`
+若要返回完整的props，要使用`wrapper.instance().props`
 
 #### .state([key]) => Any
 根据key返回state中相应的属性值，若不指定key，则是返回整个state对象
@@ -311,13 +316,13 @@ expect(wrapper.text()).to.equal('it is important.');
 ```
 
 #### .map(fn) => Array<Any>
-相当于Array.map
+相当于`Array.map`
 
 #### .forEach(fn) => Self
-相当于Array.forEach
+相当于`Array.forEach`
 
 #### .at(index) => ShallowWrapper
-获取一个node 集合中指定索引的对象
+获取一个 node 集合中指定索引的对象
 
 #### .get(index) => ReactElement
 功能与`at`相似，但返回的结果是一个`ReactElement`，无法再使用`find`等方法，但`at`方法依然适用
@@ -338,10 +343,8 @@ let lis = wrapper.find("li");
 expect(lis.at(2).text()).toBe("3");
 ```
 
-#### .context([key]) => Any
-
 #### .equals(node) => Boolean
-判断当前wrapper是否为指定的node，参数必须是一个ReactElement对象，即JSX的HTML对象
+判断当前wrapper是否为指定的node，参数必须是一个`ReactElement`对象，即JSX的HTML对象
 ```javascript
 const wrapper = shallow(<MyComponent />);
 expect(wrapper.equals(<div className="foo bar" />)).toEqual(true);
@@ -354,11 +357,15 @@ expect(wrapper.equals(<div className="foo bar" />)).toEqual(true);
 
 修改props的值，并且会自动进行render，触发`componentWillReceiveProps`生命周期方法
 
-只能用于直接shallow生成的对象
+只能用于直接`shallow`生成的对象
 
 Arguments
 - nextProps (Object): An object containing new props to merge in with the current props
 - callback (Function [optional]): If provided, the callback function will be executed once `setProps` has completed
+
+```javascript
+
+```
 
 #### .instance() => ReactComponent
 > Gets the instance of the component being rendered as the root node passed into shallow()
@@ -368,6 +375,51 @@ Arguments
 > can only be called on a wrapper instance that is also the root instance. With React 16.x, instance() returns null for stateless React component/stateless functional components.
 
 在 React16.x之后，只有class级别的组件才能成功返回组件对象实例，而function级别的返回null
+
+#### .is(selector) => Boolean
+> Returns whether or not the current node matches a provided selector.
+
+Arguments
+- selector (EnzymeSelector): The selector to match.
+
+Returns
+- Boolean: whether or not the current node matches a provided selector.
+
+```javascript
+const wrapper = shallow(<div className="some-class other-class" />);
+expect(wrapper.is('.some-class')).toBe(true);
+```
+
+#### .exists([selector]) => Boolean
+> Returns whether or not the current node exists. Or, if a selector is passed in, whether that selector has any matching results.
+
+Arguments
+- selector (EnzymeSelector [optional]): The selector to check existence for.
+
+Returns
+- Boolean: whether or not the current node exists, or the selector had any results.
+
+```javascript
+const wrapper = mount(<div className="some-class" />);
+expect(wrapper.exists('.some-class')).toBe(true);
+expect(wrapper.find('.other-class').exists()).to.Be(false);
+```
+
+#### .hasClass(className) => Boolean
+> Returns whether or not the current node has a className prop including the passed in class name.
+
+Arguments
+- className (String): A single class name.
+
+Returns
+- Boolean: whether or not the current node has the class or not.
+
+```javascript
+const wrapper = shallow(<MyComponent />);
+expect(wrapper.find('.my-button').hasClass('disabled')).toBe(true);
+```
+
+#### .context([key]) => Any
 
 # Link
 ### Github
