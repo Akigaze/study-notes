@@ -275,12 +275,15 @@ expect(wrapper.contains([
 ```
 
 #### .first() => ShallowWrapper
-取匹配过后的节点集中的第一个
+节点集中的第一个，一般应用于`find`匹配过后的节点集
 
 ```javascript
 expect(wrapper.find("DemoItem").first().length).toBe(1);
 expect(wrapper.find(DemoItem).first().prop("text")).toBe("React");
 ```
+
+#### .last() => ShallowWrapper
+返回节点集中的最后一个节点，一般用于`find`的结果，与`first`相似
 
 #### .prop(key) => Any
 
@@ -367,6 +370,36 @@ Arguments
 
 ```
 
+#### .setState(nextState[, callback]) => Self
+> A method to invoke setState() on the root component instance similar to how you might in the definition of the component, and re-renders.
+
+Arguments
+- nextState (Object): An object containing new state to merge in with the current state
+- callback (Function [optional]): If provided, the callback function will be executed once setState has completed
+
+修改state的值，并且会自动进行render，与`setProps`相似
+
+```javascript
+class Foo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { name: 'foo' };
+  }
+
+  render() {
+    const { name } = this.state;
+    return <div className={name} />
+  }
+}
+
+const wrapper = shallow(<Foo />);
+expect(wrapper.find('.foo').length).toBe(1);
+expect(wrapper.find('.bar').length).toBe(0);
+wrapper.setState({ name: 'bar' });
+expect(wrapper.find('.foo').length).toBe(0);
+expect(wrapper.find('.bar').length).toBe(1);
+```
+
 #### .instance() => ReactComponent
 > Gets the instance of the component being rendered as the root node passed into shallow()
 
@@ -417,6 +450,66 @@ Returns
 ```javascript
 const wrapper = shallow(<MyComponent />);
 expect(wrapper.find('.my-button').hasClass('disabled')).toBe(true);
+```
+
+#### .key() => String
+返回组件的`key`属性值，只能用于单个的节点
+
+```javascript
+const wrapper = shallow((
+  <ul>
+    {['foo', 'bar'].map(s => <li key={s}>{s}</li>)}
+  </ul>
+)).find('li');
+expect(wrapper.at(0).key()).toEqual('foo');
+expect(wrapper.at(1).key()).toEqual('bar');
+```
+
+#### .name() => String|null
+返回组件的名称，若是一个自定义组件，则返回根节点的组件名；若是HTML标签，则返回标签名；若组件不存在(null)，则返回null
+
+对于组件中的`name`和`displayName`属性，优先级如下：
+> type.displayName -> type.name -> type.
+
+```javascript
+// html tag
+const wrapper = shallow(<div />);
+expect(wrapper.name()).toEqual('div');
+
+// custom tag
+function SomeWrappingComponent() { return <Foo />; }
+const wrapper = shallow(<SomeWrappingComponent />);
+expect(wrapper.name()).toEqual('Foo');
+
+// displayName precedence
+Foo.displayName = 'A cool custom name';
+function SomeWrappingComponent() { return <Foo />; }
+const wrapper = shallow(<SomeWrappingComponent />);
+expect(wrapper.name()).toEqual('A cool custom name');
+```
+
+#### .update() => Self
+> Forces a re-render. Useful to run before checking the render output if something external may be updating the state of the component somewhere.
+
+强制触发render方法，只能用于`shallow`产生的对象
+
+```javascript
+class ImpureRender extends React.Component {
+  constructor(props) {
+    super(props);
+    this.count = 0;
+  }
+
+  render() {
+    this.count += 1;
+    return <div>{this.count}</div>;
+  }
+}
+
+const wrapper = shallow(<ImpureRender />);
+expect(wrapper.text()).toBe('0');
+wrapper.update();
+expect(wrapper.text()).toBe('1');
 ```
 
 #### .context([key]) => Any
