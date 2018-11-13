@@ -293,6 +293,11 @@ expect(wrapper.find(DemoItem).first().prop("text")).toBe("React");
 
 `prop`函数只能获取组件render是使用的props属性，而没有被使用到的无法返回得到；且只有在调用的wrapper对象的根节点上的属性才能被读取到
 
+```javascript
+let items = wrapper.find(DemoItem);
+expect(items.at(3).prop("text")).toEqual("Jamsine-Enzyme");
+```
+
 #### .props() => Object
 
 返回组件的props属性对象，但并不是完整的对象，只有在组件的render方法中使用的prop才会返回
@@ -324,6 +329,31 @@ expect(wrapper.text()).to.equal('it is important.');
 #### .forEach(fn) => Self
 相当于`Array.forEach`
 
+#### .someWhere(fn) => Boolean
+相当于`Array.some`
+
+#### .some(selector) => Boolean
+与`someWhere`相似，但只能以选择器作为判断条件
+
+#### .parent() => ShallowWrapper
+> Returns a wrapper with the direct parent of the node in the current wrapper.
+
+```javascript
+let item_1 = wrapper.find("DemoItem").at(0);
+expect(item_1.parent().is("ul")).toBe(true);
+```
+
+#### .parents([selector]) => ShallowWrapper
+> Returns a set of wrapper around all of the parents/ancestors of the wrapper. Does not include the node in the current wrapper. Optionally, a selector can be provided and it will filter the parents by this selector.
+
+```javascript
+wrapper = shallow(<div><p><span>hello</span>world</p></div>)
+expect(wrapper.find("span").parents().length).toBe(2);
+expect(wrapper.find("span").parents("p").length).toBe(1);
+wrapper.find("span").parents().forEach(p => console.log(p.name())); // p, div
+```
+
+
 #### .at(index) => ShallowWrapper
 获取一个 node 集合中指定索引的对象
 
@@ -344,6 +374,46 @@ let ul_2 = wrapper.find("ul").get(1);
 expect(ul_2.find).toBe(undefined);
 let lis = wrapper.find("li");
 expect(lis.at(2).text()).toBe("3");
+```
+
+#### .childAt(index) => ShallowWrapper
+与`at`类似
+
+```javascript
+wrapper = shallow((
+  <div>
+      <p><span>hello world</span></p>
+      <p>
+          <span>hello react</span>
+          <span>hello enzyme</span>
+      </p>
+  </div>
+))
+expect(wrapper.childAt(1).find("span").length).toBe(2);
+```
+
+#### .children([selector]) => ShallowWrapper
+> Returns a new wrapper set with all of the children of the node(s) in the current wrapper. Optionally, a selector can be provided and it will filter the children by this selector
+
+```javascript
+wrapper = shallow((
+    <div>
+        <p><span>hello world</span></p>
+        <p>
+            <span>hello react</span>
+            <h2>hello enzyme</h2>
+        </p>
+    </div>
+))
+expect(wrapper.children().length).toBe(2);
+expect(wrapper.children().children("h2").text()).toBe("hello enzyme")
+```
+
+#### .closest(selector) => ShallowWrapper
+> Returns a wrapper of the first element that matches the selector by traversing up through the current node's ancestors in the tree, starting with itself.
+
+```javascript
+
 ```
 
 #### .equals(node) => Boolean
@@ -367,7 +437,10 @@ Arguments
 - callback (Function [optional]): If provided, the callback function will be executed once `setProps` has completed
 
 ```javascript
-
+const demoWrapper = shallow(<DemoItem text="Enzyme" />);
+expect(demoWrapper.text()).toBe("Enzyme");
+demoWrapper.setProps({ text: "Hello World" });
+expect(demoWrapper.text()).toBe("Hello World");
 ```
 
 #### .setState(nextState[, callback]) => Self
@@ -488,6 +561,25 @@ const wrapper = shallow(<SomeWrappingComponent />);
 expect(wrapper.name()).toEqual('A cool custom name');
 ```
 
+#### .type() => String|Function|null
+> Returns the type of the current node of this wrapper. If it's a `composite` component, this will be the component `constructor`. If it's a native `DOM` node, it will be a string of the `tag name`. If it's `null`, it will be `null`.
+
+```javascript
+// actually a html tag
+function Foo() {
+  return <div />;
+}
+const wrapper = shallow(<Foo />);
+expect(wrapper.type()).toEqual('div');
+
+//  a composite component
+function Foo() {
+  return <Bar />;
+}
+const wrapper = shallow(<Foo />);
+expect(wrapper.type()).toEqual(Bar);
+```
+
 #### .update() => Self
 > Forces a re-render. Useful to run before checking the render output if something external may be updating the state of the component somewhere.
 
@@ -510,6 +602,15 @@ const wrapper = shallow(<ImpureRender />);
 expect(wrapper.text()).toBe('0');
 wrapper.update();
 expect(wrapper.text()).toBe('1');
+```
+
+#### .unmount() => Self
+卸载组件，会调用react组件生命周期的方法`componentWillUnmount`，但此方法必须显式声明在组件中，并通过`wrapper.instance()`获取
+
+```javascript
+let unmount = spyOn(wrapper.instance(), "componentWillUnmount");
+wrapper.unmount()
+expect(unmount).toHaveBeenCalled();
 ```
 
 #### .context([key]) => Any
