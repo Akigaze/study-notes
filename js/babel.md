@@ -297,6 +297,19 @@ babel-preset-env在presets中可以添加许多配置项，用于配置运行环
 }
 ```
 
+## 翻译箭头函数
+由于箭头函数是ES7的新语法，而不是ES6的内容，因而只引入es2015的preset是不够的，还用引入`stage-1`
+> npm install -D babel-preset-stage-1
+```json
+{
+    "presets": [
+        "es2015",
+        "stage-1"
+    ]
+}
+```
+
+
 ## 浏览器环境使用Babel
 Babel也可以用于浏览器环境。但是，从`Babel 6.0`开始，不再直接提供浏览器版本，而是要用构建工具构建出来。如果你没有或不想使用构建工具，可以通过安装`5.x`版本的`babel-core`模块获取。
 
@@ -361,7 +374,9 @@ https://babel.docschina.org/
 英文官网    
 https://babeljs.io/   
 Env preset  
-https://www.babeljs.cn/docs/plugins/preset-env/
+https://www.babeljs.cn/docs/plugins/preset-env/  
+Class properties transform  
+https://babel.bootcss.com/docs/plugins/transform-class-properties/
 
 ### Blog
 REPL环境  
@@ -369,7 +384,9 @@ https://www.cnblogs.com/AnnieShen/p/6028304.html
 天天の記事簿 —— Node.js神器之babel-preset-env  
 http://blog.ttionya.com/article-1695.html  
 babel 7 教程  
-https://blog.zfanw.com/babel-js/
+https://blog.zfanw.com/babel-js/  
+BABEL PRESETS STAGE  
+http://www.cnblogs.com/rock-roll/p/6250149.html  
 
 ### 掘金
 谈谈常用Babel配置与babel-preset-env  

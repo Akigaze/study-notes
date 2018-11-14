@@ -222,6 +222,9 @@ const wrapper = shallow(<MyComponent />);
 expect(wrapper.find({ prop: 'value' })).not.toExist();
 ```
 
+**---- 注意 ----**  
+通过`find`得到的ShallowWrapper对象是完全独立的，是从原有的wrapper对象拷贝出来的，而没有相互的引用，所以，如果外层的wrapper对象因props或state的改变而重新渲染，原来`find`得到的ShallowWrapper对象是不会有任何变化的，需要重新使用`find`获取渲染后的子组件
+
 #### .findWhere(fn) => ShallowWrapper
 
 类似于Array.filterde API ?????  
@@ -613,8 +616,37 @@ wrapper.unmount()
 expect(unmount).toHaveBeenCalled();
 ```
 
+#### .simulate(event[, mock]) => Self
+
+模拟组件上的一些事件
+Arguments
+- event (String): The event name to be simulated
+- mock (Object [optional]): A mock event object that will be merged with the event object passed to the handlers.
+
+`event`参数就是事件的全字母小写名称，如clcik，mouseover，mouseover  
+`mock`参数相当于事件触发时`event`对象，如：
+```javascript
+simulate("click", {ctrlKey:"true",shiftKey:true})
+```
+
+同时模拟的事件会去执行相应的事件处理函数，如果有props或state的变化，组件会自动重新渲染
+
+```javascript
+wrapper.find("h5").simulate("click");
+expect(wrapper.find("h5").text()).toEqual("world");
+```
+
 #### .context([key]) => Any
 
+---------------------------------------
+## 关于mock的问题
+在对组件的事件处理函数进行mock时，有两种mock形式：
+1. `spyOn(ComponentClass.prototype, "function")`
+对组件class的prototype的属性进行mock，因此之后构造的所有该组件的对象对应的方法都会被mock掉，这种mock必须在构建组件对象之前执行
+2. `spyOn(wrapper.instance(), "function")`
+对组件实例的方法进行mock，因而不会影响到其他组件，但进行mock的过程并不会对原来的组件对象产生影响，进mock得到的方法并没有真正绑定到组件对象上，因此需要在mock之后对组件对象进行强制渲染，执行`wrapper.instance().forceUpdate()`
+
+----------------------------
 # Link
 ### Github
 FormidableLabs/enzyme-matchers/packages/jasmine-enzyme
@@ -629,3 +661,6 @@ https://airbnb.io/enzyme/
 ### Create React App Official
 test  
 https://facebook.github.io/create-react-app/docs/running-tests
+### stackoverflow
+Enzyme simulate an onChange event  
+https://stackoverflow.com/questions/43426885/enzyme-simulate-an-onchange-event
