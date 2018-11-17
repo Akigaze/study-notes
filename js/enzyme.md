@@ -338,6 +338,38 @@ expect(wrapper.text()).to.equal('it is important.');
 #### .some(selector) => Boolean
 与`someWhere`相似，但只能以选择器作为判断条件
 
+#### .every(selector) => Boolean
+只有当wrapper集合中的每一个节点元素都满足指定的选择器是才返回true
+
+```javascript
+const wrapper = shallow((
+  <div>
+    <div className="foo qoo" />
+    <div className="foo boo" />
+    <div className="foo hoo" />
+  </div>
+));
+expect(wrapper.find('.foo').every('.foo')).toEqual(true);
+expect(wrapper.find('.foo').every('.qoo')).toEqual(false);
+expect(wrapper.find('.foo').every('.bar')).toEqual(false);
+```
+
+#### .everyWhere(fn) => Boolean
+与every相似
+
+```javascript
+const wrapper = shallow((
+  <div>
+    <div className="foo qoo" />
+    <div className="foo boo" />
+    <div className="foo hoo" />
+  </div>
+));
+expect(wrapper.find('.foo').everyWhere(n => n.hasClass('foo'))).toEqual(true);
+expect(wrapper.find('.foo').everyWhere(n => n.hasClass('qoo'))).toEqual(false);
+expect(wrapper.find('.foo').everyWhere(n => n.hasClass('bar'))).toEqual(false);
+```
+
 #### .parent() => ShallowWrapper
 > Returns a wrapper with the direct parent of the node in the current wrapper.
 
@@ -355,7 +387,6 @@ expect(wrapper.find("span").parents().length).toBe(2);
 expect(wrapper.find("span").parents("p").length).toBe(1);
 wrapper.find("span").parents().forEach(p => console.log(p.name())); // p, div
 ```
-
 
 #### .at(index) => ShallowWrapper
 获取一个 node 集合中指定索引的对象
@@ -636,7 +667,242 @@ wrapper.find("h5").simulate("click");
 expect(wrapper.find("h5").text()).toEqual("world");
 ```
 
+#### .simulateError(error) => Self
+模拟一个组件出现异常，出现异常时会调用react组件生命周期的`componentDidCatch`方法
+```javascript
+componentDidCatch(error, info) {
+  const { spy } = this.props;
+  spy(error, info);
+}
+```
+
+#### .render() => CheerioWrapper
+貌似是对子组件进行渲染的一个API，但是CheerioWrapper对象使用find方法貌似没有作用，但hasClasss之类的方法可以使用
+
+```javascript
+expect(wrapper.find(DemoItem).at(0).render().hasClass("item")).toEqual(true);
+```
+
+#### .shallow([options]) => ShallowWrapper
+对节点组件进行渲染，如果是子组件，则会把子组件的内容渲染出来
+
+Arguments
+- options (Object [optional]):
+    1. options.context: (Object [optional]): Context to be passed into the component
+    2. options.disableLifecycleMethods: (Boolean [optional]): If set to true, componentDidMount is not called on the component, and componentDidUpdate is not called after setProps and setContext. Default to false.
+
+```javascript
+expect(wrapper.find(DemoItem).at(1).shallow().find(".item").length).toEqual(1);
+```
+
 #### .context([key]) => Any
+
+---------------------------------------
+
+## Full Rendering
+> unlike shallow or static rendering, full rendering actually mounts the component in the DOM, which means that tests can affect each other if they are all using the same DOM.
+
+不同于shallow渲染模式，full模式同时会渲染子组件，即建立一棵完整的DOM树
+
+### mount(node[, options]) => ReactWrapper
+使用`mount`方法进行full渲染，使用与`shallow`相，只是返回的对象是一个完整的ReactWrapper
+
+`shallow`函数时Enzyme进行的浅渲染的函数，它不会对子组件进行渲染，因而可避免子组件对父组件的测试干扰
+
+`ShallowWrapper`对象可以是单个值，也可以是数组的形式
+
+Arguments
+- node (ReactElement): The node to render
+- options (Object [optional]):
+    1. options.context: (Object [optional]): Context to be passed into the component
+    2. options.attachTo: (DOMElement [optional]): DOM Element to attach the component to.
+    3. options.childContextTypes: (Object [optional]): Merged contextTypes for all children of the wrapper.
+
+### ReactWrapper  API
+ReactWrapper 的API与ShallowWrapper的API相似，使用方式基本一样
+
+#### .find(selector) => ReactWrapper
+Find every node in the render tree that matches the provided selector.
+
+#### .findWhere(predicate) => ReactWrapper
+Find every node in the render tree that returns true for the provided predicate function.
+
+#### .filter(selector) => ReactWrapper
+Remove nodes in the current wrapper that do not match the provided selector.
+
+#### .filterWhere(predicate) => ReactWrapper
+Remove nodes in the current wrapper that do not return true for the provided predicate function.
+
+#### .hostNodes() => ReactWrapper
+Removes nodes that are not host nodes; e.g., this will only return HTML nodes.
+
+#### .contains(nodeOrNodes) => Boolean
+Returns whether or not a given node or array of nodes is somewhere in the render tree.
+
+#### .containsMatchingElement(node) => Boolean
+Returns whether or not a given react element is somewhere in the render tree.
+
+#### .containsAllMatchingElements(nodes) => Boolean
+Returns whether or not all the given react elements are somewhere in the render tree.
+
+#### .containsAnyMatchingElements(nodes) => Boolean
+Returns whether or not one of the given react elements is somewhere in the render tree.
+
+#### .hasClass(className) => Boolean
+Returns whether or not the current root node has the given class name or not.
+
+#### .is(selector) => Boolean
+Returns whether or not the current node matches a provided selector.
+
+#### .exists([selector]) => Boolean
+Returns whether or not the current node exists, or, if given a selector, whether that selector has any matching results.
+
+#### .isEmpty() => Boolean
+Deprecated: Use .exists() instead.
+
+#### .isEmptyRender() => Boolean
+Returns whether or not the current component returns a falsy value.
+
+#### .not(selector) => ReactWrapper
+Remove nodes in the current wrapper that match the provided selector. (inverse of .filter())
+
+#### .children() => ReactWrapper
+Get a wrapper with all of the children nodes of the current wrapper.
+
+#### .childAt(index) => ReactWrapper
+Returns a new wrapper with child at the specified index.
+
+#### .parents() => ReactWrapper
+Get a wrapper with all of the parents (ancestors) of the current node.
+
+#### .parent() => ReactWrapper
+Get a wrapper with the direct parent of the current node.
+
+#### .closest(selector) => ReactWrapper
+Get a wrapper with the first ancestor of the current node to match the provided selector.
+
+#### .render() => CheerioWrapper
+Returns a CheerioWrapper of the current node's subtree.
+
+#### .text() => String
+Returns a string representation of the text nodes in the current render tree.
+
+#### .html() => String
+Returns a static HTML rendering of the current node.
+
+#### .get(index) => ReactElement
+Returns the node at the provided index of the current wrapper.
+
+#### .getDOMNode() => DOMComponent
+Returns the outer most DOMComponent of the current wrapper.
+
+#### .at(index) => ReactWrapper
+Returns a wrapper of the node at the provided index of the current wrapper.
+
+#### .first() => ReactWrapper
+Returns a wrapper of the first node of the current wrapper.
+
+#### .last() => ReactWrapper
+Returns a wrapper of the last node of the current wrapper.
+
+#### .state([key]) => Any
+Returns the state of the root component.
+
+#### .context([key]) => Any
+Returns the context of the root component.
+
+#### .props() => Object
+Returns the props of the root component.
+
+#### .prop(key) => Any
+Returns the named prop of the root component.
+
+#### .key() => String
+Returns the key of the root component.
+
+#### .simulate(event[, mock]) => ReactWrapper
+Simulates an event on the current node.
+
+#### .setState(nextState) => ReactWrapper
+Manually sets state of the root component.
+
+#### .setProps(nextProps[, callback]) => ReactWrapper
+Manually sets props of the root component.
+
+#### .setContext(context) => ReactWrapper
+Manually sets context of the root component.
+
+#### .instance() => ReactComponent|DOMComponent
+Returns the wrapper's underlying instance.
+
+#### .unmount() => ReactWrapper
+A method that un-mounts the component.
+
+#### .mount() => ReactWrapper
+A method that re-mounts the component. Trigger `componentWillMount` and `componentDidMount`
+
+#### .update() => ReactWrapper
+Calls .forceUpdate() on the root component instance.
+
+#### .debug() => String
+Returns a string representation of the current render tree for debugging purposes.
+
+#### .type() => String|Function
+Returns the type of the current node of the wrapper.
+
+#### .name() => String
+Returns the name of the current node of the wrapper.
+
+#### .forEach(fn) => ReactWrapper
+Iterates through each node of the current wrapper and executes the provided function
+
+#### .map(fn) => Array
+Maps the current array of nodes to another array.
+
+#### .matchesElement(node) => Boolean
+Returns whether or not a given react element matches the current render tree.
+
+#### .reduce(fn[, initialValue]) => Any
+Reduces the current array of nodes to a value
+
+#### .reduceRight(fn[, initialValue]) => Any
+Reduces the current array of nodes to a value, from right to left.
+
+#### .slice([begin[, end]]) => ReactWrapper
+Returns a new wrapper with a subset of the nodes of the original wrapper, according to the rules of Array#slice.
+
+#### .tap(intercepter) => Self
+Taps into the wrapper method chain. Helpful for debugging.
+
+#### .some(selector) => Boolean
+Returns whether or not any of the nodes in the wrapper match the provided selector.
+
+#### .someWhere(predicate) => Boolean
+Returns whether or not any of the nodes in the wrapper pass the provided predicate function.
+
+#### .every(selector) => Boolean
+Returns whether or not all of the nodes in the wrapper match the provided selector.
+
+#### .everyWhere(predicate) => Boolean
+Returns whether or not all of the nodes in the wrapper pass the provided predicate function.
+
+#### .ref(refName) => ReactWrapper
+Returns a wrapper of the node that matches the provided reference name.
+
+#### .detach() => void
+Unmount the component from the DOM node it's attached to.
+
+---------------------------------------
+
+## Static Rendering
+> `render` returns a wrapper very similar to the other renderers in enzyme, `mount` and `shallow`; however, render uses a third party HTML parsing and traversal library Cheerio. We believe that Cheerio handles parsing and traversing HTML extremely well, and duplicating this functionality ourselves would be a disservice.
+
+> For the purposes of this documentation, we will refer to Cheerio's constructor as `CheerioWrapper`, which is to say that it is analogous to our `ReactWrapper` and `ShallowWrapper` constructors.
+
+静态渲染使用`render`方法渲染一个组件，返回以个CheerioWrapper对象；CheerioWrapper拥有与ReactWrapper和
+ShallowWrapper相似的API
+
+CheerioWrapper是由第三方`Cheerio`提供的一个API，因此静态的`render`对组件的渲染是依赖于第三方工具的，而不是Enzyme自带的。
 
 ---------------------------------------
 ## 关于mock的问题
@@ -653,6 +919,8 @@ FormidableLabs/enzyme-matchers/packages/jasmine-enzyme
 https://github.com/FormidableLabs/enzyme-matchers/tree/master/packages/jasmine-enzyme  
 jsdom/jsdom  
 https://github.com/jsdom/jsdom
+cheerio  
+https://cheerio.js.org/
 ### Jasmine官网
 Testing a React app with Jasmine npm  
 https://jasmine.github.io/tutorials/react_with_npm
@@ -664,3 +932,6 @@ https://facebook.github.io/create-react-app/docs/running-tests
 ### stackoverflow
 Enzyme simulate an onChange event  
 https://stackoverflow.com/questions/43426885/enzyme-simulate-an-onchange-event
+### Blog
+How to Directly Test React Component Methods with Enzyme  
+https://bambielli.com/til/2018-03-04-directly-test-react-component-methods/
