@@ -905,6 +905,32 @@ ShallowWrapper相似的API
 CheerioWrapper是由第三方`Cheerio`提供的一个API，因此静态的`render`对组件的渲染是依赖于第三方工具的，而不是Enzyme自带的。
 
 ---------------------------------------
+
+# Assertions of Jasmine-Enzyme
+- toBeChecked()
+- toBeDisabled()
+- toBeEmptyRender()
+- toExist()
+- toContainMatchingElement()
+- toContainMatchingElements()
+- toContainExactlyOneMatchingElement()
+- toContainReact()
+- toHaveClassName()
+- toHaveDisplayName()
+- toHaveHTML()
+- toHaveProp()
+- toHaveRef()
+- toHaveState()
+- toHaveStyle()
+- toHaveTagName()
+- toHaveText()
+- toIncludeText()
+- toHaveValue()
+- toMatchElement()
+- toMatchSelector()
+
+
+---------------------------------------
 ## 关于mock的问题
 在对组件的事件处理函数进行mock时，有两种mock形式：
 1. `spyOn(ComponentClass.prototype, "function")`
