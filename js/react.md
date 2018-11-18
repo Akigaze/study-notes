@@ -112,18 +112,28 @@ class Controller extends React.Component{
 
 - webpack
 - webpack-cli
+- webpack-dev-server
 
-> npm install --save-dev webpack webpack-cli
+> npm install --save-dev webpack webpack-cli webpack-dev-server
 
 - babel-core
 - babel-cli
 - babel-loader
 - babel-preset-env
 - babel-preset-react
+- babel-preset-stage-1
 
-> npm install --save babel-core babel-cli babel-loader@7 babel-preset-env babel-preset-react
+> npm install --save babel-core babel-cli babel-loader@7 babel-preset-env babel-preset-react babel-preset-stage-1
 
-由于默认安装的 babel-core 和 babel-cli 是`6.x`的版本，而 babel-loader 是`8.x`的版本，这个版本的 babel-loader 需要`7.x`以上的 babel-core，因此要降低 babel-loader 的版本到`7.x`，以适应 babel-core 和 babel-cli。
+由于默认安装的 babel-core 和 babel-cli 是`6.x`的版本，而 babel-loader 是`8.x`的版本，这个版本的 babel-loader 需要`7.x`以上的 babel-core，因此要降低 babel-loader 的版本到`7.x`，以适应 babel-core 和 babel-cli。  
+babel-preset-stage-1 是用于翻译class中使用箭头函数定义类方法的语法
+
+- css-loader
+- style-loader
+
+> npm install --save css-loader style-loader
+
+样式打包的工具，css-loader：遍历加载CSS文件，style-loader：生成style标记
 
 - react
 - react-dom
@@ -170,11 +180,17 @@ const config = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["env", "react"]
+            presets: ["env", "react", "stage-1"]
           }
         },
         exclude: /(node_modules|bower_components)/
-      }
+        },
+        // 样式加载器，必须将`css-loader`放在最后，因为use对loader的加载顺序是从后往前的，先遍历加载CSS资源，再生成style标记。
+        {
+            test: /\.css/,
+            use: ["style-loader", "css-loader"],
+            exclude: /(node_modules|bower_components)/
+        }
     ]
   },
   //开启监听
@@ -183,7 +199,14 @@ const config = {
     ignored: /node_modules/,
     aggregateTimeout: 2000
   },
-  mode: "development"
+  mode: "development",
+  devtool: "inline-source-map",//开发调试的工具
+  // webpack-dev-server的服务器配置
+  devServer: {
+    contentBase: "./dist",
+    host: "localhost",
+    port: 8888
+  }
 };
 
 module.exports = config;
@@ -193,16 +216,17 @@ module.exports = config;
 若 webpack.config.js 配置 loader 的 `options` ，则可以不需要
 ```json
 {
-  "presets": ["env", "react"]
+  "presets": ["env", "react", "stage-1"]
 }
 
 ```
 ### package.json
-webpack打包项目的命令
+webpack打包项目的命令和运行服务
 ```json
 ...
 "scripts": {
-   "build": "webpack --webpack.config.js"
+    "start":"webpack-dev-server --open",
+    "build": "webpack --webpack.config.js"
  }
  ...
 ```
