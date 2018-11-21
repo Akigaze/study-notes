@@ -56,6 +56,60 @@ configure({adapter: new Adapter()});
 
 使用`jest --init`生成配置文件是，会有一个测试环境的选择，包括`node`和`jsdom`两个选项，若选择`node`，则文件会添加一个`testEnvironment: "node"`的属性，但是不管选哪一个，都能正常使用Enzyme进行react组件的测试
 
+### configure options
+- automock [boolean]
+- bail [boolean]
+- browser [boolean]
+- cacheDirectory [string]
+- clearMocks [boolean]
+- collectCoverage [boolean]
+- collectCoverageFrom [array]
+- coverageDirectory [string]
+- coveragePathIgnorePatterns [array]
+- coverageReporters [array]
+- coverageThreshold [object]
+- errorOnDeprecated [boolean]
+- forceCoverageMatch [array]
+- globals [object]
+- globalSetup [string]
+- globalTeardown [string]
+- moduleDirectories [array]
+- moduleFileExtensions [array]
+- moduleNameMapper [object]
+- modulePathIgnorePatterns [array]
+- modulePaths [array]
+- notify [boolean]
+- notifyMode [string]
+- preset [string]
+- prettierPath [string]
+- projects [array]
+- reporters [array]
+- resetMocks [boolean]
+- resetModules [boolean]
+- resolver [string]
+- restoreMocks [boolean]
+- rootDir [string]
+- roots [array]
+- runner [string]
+- setupFiles [array]
+- setupTestFrameworkScriptFile [string]
+- snapshotSerializers [array]
+- testEnvironment [string]
+- testEnvironmentOptions [Object]
+- testMatch [array]
+- testPathIgnorePatterns [array]
+- testRegex [string]
+- testResultsProcessor [string]
+- testRunner [string]
+- testURL [string]
+- timers [string]
+- transform [object]
+- transformIgnorePatterns [array]
+- unmockedModulePathPatterns [array]
+- verbose [boolean]
+- watchPathIgnorePatterns [array]
+- watchPlugins [array]
+
 ### moduleNameMapper
 对于项目文件中引用的一些css，png，svg等资源文件，在jest的测试中是没有必要真正加载的，因此可以建立一个映射关系，将相应文件的引用映射成自定义的js对象，类似于资源的mock
 ```JavaScript
@@ -88,6 +142,127 @@ module.exports = 'test-file-stub';
 setup files 的列表，存放每一个setup file的相对路径, setup file会在每个测试文件之前执行
 
 ## Jest API
+### basic
+- afterAll(fn, timeout)
+- afterEach(fn, timeout)
+- beforeAll(fn, timeout)
+- beforeEach(fn, timeout)
+- describe(name, fn)
+- describe.each(table)(name, fn, timeout)
+- describe.only(name, fn)
+- describe.only.each(table)(name, fn)
+- describe.skip(name, fn)
+- describe.skip.each(table)(name, fn)
+- test(name, fn, timeout)
+- test.each(table)(name, fn, timeout)
+- test.only(name, fn, timeout)
+- test.only.each(table)(name, fn)
+- test.skip(name, fn)
+- test.skip.each(table)(name, fn)
+
+### Expect断言
+- expect(value)
+- expect.extend(matchers)
+- expect.anything()
+- expect.any(constructor)
+- expect.arrayContaining(array)
+- expect.assertions(number)
+- expect.hasAssertions()
+- expect.not.arrayContaining(array)
+- expect.not.objectContaining(object)
+- expect.not.stringContaining(string)
+- expect.not.stringMatching(string | regexp)
+- expect.objectContaining(object)
+- expect.stringContaining(string)
+- expect.stringMatching(string | regexp)
+- expect.addSnapshotSerializer(serializer)
+- .not
+- .resolves
+- .rejects
+- .toBe(value)
+- .toHaveBeenCalled()
+- .toHaveBeenCalledTimes(number)
+- .toHaveBeenCalledWith(arg1, arg2, ...)
+- .toHaveBeenLastCalledWith(arg1, arg2, ...)
+- .toHaveBeenNthCalledWith(nthCall, arg1, arg2, ....)
+- .toHaveReturned()
+- .toHaveReturnedTimes(number)
+- .toHaveReturnedWith(value)
+- .toHaveLastReturnedWith(value)
+- .toHaveNthReturnedWith(nthCall, value)
+- .toBeCloseTo(number, numDigits)
+- .toBeDefined()
+- .toBeFalsy()
+- .toBeGreaterThan(number)
+- .toBeGreaterThanOrEqual(number)
+- .toBeLessThan(number)
+- .toBeLessThanOrEqual(number)
+- .toBeInstanceOf(Class)
+- .toBeNull()
+- .toBeTruthy()
+- .toBeUndefined()
+- .toContain(item)
+- .toContainEqual(item)
+- .toEqual(value)
+- .toHaveLength(number)
+- .toMatch(regexpOrString)
+- .toMatchObject(object)
+- .toHaveProperty(keyPath, value)
+- .toMatchSnapshot(propertyMatchers, snapshotName)
+- .toMatchInlineSnapshot(propertyMatchers, inlineSnapshot)
+- .toStrictEqual(value)
+- .toThrow(error)
+- .toThrowErrorMatchingSnapshot()
+- .toThrowErrorMatchingInlineSnapshot()
+
+### mock
+- mockFn.getMockName()
+- mockFn.mock.calls
+- mockFn.mock.results
+- mockFn.mock.instances
+- mockFn.mockClear()
+- mockFn.mockReset()
+- mockFn.mockRestore()
+- mockFn.mockImplementation(fn)
+- mockFn.mockImplementationOnce(fn)
+- mockFn.mockName(value)
+- mockFn.mockReturnThis()
+- mockFn.mockReturnValue(value)
+- mockFn.mockReturnValueOnce(value)
+- mockFn.mockResolvedValue(value)
+- mockFn.mockResolvedValueOnce(value)
+- mockFn.mockRejectedValue(value)
+- mockFn.mockRejectedValueOnce(value)
+
+### jest Object
+- jest.clearAllTimers()
+- jest.disableAutomock()
+- jest.enableAutomock()
+- jest.fn(implementation)
+- jest.isMockFunction(fn)
+- jest.genMockFromModule(moduleName)
+- jest.mock(moduleName, factory, options)
+- jest.unmock(moduleName)
+- jest.doMock(moduleName, factory, options)
+- jest.dontMock(moduleName)
+- jest.clearAllMocks()
+- jest.resetAllMocks()
+- jest.restoreAllMocks()
+- jest.resetModules()
+- jest.retryTimes()
+- jest.runAllTicks()
+- jest.runAllTimers()
+- jest.runAllImmediates()
+- jest.advanceTimersByTime(msToRun)
+- jest.runOnlyPendingTimers()
+- jest.requireActual(moduleName)
+- jest.requireMock(moduleName)
+- jest.setMock(moduleName, moduleExports)
+- jest.setTimeout(timeout)
+- jest.useFakeTimers()
+- jest.useRealTimers()
+- jest.spyOn(object, methodName)
+- jest.spyOn(object, methodName, accessType?)
 
 
 #Link
