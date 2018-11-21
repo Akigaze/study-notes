@@ -56,7 +56,7 @@ configure({adapter: new Adapter()});
 
 使用`jest --init`生成配置文件是，会有一个测试环境的选择，包括`node`和`jsdom`两个选项，若选择`node`，则文件会添加一个`testEnvironment: "node"`的属性，但是不管选哪一个，都能正常使用Enzyme进行react组件的测试
 
-## moduleNameMapper
+### moduleNameMapper
 对于项目文件中引用的一些css，png，svg等资源文件，在jest的测试中是没有必要真正加载的，因此可以建立一个映射关系，将相应文件的引用映射成自定义的js对象，类似于资源的mock
 ```JavaScript
 {
@@ -79,10 +79,13 @@ example of fileMock.js
 module.exports = 'test-file-stub';
 ```
 
-## coverageDirectory
+### coverageDirectory
 生成jest.config.js文件是，若选择生成测试覆盖率文件夹，则会在项目根目录下生成`coverage`文件夹存放测试覆盖率的结果报告，同时添加`coverageDirectory: "coverage"`的配置项
 
 可以在jest命令后使用`--coverage`参数，直接在命令行输出本次测试的覆盖率
+
+### setupFiles []
+setup files 的列表，存放每一个setup file的相对路径, setup file会在每个测试文件之前执行
 
 ## Jest API
 
