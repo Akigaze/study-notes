@@ -149,16 +149,52 @@ setup files 的列表，存放每一个setup file的相对路径, setup file会�
 - beforeEach(fn, timeout)
 - describe(name, fn)
 - describe.each(table)(name, fn, timeout)
-- describe.only(name, fn)
+- describe.only(name, fn)  
+在同一作用域下，不执行其他没有`.only`标示的`describe`和`test`，若没有`.only`标示的`describe`中包含有`.only`标示的其他`describe`或`test`，则这些内部的测试也会执行
 - describe.only.each(table)(name, fn)
 - describe.skip(name, fn)
 - describe.skip.each(table)(name, fn)
 - test(name, fn, timeout)
 - test.each(table)(name, fn, timeout)
-- test.only(name, fn, timeout)
+- test.only(name, fn, timeout)  
+在同一作用域下，不执行其他没有`.only`标示的`describe`和`test`，若没有`.only`标示的`describe`中包含有`.only`标示的其他`describe`或`test`，则这些内部的测试也会执行
 - test.only.each(table)(name, fn)
 - test.skip(name, fn)
 - test.skip.each(table)(name, fn)
+
+#### before与after的执行顺序
+```JavaScript
+beforeAll(() => console.log('1 - beforeAll'));
+afterAll(() => console.log('1 - afterAll'));
+beforeEach(() => console.log('1 - beforeEach'));
+afterEach(() => console.log('1 - afterEach'));
+test('', () => console.log('1 - test'));
+describe('Scoped / Nested block', () => {
+  beforeAll(() => console.log('2 - beforeAll'));
+  afterAll(() => console.log('2 - afterAll'));
+  beforeEach(() => console.log('2 - beforeEach'));
+  afterEach(() => console.log('2 - afterEach'));
+  test('', () => console.log('2 - test'));
+});
+
+// 1 - beforeAll
+// 1 - beforeEach
+// 1 - test
+// 1 - afterEach
+// 2 - beforeAll
+// 1 - beforeEach
+// 2 - beforeEach
+// 2 - test
+// 2 - afterEach
+// 1 - afterEach
+// 2 - afterAll
+// 1 - afterAll
+```
+
+#### describe与test的顺序
+> Jest executes all describe handlers in a test file before it executes any of the actual tests. This is another reason to do setup and teardown in before* and after* handlers rather in the describe blocks. Once the describe blocks are complete, by default Jest runs all the tests serially in the order they were encountered in the collection phase, waiting for each to finish and be tidied up before moving on.
+
+Jest会先按顺序执行所有`describe`中的所有其他代码，在按顺序执行`test`中的测试，所以推荐将测试的准备写在`before*`和`after*`中，保证代码正确的执行顺序
 
 ### Expect断言
 - expect(value)
@@ -217,8 +253,28 @@ setup files 的列表，存放每一个setup file的相对路径, setup file会�
 
 ### mock
 - mockFn.getMockName()
-- mockFn.mock.calls
-- mockFn.mock.results
+- mockFn.mock.calls  
+检验`mockFn`这个mock对象被调用的情况，其结果是一个二维数组，第一维表示第几次被调用，第二维表示调用时参数的顺序，`length`属性返回被调用的次数  
+```JavaScript
+const mockCallback = jest.fn(x => 42 + x);
+forEach([0, 1], mockCallback);
+// The mock function is called twice
+expect(mockCallback.mock.calls.length).toBe(2);
+// The first argument of the first call to the function was 0
+expect(mockCallback.mock.calls[0][0]).toBe(0);
+// The first argument of the second call to the function was 1
+expect(mockCallback.mock.calls[1][0]).toBe(1);
+```
+- mockFn.mock.results  
+检验mock方法执行的结果，是一个一维数组，每个元素的`value`属性代表返回值
+```JavaScript
+const mockCallback = jest.fn(x => 42 + x);
+forEach([0, 1], mockCallback);
+// The return value of the first call to the function was 42
+expect(mockCallback.mock.results[0].value).toBe(42);
+// The return value of the second call to the function was 43
+expect(mockCallback.mock.results[1].value).toBe(43);
+```
 - mockFn.mock.instances
 - mockFn.mockClear()
 - mockFn.mockReset()
@@ -227,8 +283,20 @@ setup files 的列表，存放每一个setup file的相对路径, setup file会�
 - mockFn.mockImplementationOnce(fn)
 - mockFn.mockName(value)
 - mockFn.mockReturnThis()
-- mockFn.mockReturnValue(value)
-- mockFn.mockReturnValueOnce(value)
+- mockFn.mockReturnValue(value)  
+设置mock方法每次执行的返回值
+- mockFn.mockReturnValueOnce(value)  
+相当于mokito的`thenReturn`；该方法的返回值是mock对象本身，因而可以继续调用设置第下一次调用时的返回值  
+```JavaScript
+const myMock = jest.fn();
+console.log(myMock());
+// > undefined
+myMock.mockReturnValueOnce(10)
+      .mockReturnValueOnce('x')
+      .mockReturnValue(true);
+console.log(myMock(), myMock(), myMock(), myMock());
+// > 10, 'x', true, true
+```
 - mockFn.mockResolvedValue(value)
 - mockFn.mockResolvedValueOnce(value)
 - mockFn.mockRejectedValue(value)
@@ -239,6 +307,7 @@ setup files 的列表，存放每一个setup file的相对路径, setup file会�
 - jest.disableAutomock()
 - jest.enableAutomock()
 - jest.fn(implementation)
+返回一个jest的方法mock对象，参数为自定义的实现  
 - jest.isMockFunction(fn)
 - jest.genMockFromModule(moduleName)
 - jest.mock(moduleName, factory, options)
