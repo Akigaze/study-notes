@@ -1,5 +1,4 @@
-数据结构
-===
+# 数据结构
 1. 一维
     * 向量：数值型变量，元素的数据类型一样
     * 因子：分类变量
@@ -18,11 +17,14 @@
 直接使用变量名定义，无需再前面指明变量类型
 
 ## 赋值
-1. 等号操作符：=
-2. 箭头操作符：<-
+1. 等号操作符：`=`
+2. 箭头操作符：`<-`
 
-在声明的变量外加上括号，可以在执行声明语句的同时，打印该变量的内容，如：
-(a <- c(1,1,1,))
+在变量声明语句外加上括号，可以在执行声明语句的同时，打印该变量的内容，如：
+```R
+(count <- c(2,4,5))
+# [1] 2 4 5
+```
 
 ## 搜索路径
 相当于全局变量  
@@ -46,12 +48,57 @@
 # 向量
 ## 创建向量
 1. c()：combine
-2. 冒号操作符: ：a:b 表示从a到b步长为1的所有元素组成的向量
-3. seq(from,to,by,length,along.with)：from 起点，to 终点，by 步长 ，length为向量的长度，along.with指定一个向量，是具有相同的长度
+2. 冒号操作符 `:`
+3. seq(from, to, by, length.out=, along.with=)
+
+### c(v1, v2, ...)
+```r
+names <- c("quinn", "akigaze", "hwang")
+names
+# "quinn"   "akigaze" "hwang"
+```
+
+### a:b
+a:b 表示从a到b步长为1的所有元素组成的向量
+```r
+num <- 1:10
+num
+# [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+### seq(from, to, by, length.out=, along.with=)
+> seq(from = 1, to = 1, by = ((to - from)/(length.out - 1)),
+    length.out = NULL, along.with = NULL, ...)  
+
+`from` 起点，`to` 终点，`by` 步长 ，`length.out`为向量的长度，`along.with`指定一个向量，是具有相同的长度
+
+Typical usages:
+>seq(from, to)  
+seq(from, to, by= )  
+seq(from, to, length.out= )  
+seq(along.with= )  
+seq(from)  
+seq(length.out= )  
+
+```r
+seq(2, 8, 2)
+# [1] 2 4 6 8
+seq(2, 8, length.out = 5)
+# [1] 8.0 6.5 5.0 3.5 2.0
+num <- 1:3
+seq(2, 8, along.with = num)
+# [1] 2 5 8
+```
 
 ## 提取向量子集
-1. 元素下标：正数，表示想要的元素；负数，表示不要的元素；支持向量；下标从1开始
-2. which()：根据传入的关于向量的表达式，返回元素的下标，如：which(y > 5)
+1. 元素下标(index)
+2. which()
+
+### index
+正数，表示想要的元素；负数，表示不要的元素；支持向量；下标从1开始
+
+### which()
+根据传入的关于向量的表达式，返回元素的下标，如：which(y > 5)
 
 ------------
 
