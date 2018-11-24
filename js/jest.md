@@ -56,6 +56,14 @@ configure({adapter: new Adapter()});
 
 使用`jest --init`生成配置文件是，会有一个测试环境的选择，包括`node`和`jsdom`两个选项，若选择`node`，则文件会添加一个`testEnvironment: "node"`的属性，但是不管选哪一个，都能正常使用Enzyme进行react组件的测试
 
+原本Jest是无法解释ES6的`import`语法的，所以需要使用babel进行转码，但在安装Jest时会自动安装`babel-jest`; `babel-jest`会根据项目中的babel配置文件(`·babelrc`)对测试文件中的js代码进行转码，仅需安装`babel-preset-env`和如下配置就可以解释`import`:
+```json
+{
+    "presets":["env"]
+}
+```
+------------------------------------
+
 ### configure options
 - automock [boolean]
 - bail [boolean]
@@ -141,26 +149,57 @@ module.exports = 'test-file-stub';
 ### setupFiles []
 setup files 的列表，存放每一个setup file的相对路径, setup file会在每个测试文件之前执行
 
+------------------------------------
 ## Jest API
 ### basic
 - afterAll(fn, timeout)
 - afterEach(fn, timeout)
 - beforeAll(fn, timeout)
 - beforeEach(fn, timeout)
+
 - describe(name, fn)
-- describe.each(table)(name, fn, timeout)
+- describe.each(table)(name, fn, timeout)  
+当需要重复执行某几个测试用例，但使用不同的测试是数据时，可以使用`describe.each`；   
+`table`是一个二维数组(一维数组会自动转化为二维数组)，每一行就是每次测试需要使用的数据，数据会作为参数传入`fn`函数；  
+同时，`name`可以使用一些占位符来指代测试所使用的参数
+```JavaScript
+let data = [[1, 1, 2], [1, 2, 3], [2, 1, 3]];
+describe.each(data)(".add(%p, %p)", (a, b, expected) => {
+    test(`returns ${expected}`, () => {
+        expect(a + b).toBe(expected);
+    });
+
+    test(`returned value not be greater than ${expected}`, () => {
+        expect(a + b).not.toBeGreaterThan(1);
+    });
+
+    test(`returned value not be less than ${expected}`, () => {
+        expect(a + b).not.toBeLessThan(expected);
+    });
+});
+```
 - describe.only(name, fn)  
-在同一作用域下，不执行其他没有`.only`标示的`describe`和`test`，若没有`.only`标示的`describe`中包含有`.only`标示的其他`describe`或`test`，则这些内部的测试也会执行
+在同一作用域下，不执行其他没有`.only`标示的`describe`和`test`，若没有`.only`标示的`describe`中包含有`.only`标示的其他`describe`或`test`，则这些内部的测试也会执行；别名`fdescribe(name, fn)`
 - describe.only.each(table)(name, fn)
-- describe.skip(name, fn)
+- describe.skip(name, fn)  
+别名`xdescribe(name, fn)`
 - describe.skip.each(table)(name, fn)
-- test(name, fn, timeout)
-- test.each(table)(name, fn, timeout)
+
+
+- test(name, fn, timeout)  
+别名`it(name, fn, timeout)`
+- test.each(table)(name, fn, timeout)  
+类似`describe.each`
 - test.only(name, fn, timeout)  
 在同一作用域下，不执行其他没有`.only`标示的`describe`和`test`，若没有`.only`标示的`describe`中包含有`.only`标示的其他`describe`或`test`，则这些内部的测试也会执行
 - test.only.each(table)(name, fn)
 - test.skip(name, fn)
 - test.skip.each(table)(name, fn)
+
+相关别名：  
+`.only` => `f`  
+`.skip` => `x`  
+`test` => `it`
 
 #### before与after的执行顺序
 ```JavaScript
@@ -196,61 +235,151 @@ describe('Scoped / Nested block', () => {
 
 Jest会先按顺序执行所有`describe`中的所有其他代码，在按顺序执行`test`中的测试，所以推荐将测试的准备写在`before*`和`after*`中，保证代码正确的执行顺序
 
+------------------------
 ### Expect断言
 - expect(value)
-- expect.extend(matchers)
-- expect.anything()
-- expect.any(constructor)
-- expect.arrayContaining(array)
-- expect.assertions(number)
-- expect.hasAssertions()
-- expect.not.arrayContaining(array)
-- expect.not.objectContaining(object)
-- expect.not.stringContaining(string)
-- expect.not.stringMatching(string | regexp)
-- expect.objectContaining(object)
-- expect.stringContaining(string)
-- expect.stringMatching(string | regexp)
-- expect.addSnapshotSerializer(serializer)
 - .not
-- .resolves
-- .rejects
-- .toBe(value)
-- .toHaveBeenCalled()
-- .toHaveBeenCalledTimes(number)
-- .toHaveBeenCalledWith(arg1, arg2, ...)
-- .toHaveBeenLastCalledWith(arg1, arg2, ...)
-- .toHaveBeenNthCalledWith(nthCall, arg1, arg2, ....)
-- .toHaveReturned()
-- .toHaveReturnedTimes(number)
-- .toHaveReturnedWith(value)
-- .toHaveLastReturnedWith(value)
-- .toHaveNthReturnedWith(nthCall, value)
+
+
+- .resolves   
+`resolves`和`rejects`用于测试Promis对象调用其 resolve 和 reject 函数的情况
+- .rejects  
+
+
+- expect.anything()  
+匹配`null`和`undefined`以外的所有内容
+- expect.any(constructor)
+- expect.stringContaining(string)
+- expect.not.stringContaining(string)
+- expect.stringMatching(string | regexp)
+- expect.not.stringMatching(string | regexp)
+- expect.arrayContaining(array)
+- expect.not.arrayContaining(array)
+- expect.objectContaining(object)
+- expect.not.objectContaining(object)
+
+- expect.assertions(number)  
+断言在当前`test`中，有其他的断言被执行的总次数，通常用于断言异步函数中断言的执行次数
+```JavaScript
+test('doAsync calls both callbacks', () => {
+  expect.assertions(2);
+  function callback1(data) {
+    expect(data).toBeTruthy();
+  }
+  function callback2(data) {
+    expect(data).toBeTruthy();
+  }
+  doAsync(callback1, callback2);
+});
+```
+- expect.hasAssertions()  
+断言在当前`test`中，有其他的断言被执行过，使用与`expect.assertions`相似
+
+
+- expect.addSnapshotSerializer(serializer)
+
+
+- expect.extend(matchers)  
+自定义断言`matchers`是一个json对象，其key和value是相应断言函数的名字和自定义的函数，其中，断言函数必修返回一个`{ message: fn, pass: bool }`，`pass`决定该断言是否正确，`message`在断言错误时被调用，通常是打印断言失败原因的信息
+```JavaScript
+expect.extend({
+  toBeWithinRange:(received, floor, ceiling) => {
+    const pass = received >= floor && received &lt;= ceiling;
+    if (pass) {
+      return {
+        message: () => `expected ${received} not to be within range ${floor} - ${ceiling}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected ${received} to be within range ${floor} - ${ceiling}`,
+        pass: false,
+      };
+    }
+  },
+});
+test('numeric ranges', () => {
+      expect(100).toBeWithinRange(101, 110);
+      expect(101).not.toBeWithinRange(0, 100);
+      expect({apples: 6, bananas: 3}).toEqual({
+        apples: expect.toBeWithinRange(1, 10),
+        bananas: expect.not.toBeWithinRange(11, 20),
+      });
+});
+```
+
+#### 数字断言
 - .toBeCloseTo(number, numDigits)
-- .toBeDefined()
-- .toBeFalsy()
 - .toBeGreaterThan(number)
 - .toBeGreaterThanOrEqual(number)
 - .toBeLessThan(number)
 - .toBeLessThanOrEqual(number)
+
+#### 值属性断言
+- .toBe(value)  
+不要用于浮点数的断言
+- .toEqual(value)
+`toBe`会比较对象的地址，而`toEuqal`只比较内容
+- .toBeDefined()
+- .toBeFalsy()
 - .toBeInstanceOf(Class)
 - .toBeNull()
 - .toBeTruthy()
 - .toBeUndefined()
-- .toContain(item)
+- .toContain(item)  
+用于数组的断言
 - .toContainEqual(item)
-- .toEqual(value)
-- .toHaveLength(number)
 - .toMatch(regexpOrString)
 - .toMatchObject(object)
+- .toHaveLength(number)  
+Use .toHaveLength to check that an object has a .length property and it is set to a certain numeric value.
 - .toHaveProperty(keyPath, value)
+
+
+- .toHaveBeenCalled()  
+Also under the alias: `.toBeCalled()`
+- .toHaveBeenCalledTimes(number)  
+Also under the alias: `.toBeCalledTimes(number)`
+- .toHaveBeenCalledWith(arg1, arg2, ...)  
+Also under the alias: `.toBeCalledWith()`
+- .toHaveBeenLastCalledWith(arg1, arg2, ...)  
+Also under the alias: `.lastCalledWith(arg1, arg2, ...)`
+- .toHaveBeenNthCalledWith(nthCall, arg1, arg2, ....)  
+Also under the alias: `.nthCalledWith(nthCall, arg1, arg2, ...)`  
+`nth`表示第n次被调用，从1开始计算
+```javascript
+test('drinkEach drinks each drink', () => {
+  const drink = jest.fn();
+  drinkEach(drink, ['lemon', 'octopus']);
+  expect(drink).toHaveBeenNthCalledWith(1, 'lemon');
+  expect(drink).toHaveBeenNthCalledWith(2, 'octopus');
+});
+```
+
+
+- .toHaveReturned()  
+Also under the alias: .toReturn()  
+断言mock对象至少有一次执行了`return`语句
+- .toHaveReturnedTimes(number)  
+Also under the alias: `.toReturnTimes(number)`
+- .toHaveReturnedWith(value)  
+Also under the alias: `.toReturnWith(value)`
+- .toHaveLastReturnedWith(value)  
+Also under the alias: `.lastReturnedWith(value)`
+- .toHaveNthReturnedWith(nthCall, value)  
+Also under the alias: `.nthReturnedWith(nthCall, value)`
+
+
 - .toMatchSnapshot(propertyMatchers, snapshotName)
 - .toMatchInlineSnapshot(propertyMatchers, inlineSnapshot)
 - .toStrictEqual(value)
+
+
 - .toThrow(error)
 - .toThrowErrorMatchingSnapshot()
 - .toThrowErrorMatchingInlineSnapshot()
 
+---------------------
 ### mock
 - mockFn.getMockName()
 - mockFn.mock.calls  
@@ -275,14 +404,37 @@ expect(mockCallback.mock.results[0].value).toBe(42);
 // The return value of the second call to the function was 43
 expect(mockCallback.mock.results[1].value).toBe(43);
 ```
-- mockFn.mock.instances
+- mockFn.mock.instances  
+返回mock对象的实例数组，通过索引获取指定的实例对象
 - mockFn.mockClear()
 - mockFn.mockReset()
 - mockFn.mockRestore()
-- mockFn.mockImplementation(fn)
-- mockFn.mockImplementationOnce(fn)
-- mockFn.mockName(value)
-- mockFn.mockReturnThis()
+
+#### 提供mock对象的实现
+
+- mockFn.mockImplementation(fn)  
+为一个mock对象提供一个实现的函数
+```JavaScript
+jest.mock('../foo'); // this happens automatically with automocking
+const foo = require('../foo');
+// foo is a mock function
+foo.mockImplementation(() => 42);
+foo();
+// > 42
+```
+- mockFn.mockImplementationOnce(fn)  
+指定一个mock对象每次被调用时的实现方法，返回mock对象本身; 当mock对象调用超过次数时，会使用`jest.fn()`指定的实现
+```javascript
+const myMockFn = jest.fn()
+    .mockImplementationOnce(cb => cb(null, true))
+    .mockImplementationOnce(cb => cb(null, false));
+myMockFn((err, val) => console.log(val)); //true
+myMockFn((err, val) => console.log(val)); //false
+```
+- mockFn.mockName(value)  
+给mock一个名称，以便在test fail时输出mock对象的名称，而不是`jest.fn()`
+- mockFn.mockReturnThis()  
+指定mock对象调用的返回值是它本身
 - mockFn.mockReturnValue(value)  
 设置mock方法每次执行的返回值
 - mockFn.mockReturnValueOnce(value)  
@@ -306,11 +458,24 @@ console.log(myMock(), myMock(), myMock(), myMock());
 - jest.clearAllTimers()
 - jest.disableAutomock()
 - jest.enableAutomock()
-- jest.fn(implementation)
+- jest.fn(implementation)  
 返回一个jest的方法mock对象，参数为自定义的实现  
 - jest.isMockFunction(fn)
 - jest.genMockFromModule(moduleName)
-- jest.mock(moduleName, factory, options)
+- jest.mock(moduleName, factory, options)  
+模块的mock，在使用被mock的模块时，可以使用`.mockResolvedValue`方法指定其某个属性或方法的返回值
+```JavaScript
+import axios from 'axios';
+import Users from './users';
+jest.mock('axios');
+test('should fetch users', () => {
+    const resp = {data: [{name: 'Bob'}]};
+    axios.get.mockResolvedValue(resp);
+    // or you could use the following depending on your use case:
+    // axios.get.mockImplementation(() => Promise.resolve(resp))
+    return Users.all().then(users => expect(users).toEqual(resp.data));
+});
+```
 - jest.unmock(moduleName)
 - jest.doMock(moduleName, factory, options)
 - jest.dontMock(moduleName)
@@ -333,8 +498,14 @@ console.log(myMock(), myMock(), myMock(), myMock());
 - jest.spyOn(object, methodName)
 - jest.spyOn(object, methodName, accessType?)
 
+## Jest test react
+直接在react的开发栈安装jest即可立即使用jest测试
 
-#Link
+## 快照测试
+？？？？？？？？？？？
+
+----------------------------------
+# Link
 ### 官网
 中文官网  
 https://jestjs.io/zh-Hans/  
