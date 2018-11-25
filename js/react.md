@@ -64,7 +64,11 @@ ClassName.defaultProps={
 
 ### Prop 检验
 
-限定组件可传入的 prop 的数据类型以及必要性
+限定组件可传入的 prop 的数据类型以及必要性，但是如果不传入指定的prop并不会fail整个引用，而是会在控制台抛出warning信息
+
+"prop-types"模块的 `PropTypes` 对象，封装了数据类型和约束，可以用于 prop 的数据检测
+
+>npm install --save prop-types
 
 ```javascript
 import PropTypes from "prop-types";
@@ -274,6 +278,12 @@ CustomButton.defaultProps = {
 ### displayName
 displayName被用在调试信息中。JSX会自动设置该值
 
+## 数据传递
+同级组件或者非父子关系的组件之间的数据传递是十分困难的事情，而在react官网提供了三种解决方法：
+1. 上下文(Context)，但官方比不推荐
+2. 事件订阅(event subscribe)
+3. redux
+
 # create by webpack
 
 ## 1.所需要的依赖
@@ -469,3 +479,12 @@ https://facebook.github.io/create-react-app/docs/running-tests
 ### Github
 facebook/create-react-app  
 https://github.com/facebook/create-react-app
+### 阮一峰
+React 入门实例教程  
+http://www.ruanyifeng.com/blog/2015/03/react.html  
+React 技术栈系列教程  
+http://www.ruanyifeng.com/blog/2016/09/react-technology-stack.html  
+React 测试入门教程  
+http://www.ruanyifeng.com/blog/2016/02/react-testing-tutorial.html  
+React Router 使用教程  
+http://www.ruanyifeng.com/blog/2016/05/react_router.html
