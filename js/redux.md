@@ -313,10 +313,12 @@ const bigState = {
   todos : todo(),
   visibilityFilter : visibilityFilter()
 }
-const bigReducer = (state = bigState, action={}) = >{
+const bigReducer = (preState = bigState, action={}) = >{
+  let nextTodos = todo(preState.todos, action);
+  let nextVisibility = visibility(preState.visibilityFilter, action);
   return {
-    todos : todo(state.todos, action),
-    visibility : visibility(state.visibilityFilter, action)
+    todos : nextTodos,
+    visibility : nextVisibility
   }
 }
 ```
@@ -378,6 +380,13 @@ store.dispatch(setVisibilityFilter(VisibilityFilters.SHOW_COMPLETED))
 // 停止监听 state 更新
 unsubscribe()
 ```
+
+## 数据的生命周期
+1. 调用 `store.dispatch(action)`
+2. Redux store 调用传入的 reducer 函数，把当前的 `state` 树和 `action` 传入 reducer，返回下一个 state
+3. 根 reducer 应该把多个子 reducer 输出合并成一个单一的 state 树
+4. Redux store 保存了根 reducer 返回的完整 state 树，通过 `getState` 函数获取完整的 state
+
 ## Only Redux
 #### 安装  
 > npm install --save redux
@@ -433,7 +442,7 @@ store.subscribe(() => {
 });
 ```
 
-## Reducer
+### Reducer
 用于响应action，管理、控制应用的state的模块，一般暴露一个用于响应action的函数，该函数的返回值将作为应用的state被store控制，在 `createStore` 和 `dispatch` 是都会执行该函数。
 
 reducer函数的通常有两个参数，`state` 和 `action` ，通常会在参数列表中设置默认参数，避免空值的异常；同时 `state` 是一个只读的参数，不能直接对其修改属性再最为返回值
@@ -536,6 +545,111 @@ export default class App extends Component {
 }
 ```
 
+-----------------
+
+# React Redux
+相关模块：
+- redux
+- react-redux
+
+安装：
+> npm install --save react-redux
+
+## 容器组件（Smart/Container Components）和展示组件（Dumb/Presentational Components）
+
+|                  |展示组件                |容器组件|
+|:-|:-|:-|
+|**作用**          |描述如何展现（骨架、样式）|描述如何运行（数据获取、状态更新）|
+|**直接使用 Redux**|否                      |是|
+|**数据来源**      |props                   |监听 Redux state|
+|**数据修改**      |从 props 调用回调函数    |向 Redux 派发 actions|
+|**调用方式**      |手动                    |通常由 React Redux 生成 |
+
+从技术上讲可以直接使用 `store.subscribe()`
+来编写容器组件。但不建议这么做的原因是无法使用 React Redux 带来的性能优化。也因此，不要手写容器组件，而使用 React Redux 的 `connect()` 方法来生成。
+
+### 展示组件
+只定义外观并不关心数据来源和如何改变的组件。传入什么就渲染什么。如果你把代码从 Redux 迁移到别的架构，这些组件可以不做任何改动直接使用。它们并不依赖于 Redux。
+
+### 容器组件
+监听 Redux store 变化并处理如何过滤出要显示的数据
+
+#### 使用 connect 创建容器组件
+使用 `connect()` 前，需要先定义 `mapStateToProps` 这个函数来指定如何把当前 Redux store state 映射到展示组件的 `props` 中，处理直接将store state 中的属性映射到 组件的 props 以外， 也可以添加一些计算逻辑，会去 store state 计算后的结果作为组件的 prop
+
+`mapStateToProps` 函数的参数是 store 的完整 state
+
+```javascript
+// 获取prop的逻辑
+const getVisibleTodos = (todos, filter) => {
+  switch (filter) {
+    case 'SHOW_COMPLETED':
+      return todos.filter(t => t.completed)
+    case 'SHOW_ACTIVE':
+      return todos.filter(t => !t.completed)
+    case 'SHOW_ALL':
+    default:
+      return todos
+  }
+}
+// props 映射 store state
+const mapStateToProps = state => {
+  return {
+    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+  }
+}
+```
+
+定义 `mapDispatchToProps()` 方法接收 `dispatch()` 方法并返回期望注入到展示组件的 props 中的回调方法，即绑定了 dispatch 的行为相关的props
+
+ `mapDispatchToProps()` 函数的参数是 store 对象的 `dispatch` 方法
+
+```javascript
+const mapDispatchToProps = dispatch => {
+  return {
+    onTodoClick: id => {
+      dispatch(toggleTodo(id))
+    }
+  }
+}
+```
+
+使用 `connect()` 创建已有展示组件的容器组件，`connect()`以`mapStateToProps`和`mapDispatchToProps`为参数，返回一个新的函数，该新函数接受一个容器组件的 `构造器` 为参数，返回与容器组件同名的 容器组件
+
+```javascript
+import { connect } from 'react-redux'
+import React, {Component} from 'react'
+export class VisibleTodoList extends Component {
+    ...
+}
+
+const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList)
+export default VisibleTodoList
+//export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
+```
+
+有了容器组件之后，要讲store传入组件中才能使组件正常工作，一种方式是把store以 `props` 的形式传入到所有容器组件中。
+
+redux官方推荐使用React Redux 组件 `<Provider>` 来 魔法般的 让所有容器组件都可以访问 store，而不必显式地传递它。只需要在渲染根组件时使用即可。
+
+```javaScript
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import todoApp from './reducers'
+import App from './components/App'
+
+let store = createStore(todoApp)
+
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
+
 ------------------
 # Link
 
@@ -544,6 +658,8 @@ EN Offical
 https://redux.js.org/  
 CN Offical  
 https://cn.redux.js.org/  
+React redux  
+https://react-redux.js.org/  
 ### egghead.io
 Video : Getting Started with Redux  
 https://egghead.io/courses/getting-started-with-redux  
