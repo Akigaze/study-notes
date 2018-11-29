@@ -104,6 +104,83 @@ boundCompleteTodo(index);
 ```
 在开发react应用时，通常会使用 `react-redux` 提供的 `connect()` 帮助器来调用dispatch。`bindActionCreators()` 可以自动把多个 action 创建函数 绑定到 dispatch() 方法上。
 
+### 异步 Action
+当调用异步 API 时，有两个非常关键的时刻：发起请求的时刻，和接收到响应的时刻（也可能是超时）。
+
+这两个时刻都可能会更改应用的 `state`；一般情况下，每个 API 请求都要考虑 `dispatch` 至少三种 action：
+- 通知 reducer 请求开始的 action：
+对于这种 action，reducer 可能会切换一下 state 中的 `isFetching` 标记。以此来告诉 UI 来显示加载界面。
+- 通知 reducer 请求成功的 action：
+对于这种 action，reducer 可能会把接收到的新数据合并到 state 中，并重置 `isFetching` 。UI 则会隐藏加载界面，并显示接收到的数据。
+- 通知 reducer 请求失败的 action：
+对于这种 action，reducer 可能会重置 `isFetching` 。另外，有些 reducer 会保存这些失败信息，并在 UI 里显示出来。
+
+为了区分这三种 action，可能在 action 里添加一个专门的 `status` 字段作为标记位：
+```javaScript
+{ type: 'FETCH_POSTS' }
+{ type: 'FETCH_POSTS', status: 'error', error: 'Oops' }
+{ type: 'FETCH_POSTS', status: 'success', response: { ... } }
+```
+
+又或者为它们定义不同的 type：
+```javaScript
+{ type: 'FETCH_POSTS_REQUEST' }
+{ type: 'FETCH_POSTS_FAILURE', error: 'Oops' }
+{ type: 'FETCH_POSTS_SUCCESS', response: { ... } }
+```
+
+#### 异步 action 创建函数
+thunk action 创建函数
+
+```javaScript
+import fetch from 'cross-fetch'
+
+export const REQUEST_POSTS = 'REQUEST_POSTS'
+function requestPosts(subreddit) {
+  return {
+    type: REQUEST_POSTS,
+    subreddit
+  }
+}
+
+export const RECEIVE_POSTS = 'RECEIVE_POSTS'
+function receivePosts(subreddit, json) {
+  return {
+    type: RECEIVE_POSTS,
+    subreddit,
+    posts: json.data.children.map(child => child.data),
+    receivedAt: Date.now()
+  }
+}
+
+ export const INVALIDATE_SUBREDDIT = ‘INVALIDATE_SUBREDDIT’
+ export function invalidateSubreddit(subreddit) {
+   return {
+     type: INVALIDATE_SUBREDDIT,
+     subreddit
+   }
+ }
+
+//带异步请求的action函数
+export function fetchPosts(subreddit) {
+  //这里把 dispatch 方法通过参数的形式传给函数，以此来让它自己也能 dispatch action。
+  return function (dispatch) {
+    //首次 dispatch：更新应用的 state 来通知 API 请求发起了。
+    dispatch(requestPosts(subreddit))
+
+    return fetch(`http://www.subreddit.com/r/${subreddit}.json`)
+      .then(
+        response => response.json(),
+        error => console.log('An error occurred.', error)
+      )
+      .then(json =>
+        //可以多次 dispatch！ 这里使用 API 请求结果来更新应用的 state。
+        dispatch(receivePosts(subreddit, json))
+      )
+  }
+}
+```
+
 ## Reducer
 Reducer 指定了应用状态的变化如何响应 `actions` 并发送到 `store` 的，而 `actions` 只是描述了有事情发生了这一事实，并没有描述应用如何更新 `state`。
 

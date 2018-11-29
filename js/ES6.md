@@ -247,3 +247,18 @@ Promise.all([
 * `*`定义的方法不能直接执行，而是要获取该函数的执行结果作为新的对象
 * generator对象有一个`next()`方法，用于执行每两个`yield
 `之间的代码
+
+# ES6 计算属性
+新语法：
+```javaScript
+return Object.assign({}, state, {
+  [action.subreddit]: posts(state[action.subreddit], action)
+})
+```
+
+等价于
+```javaScript
+let nextState = {}
+nextState[action.subreddit] = posts(state[action.subreddit], action)
+return Object.assign({}, state, nextState)
+```
