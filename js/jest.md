@@ -501,6 +501,20 @@ test('should fetch users', () => {
 ## Jest test react
 直接在react的开发栈安装jest即可立即使用jest测试
 
+## Jest Enzyme
+`jest-enzyme` 是一个类似 `jasmine-enzyme` 的Enzyme API扩充包，其中的断言API与 `jasmine-enzyme` 基本一样，使用时需要在 `setupTestFrameworkScriptFile` 配置项中记载，或使用 `jest-environment-enzyme` 提供的测试环境
+
+安装：
+> npm install --save jest-Enzyme
+
+配置：
+```javascript
+// jest。config.js
+module.exports = {
+  setupTestFrameworkScriptFile: "./node_modules/jest-enzyme/lib/index.js" //固定写法
+}
+```
+
 ## 快照测试
 ？？？？？？？？？？？
 
@@ -516,3 +530,6 @@ https://jestjs.io/docs/zh-Hans/cli
 ### 开源中国
 如何使用 Jest 测试 React 组件   
 https://www.oschina.net/translate/test-react-components-jest
+### Github
+jest-enzyme  
+https://github.com/FormidableLabs/enzyme-matchers/tree/master/packages/jest-enzyme  
