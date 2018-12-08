@@ -622,109 +622,52 @@ export default class App extends Component {
 }
 ```
 
------------------
-
-# React Redux
-相关模块：
-- redux
-- react-redux
-
-安装：
-> npm install --save react-redux
-
-## 容器组件（Smart/Container Components）和展示组件（Dumb/Presentational Components）
-
-|                  |展示组件                |容器组件|
-|:-|:-|:-|
-|**作用**          |描述如何展现（骨架、样式）|描述如何运行（数据获取、状态更新）|
-|**直接使用 Redux**|否                      |是|
-|**数据来源**      |props                   |监听 Redux state|
-|**数据修改**      |从 props 调用回调函数    |向 Redux 派发 actions|
-|**调用方式**      |手动                    |通常由 React Redux 生成 |
-
-从技术上讲可以直接使用 `store.subscribe()`
-来编写容器组件。但不建议这么做的原因是无法使用 React Redux 带来的性能优化。也因此，不要手写容器组件，而使用 React Redux 的 `connect()` 方法来生成。
-
-### 展示组件
-只定义外观并不关心数据来源和如何改变的组件。传入什么就渲染什么。如果你把代码从 Redux 迁移到别的架构，这些组件可以不做任何改动直接使用。它们并不依赖于 Redux。
-
-### 容器组件
-监听 Redux store 变化并处理如何过滤出要显示的数据
-
-#### 使用 connect 创建容器组件
-使用 `connect()` 前，需要先定义 `mapStateToProps` 这个函数来指定如何把当前 Redux store state 映射到展示组件的 `props` 中，处理直接将store state 中的属性映射到 组件的 props 以外， 也可以添加一些计算逻辑，会去 store state 计算后的结果作为组件的 prop
-
-`mapStateToProps` 函数的参数是 store 的完整 state
-
-```javascript
-// 获取prop的逻辑
-const getVisibleTodos = (todos, filter) => {
-  switch (filter) {
-    case 'SHOW_COMPLETED':
-      return todos.filter(t => t.completed)
-    case 'SHOW_ACTIVE':
-      return todos.filter(t => !t.completed)
-    case 'SHOW_ALL':
-    default:
-      return todos
-  }
-}
-// props 映射 store state
-const mapStateToProps = state => {
-  return {
-    todos: getVisibleTodos(state.todos, state.visibilityFilter)
-  }
-}
+## bindActionCreators(actionCreators, dispatch)
+引用：
+```javaScript
+import { bindActionCreators } from 'redux'
 ```
+绑定 `action` 创建函数和 `dispatch` 的函数，对每个 `action` 创建函数，于映射成一个函数，该函 `dispatch` 对应的 `action`
 
-定义 `mapDispatchToProps()` 方法接收 `dispatch()` 方法并返回期望注入到展示组件的 props 中的回调方法，即绑定了 dispatch 的行为相关的props
+通过 `bindActionCreators` 包装后的 `action` 函数， 可以传入子组件在，子组件可以在不感知 `dispatch` 存在的情况下发起 `action`
 
- `mapDispatchToProps()` 函数的参数是 store 对象的 `dispatch` 方法
+#### 参数
+1. actionCreators (Function or Object): 一个 action creator函数，或者一个 value 是 action creator 的对象。
+2. dispatch (Function): 一个由 Store 实例提供的 dispatch 函数。
 
-```javascript
-const mapDispatchToProps = dispatch => {
-  return {
-    onTodoClick: id => {
-      dispatch(toggleTodo(id))
+#### 返回值
+(Function or Object): 一个与原对象类似的对象，只不过这个对象的 value 都是会直接 dispatch 原 action creator 返回的结果的函数。如果传入一个单独的函数作为 actionCreators，那么返回的结果也是一个单独的函数。
+
+#### 源码
+```javaScript
+function bindActionCreator = (actionCreator, dispatch) => () => {
+	return dispatch(actionCreator.apply(this, arguments))
+}
+
+export default function bindActionCreators(actionCreators, dispatch) {
+  if (typeof actionCreators === 'function') {
+    return bindActionCreator(actionCreators, dispatch)
+  }
+
+  if (typeof actionCreators !== 'object' || actionCreators === null) {
+    throw new Error(
+      `bindActionCreators expected an object or a function, instead received ${
+        actionCreators === null ? 'null' : typeof actionCreators
+      }. Did you write "import ActionCreators from" instead of "import * as ActionCreators from"?`
+    )
+  }
+
+  const keys = Object.keys(actionCreators)
+  const boundActionCreators = {}
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+    const actionCreator = actionCreators[key]
+    if (typeof actionCreator === 'function') {
+      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch)
     }
   }
+  return boundActionCreators
 }
-```
-
-使用 `connect()` 创建已有展示组件的容器组件，`connect()`以`mapStateToProps`和`mapDispatchToProps`为参数，返回一个新的函数，该新函数接受一个容器组件的 `构造器` 为参数，返回与容器组件同名的 容器组件
-
-```javascript
-import { connect } from 'react-redux'
-import React, {Component} from 'react'
-export class VisibleTodoList extends Component {
-    ...
-}
-
-const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList)
-export default VisibleTodoList
-//export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
-```
-
-有了容器组件之后，要讲store传入组件中才能使组件正常工作，一种方式是把store以 `props` 的形式传入到所有容器组件中。
-
-redux官方推荐使用React Redux 组件 `<Provider>` 来 魔法般的 让所有容器组件都可以访问 store，而不必显式地传递它。只需要在渲染根组件时使用即可。
-
-```javaScript
-import React from 'react'
-import { render } from 'react-dom'
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import todoApp from './reducers'
-import App from './components/App'
-
-let store = createStore(todoApp)
-
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-)
 ```
 
 ## Middleware
@@ -829,6 +772,133 @@ function logger({ getState }) {
 const store = createStore(todos, applyMiddleware(logger))
 ```
 
+
+-----------------
+
+# React Redux
+相关模块：
+- redux
+- react-redux
+
+安装：
+> npm install --save react-redux
+
+## 容器组件（Smart/Container Components）和展示组件（Dumb/Presentational Components）
+
+|                  |展示组件                |容器组件|
+|:-|:-|:-|
+|**作用**          |描述如何展现（骨架、样式）|描述如何运行（数据获取、状态更新）|
+|**直接使用 Redux**|否                      |是|
+|**数据来源**      |props                   |监听 Redux state|
+|**数据修改**      |从 props 调用回调函数    |向 Redux 派发 actions|
+|**调用方式**      |手动                    |通常由 React Redux 生成 |
+
+从技术上讲可以直接使用 `store.subscribe()`
+来编写容器组件。但不建议这么做的原因是无法使用 React Redux 带来的性能优化。也因此，不要手写容器组件，而使用 React Redux 的 `connect()` 方法来生成。
+
+### 展示组件
+只定义外观并不关心数据来源和如何改变的组件。传入什么就渲染什么。如果你把代码从 Redux 迁移到别的架构，这些组件可以不做任何改动直接使用。它们并不依赖于 Redux。
+
+### 容器组件
+监听 Redux store 变化并处理如何过滤出要显示的数据
+
+### Provider
+引用：
+```javaScript
+import { Provider } from 'react-redux'
+```
+
+一个用于将 Store 传递给组件的组件，一般用于最为外层包装App，这样 App及其子组件就可以通过 connect 共享 store 中的数据和方法
+
+```javaScript
+const store = createStore(reducer)
+ReactDOM.render(
+    <Provider store={store}>
+        <App />
+    <Provider />,
+    document.getElementById("root")
+)
+```
+
+#### 使用 connect 创建容器组件
+引用：
+```javaScript
+import { connect } from 'react-redux'
+```
+使用 `connect()` 前，需要先定义 `mapStateToProps` 这个函数来指定如何把当前 Redux store state 映射到展示组件的 `props` 中，处理直接将store state 中的属性映射到 组件的 props 以外， 也可以添加一些计算逻辑，会去 store state 计算后的结果作为组件的 prop
+
+`mapStateToProps` 函数的参数是 store 的完整 state
+
+```javascript
+// 获取prop的逻辑
+const getVisibleTodos = (todos, filter) => {
+  switch (filter) {
+    case 'SHOW_COMPLETED':
+      return todos.filter(t => t.completed)
+    case 'SHOW_ACTIVE':
+      return todos.filter(t => !t.completed)
+    case 'SHOW_ALL':
+    default:
+      return todos
+  }
+}
+// props 映射 store state
+const mapStateToProps = state => {
+  return {
+    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+  }
+}
+```
+
+定义 `mapDispatchToProps()` 方法接收 `dispatch()` 方法并返回期望注入到展示组件的 props 中的回调方法，即绑定了 dispatch 的行为相关的props
+
+ `mapDispatchToProps()` 函数的参数是 store 对象的 `dispatch` 方法
+
+```javascript
+const mapDispatchToProps = dispatch => {
+  return {
+    onTodoClick: id => {
+      dispatch(toggleTodo(id))
+    }
+  }
+}
+```
+
+使用 `connect()` 创建已有展示组件的容器组件，`connect()`以`mapStateToProps`和`mapDispatchToProps`为参数，返回一个新的函数，该新函数接受一个容器组件的 `构造器` 为参数，返回与容器组件同名的 容器组件
+
+```javascript
+import { connect } from 'react-redux'
+import React, {Component} from 'react'
+export class VisibleTodoList extends Component {
+    ...
+}
+
+const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList)
+export default VisibleTodoList
+//export default connect(mapStateToProps, mapDispatchToProps)(TodoList)
+```
+
+有了容器组件之后，要讲store传入组件中才能使组件正常工作，一种方式是把store以 `props` 的形式传入到所有容器组件中。
+
+redux官方推荐使用React Redux 组件 `<Provider>` 来 魔法般的 让所有容器组件都可以访问 store，而不必显式地传递它。只需要在渲染根组件时使用即可。
+
+```javaScript
+import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import todoApp from './reducers'
+import App from './components/App'
+
+let store = createStore(todoApp)
+
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
 
 ------------------
 # Link
