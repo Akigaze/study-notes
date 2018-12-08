@@ -148,3 +148,13 @@ switch(n){
 ```javascript
 const regx = /\.js$/;
 ```
+
+## 集合操作
+#### Array.from(obj, fn = (o) => o )
+相当于 `obj.map(o => fn(o))`
+
+#### Array.prototype.slice(begin = 0, end = this.length)
+左闭右开的集合截取
+
+#### Array.prototype.reverse()
+集合元素顺序反转

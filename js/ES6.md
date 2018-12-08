@@ -36,6 +36,29 @@
     express
 }
 ```
+妙用箭头函数
+```javaScript
+function logger(store) {
+  return function wrapDispatchToAddLogging(next) {
+    return function dispatchAndLog(action) {
+      console.log('dispatching', action)
+      let result = next(action)
+      console.log('next state', store.getState())
+      return result
+    }
+  }
+}
+```
+
+可以使用箭头函数改写：
+```javaScript
+const logger = store => next => action => {
+  console.log('dispatching', action)
+  let result = next(action)
+  console.log('next state', store.getState())
+  return result
+}
+```
 
 1. 如果只有一个参数，则括号可以省略
 2. 如果方法体只有一个`return`的表达式，则`{}`和`return`都可以省略
