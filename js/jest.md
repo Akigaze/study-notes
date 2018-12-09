@@ -284,7 +284,7 @@ test('doAsync calls both callbacks', () => {
 ```JavaScript
 expect.extend({
   toBeWithinRange:(received, floor, ceiling) => {
-    const pass = received >= floor && received &lt;= ceiling;
+    const pass = received >= floor && received <= ceiling;
     if (pass) {
       return {
         message: () => `expected ${received} not to be within range ${floor} - ${ceiling}`,
@@ -511,6 +511,7 @@ test('should fetch users', () => {
 ```javascript
 // jest。config.js
 module.exports = {
+  testEnvironment: "jsdom", // 使用 mount 需要完整的DOM
   setupTestFrameworkScriptFile: "./node_modules/jest-enzyme/lib/index.js" //固定写法
 }
 ```
