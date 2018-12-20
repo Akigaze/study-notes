@@ -771,7 +771,29 @@ function logger({ getState }) {
 }
 const store = createStore(todos, applyMiddleware(logger))
 ```
+## 子应用隔离
+在如果父级组件不需要与字组件共享state，或者多个子组件之间持有自己独有的state，则可以在父组件中创建`store`，在使用`Provider`包装子组件
+```js
+import React, { Component } from 'react'
+import { Provider } from 'react-redux'
+import reducer from './reducers'
+import App from './App'
 
+class SubApp extends Component {
+  constructor(props) {
+    super(props)
+    this.store = createStore(reducer)
+  }
+
+  render() {
+    return (
+      <Provider store={this.store}>
+        <App />
+      </Provider>
+    )
+  }
+}
+```
 
 -----------------
 
