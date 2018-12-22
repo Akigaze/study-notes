@@ -922,6 +922,133 @@ render(
 )
 ```
 
+## Testing for redux
+对于Redux的测试，可以分为几个部分进行：
+1. testing for action
+2. testing for reducer
+3. testing for smart(connect) component
+
+相关依赖：
+- jest
+- jasmine
+- enzyme
+- redux-mock-store
+- react-test-renderer
+- enzyme-to-json
+- redux-thunk
+
+### testing for action
+对`action`的测试十分直接，直接断言某个action创建函数创建的action对象是否正确即可：
+```javaScript
+it("create a increase action", () => {
+    const action = increaseAction();
+    expect(action).toEqual({type: "INCREASEMENT"})
+});
+```
+
+对于异步的action，则需要引用`store`，让store `dispatch` 某个action创建函数的结果，在断言异步请求中`store`是否接受了正确的action对象：
+```javaScript
+import configureMockStore from 'redux-mock-store'
+import thunk from 'redux-thunk'
+
+it('creates FETCH_TODOS_SUCCESS when fetching todos has been done', () => {
+    const expectedActions = [
+      { type: types.FETCH_TODOS_REQUEST },
+      { type: types.FETCH_TODOS_SUCCESS, body: { todos: ['do something'] } }
+    ]
+    const middlewares = [thunk]
+    const mockStore = configureMockStore(middlewares)
+    const store = mockStore({ todos: [] })
+​
+    return store.dispatch(actions.fetchTodos()).then(() => {
+      // return of async actions
+      expect(store.getActions()).toEqual(expectedActions)
+    })
+  })
+```
+
+此时需要使用到`redux-mock-store`的`configureMockStore`函数创建mock的store。
+
+### testing for reducer
+对reducer的测试也是十分直接，就是对函数的测试而已，给出指定的state和action，断言reducer函数是否返回正确的state。
+
+测试返回初始的state：
+```javaScript
+it("should return the default state when action not match", () => {
+    const state = reducer(undefined, {})
+    expect(state).toEqual({sum:0});
+});
+```
+
+测试在指定的state的情况下接受action：
+```javaScript
+it("should plus one at the specific couter of state when give a INCREASEMENT action", () => {
+    const initState = {sum:0}
+    const state = reducer(initState, {type:"INCREASEMENT"})
+    expect(state.sum).toEqual(1);
+});
+```
+
+### testing for smart(connect) component
+当要测试使用`connect`包装的组件时，可以使用`Provider`对组件进行包装，使用`redux-mock-store`提供mock的store，但由于没有`reducer`，所以无法测试无法测试`dispatch`的结果，只能测试`props`中的的一些属性的初始值或者函数的调用，通过调用与`dispatch`相关的函数，也可以测试store是否接受了特定的`action`。
+```javascript
+import configureMockStore from 'redux-mock-store'
+test('dispatches event to show the avatar selection list', () => {
+    const store = configureMockStore()(state)
+    const wrapper = shallow(<GatorAvatar store={store} />);
+    const component = wrapper.dive();
+
+    component.find(Avatar).props().onPress();
+
+    expect(store.getActions()).toMatchSnapshot();
+});
+```
+
+### configureMockStore()
+```javascript
+import configureStore from 'redux-mock-store'
+```
+
+`redux-mock-store`中用于创建mockStore的函数，接受一个中间件(middleware)的列表为参数，返回一个没有state的mockStore，当然这个mockStore也是没有reducer的。mockStore同时也是一个函数，接受一个state作为参数，返回一个可以传入`Provider`中的store：
+```javascript
+const mockStore = configureStore(middlewares)
+const store = mockStore(state)
+
+let component = mount(<Provider store={store}><MyComponent/></Provider>)
+```
+
+对 configureStore 的理解：
+```javascript
+configureStore = (middlewares) => (state) => {
+	return  createStore(() => {return state)}, middlewares)
+}
+```
+
+通常会使用`redux-thunk`的`thunk`来创建middlewares：
+```javascript
+import thunk from 'redux-thunk'
+const middlewares = [thunk]
+```
+
+### react-test-renderer
+react官方推荐的创建react组件用于测试的包
+
+`renderer`对象的`create`函数类似于enzyme的`mount`函数，用于创建react组件对象，该对象的`toJSON`函数可以将对象序列化：
+```javascript
+import renderer from 'react-test-renderer';
+// Convert it to JSON.
+const tree = renderer.create(<Pager name={name}/>).toJSON();
+```
+
+### enzyme-to-json
+enzyme相关的序列化工具包，使用`toJson`函数可以将enzyme创建的组件对象序列化。`createSerializer`函数可以将一个普通对象序列化：
+```javascript
+import toJson,{createSerializer} from 'enzyme-to-json';
+//序列化组件
+expect(toJson(component)).toMatchSnapshot();
+expect.addSnapshotSerializer(createSerializer({mode: 'deep'}));
+```
+
 ------------------
 # Link
 
@@ -944,3 +1071,13 @@ Redux 入门教程（二）：中间件与异步操作
 http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_two_async_operations.html  
 Redux 入门教程（三）：React-Redux 的用法  
 http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html  
+### alligator.io
+Testing React / Redux Apps with Jest & Enzyme   
+https://alligator.io/react/testing-react-redux-with-jest-enzyme/
+### GitHub
+redux-mock-store  
+https://github.com/dmitry-zaets/redux-mock-store  
+enzyme-to-json  
+https://github.com/adriantoine/enzyme-to-json  
+react-test-renderer  
+https://github.com/jamiebuilds/react-test-renderer  
