@@ -892,6 +892,9 @@ Returns a wrapper of the node that matches the provided reference name.
 #### .detach() => void
 Unmount the component from the DOM node it's attached to.
 
+#### .dive([options]) => ShallowWrapper
+Shallow render the one non-DOM child of the current wrapper, and return a wrapper around the result.
+
 ---------------------------------------
 
 ## Static Rendering

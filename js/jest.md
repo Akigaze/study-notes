@@ -62,6 +62,47 @@ configure({adapter: new Adapter()});
     "presets":["env"]
 }
 ```
+
+## Jest Snapshot
+存放断言结果的镜像，如：
+```javascript
+it("sum of quadratic when no given number", function() {
+    const result = sumQuadratic();
+    expect(result).toMatchSnapshot();
+});
+```
+第一次执行这个spec时，spec的描述和`result`的值会被保存在测试文件相同目录下的 `__snapshots__` 文件夹中的 `.snap` 文件中，以后每次执行这个spec，则会将被断言的值与`.snap`文件相对于的值进行比较
+
+`.snap` 文件中已有的spec的值因为修改测试代码或源代码而自动修改，而必须在执行测试命令时添加`-u`参数才能更新snap
+> jest -u
+
+或
+> npm test -- -u
+
+`-u` 是 `--updateSnapshot` 的简写
+
+### serialize
+snapshot的值都是被序列化的值，可以理解为`.snap`文件中的值都是字符串，所以被断言的值最好也是可序列化的。若是对象，jest在进行断言时会自动进行序列化，但reat的组件对象要手动序列化，可以使用`enzyme-to-json`的`toJson`函数进行组件序列化，也可以使用`react-test-renderer`的`renderer.create()`创建组件对象，再调用组件的`toJSON`函数序列化。
+
+此外，Function 对象不会被序列化，在snapshot中是以`[Function]`的形式存在。
+
+### jest如何将snapshot的值与spec对应起来
+`.snap` 文件中每个snapshot的表达式：
+```javascript
+exports[`test math util sum of quadratic when no given number 2`] = `2`;
+```
+jest是通过`describe + it + index` 来定位spec的，index默认是1，当出现相同的`describe + it`组合时，index就会递增。
+
+相同`describe + it`组合，index的顺序与在测试文件中从上到下spec的顺序是一致的，在snapshot在`.snap`文件中是根据描述按字母顺序排列的，所以调整spec的顺序有时也会导致fail。
+
+当修改`describe`或`it`的描述时，就会生成新的snapshot的值，而已有的snapshot若没有对应的spec，则会提示obsolete(废弃)，并且即使没有spec fail，整个测试的结果也会标记为fail。
+
+因此，但修改源代码或者测试文件时，最好执行`jest -u`或`npm test -- -u`来运行测试，以更新snapshot
+
+### .toMatchSnapshot(value)
+使用snapshot断言的方法
+value是一个对象，可以控制生成的snapshot的结构
+
 ------------------------------------
 
 ### configure options
