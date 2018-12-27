@@ -99,6 +99,16 @@ stash@{2}: WIP on master: 21d80a5 added number to log
 ## 7. 删除本地git仓库
 > rm -rf .git
 
+## 8. Git命令别名
+### 设置别名
+> git config --global alias.cot checkout
+
+使用 `alias.xxx cmd` 为指定的命令设置别名xxx，`--global` 为全局设置，也可不加，则为项目设置
+> git config alias.pop 'stash pop'
+
+当需要起别名的命令you多个单词是，用单引号包含起来
+
+
 # Link
 ### Git-book
 Book Index  
