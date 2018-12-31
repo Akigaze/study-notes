@@ -160,6 +160,10 @@ Promise 对象中的 `then` 方法,可以接收构造函数中处理的状态变
 `then`方法的执行结果也会返回一个Promise对象,因此我们可以进行 `then` 的链式执行;若 `then` 的 `resolve` 函数的返回值并不是一个 Promise 对或没有返回值,则 `then` 返回的 Promise 会立即立即执行回调 `resolve()`.  
 `then`链式中的第二个 `then` 开始,它们的 `resolve` 中的参数,是前一个 `then` 中 `resolve` 的 `return` 语句的返回值.  
 
+构造函数中的`resolve`和`reject`都是异步的函数，在使用构造方法创建Promise对象时，会直接执行构造方法中的函数，`resolve`和`reject`和其他一步操作都会被放入异步工作线程等待被执行；只有当主线程执行完毕，且有调用`then`为`resolve`和`reject`传递函数时，构造函数中的`resolve`和`reject`回调才会被真正执行。
+
+在Promise对象前使用`await`关键字，该表达式会返回该Promise对象`resolve`的值，若该Promise对象一直没有`resolve`，则会保持pending状态直到timeout
+
 ### 示例1：
 ```javascript
 let getPromise = (num) => {
@@ -183,23 +187,45 @@ Promise 实例在生成后会立即执行,而 `then` 方法只有在所有同步
 ### 示例2：
 ```javascript
 const promise = new Promise((resolve, reject) => {
-  console.log('async task begins!')
+  console.log('async task begins!') //1
   setTimeout(() => {
-    resolve('done, pending -> resolved!')
+    resolve('done, pending -> resolved!') //6
   }, 1000)
 })
+console.log('new promise') //2
 promise.then(value => {
-  console.log(value)
+  console.log(value) //7
 })
-console.log('1.please wait')
-console.log('2.please wait')
-console.log('3.please wait')
+console.log('1.please wait') //3
+console.log('2.please wait') //4
+console.log('3.please wait') //5
 ```
 结果：
 > async task begins!  
+new promise  
 1.please wait  
 2.please wait  
 3.please wait  
+done, pending -> resolved!  
+
+### 示例3：
+不是异步的条件执行`resolve`
+```javascript
+const promise = new Promise((resolve, reject) => {
+  console.log('async task begins!') //1
+  resolve('done, pending -> resolved!') //2
+})
+console.log('new promise') //3
+promise.then(value => {
+  console.log(value) //5
+})
+console.log('1.please wait') //4
+```
+
+结果：
+> async task begins!  
+new promise  
+1.please wait   
 done, pending -> resolved!  
 
 ## .catch
@@ -225,6 +251,38 @@ renderAll().then((value) => {
 ## Promise.race
 * 与 `Promise.all` 相似的是,`Promise.race` 都是以一个 `Promise` 对象组成的数组作为参数,不同的是,只要当数组中的其中一个 `Promsie` 状态变成 `resolved` 或 `rejected` 时,就可以调用 `.then` 方法了.  
 * 传递给 `then` 方法的值也会有所不同.
+
+
+## 更多教程
+```javaScript
+let promise = new Promise(function(resolve, reject) {
+  // executor (生产者代码，"singer")
+});
+```
+
+传递给 `new Promise`的函数称之为 **executor**。当 promise 被创建时，它会被自动调用。
+
+promise 对象有内部属性：
+
+- state —— 最初是 “pending”，然后被改为 “fulfilled” 或 “rejected”，
+- result —— 一个任意值，最初是 undefined。
+
+当 executor 完成任务时，应调用下列之一：
+
+- resolve(value) —— 说明任务已经完成：
+将 state 设置为 "fulfilled"，
+sets result to value。
+- reject(error) —— 表明有错误发生：
+将 state 设置为 "rejected"，
+将 result 设置为 error。
+
+Promise 结果应该是 resolved 或 rejected 的状态被称为 `settled`
+
+![](./pic/promise-resolve-reject.png)
+
+Promise 的 `state` 和 `result` 属性是内部的。我们不能从代码中直接访问它们，但是我们可以使用 `.then/catch` 来访问
+
+对于一个Promise对象，只能被resolve或者是reject一次，因此如果已经出现了resolve或者reject，则后面的所有resolve和reject都会被忽略
 
 ---
 # async/await
@@ -316,3 +374,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
 ### Microsoft
 Promise 对象 (JavaScript)  
 https://msdn.microsoft.com/zh-cn/library/dn802826.aspx
+### 现代 Javascript 教程
+Promises, async/await  
+https://zh.javascript.info/promise-basics  

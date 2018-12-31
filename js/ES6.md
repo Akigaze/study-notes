@@ -230,7 +230,7 @@ json.run(10);
 Promise是ES6的内置对象，用于处理异步请求
 1. 创建Promise对象，构造方法接受1个函数，函数有2个参数，`resolve`请求成功的函数，`reject`请求失败的函数，同时在函数中发送Ajax请求
 ```javascript
-let pro1 = new new Promise((resolve, reject)=> {
+let pro1 = new Promise((resolve, reject)=> {
     //Ajax请求
 });
 ```
