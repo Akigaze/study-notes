@@ -51,7 +51,11 @@ To see more detail about a task.
 打包之前，会默认执行`gradle clean`命令，先清除之前的build文件夹
 
 ## gradle wrapper
-这个命令根据`gradle\wrapper\gradle-wrapper.properties`目录下的`distributionUrl`属性，比较项目使用的gradle版本和运行环境所使用的gradle版本，在版本不兼容的情况下，自动下载合适的gradle版本。
+生成Gradle Wrapper
+
+> gradle wrapper --gradle-version xx.xx
+
+指定生成的Gradle Wrapper所使用的Gradle版本
 
 ## gradle <task1\> <task2\>
 同时执行多个任务
