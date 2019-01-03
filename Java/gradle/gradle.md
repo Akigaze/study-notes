@@ -65,10 +65,107 @@ task intro(dependsOn: hello) << {
 }
 ```
 
-> **>** gradle intro -q 
+> **>** gradle intro -q  
 Hello world!  
 I'm Gradle
 
+## 动态任务
+Gradle能利用Groovy语法动态创建task，使用类似lambda表达式的语句：
+
+#### 例子04：动态创建任务
+```groovy
+4.times { counter ->
+    task "task$counter" << {
+        println "I'm task number $counter"
+    }
+}
+```
+
+该表达式利用循环动态创建了 `task0`, `task1`, `task2`, `task3` 四个task
+
+> **>** gradle task1 -q  
+I'm task number 1
+
+## 任务功能拓展
+### 1. 使用dependsOn为task添加依赖
+使用 `task0.dependsOn task1,task2` 为task0依次添加task1和task2为依赖，执行task时按照依赖添加的顺序执行。
+
+#### 例子05：dependsOn
+```groovy
+task hello << { println "Hello World" }
+task say << { println "Good Morning" }
+task study << { println "Study Gradle" }
+
+study.dependsOn hello,say
+```
+
+> **>** gradle study -q  
+Hello World  
+Good Morning  
+Study Gradle  
+
+### 2. 使用task定义为task添加内容
+在task定义之后，可以使用`taskName << {  }` 的表达式为task添加内容，对于同一个task的重复描述Gradle最终会把内容按定义的顺序合并
+
+#### 例子06：使用 <<
+```groovy
+task hello << {
+    println 'Hello Earth'
+}
+hello << {
+    println 'Hello Jupiter'
+}
+```
+
+> **>** gradle hello -q  
+Hello Earth  
+Hello Jupiter  
+
+### 3. 使用`.doFirst`和`.doLast`添加内容
+`task.doFirst{...}` 和 `task.doLast{...}` 可以给已经定义的task添加内容，doLast添加的内容会在doFirst之后执行。
+
+#### 例子07：.doFirst和.doLast
+```groovy
+task hello << {
+    println 'Hello Earth'
+}
+hello.doFirst {
+    println 'Hello Venus'
+}
+hello.doLast {
+    println 'Hello Mars'
+}
+```
+
+`.doFirst`和`.doLast`添加的内容的执行顺序：
+1. `.doFirst`：后加的在前
+2. `.doLast`：先加的在前
+
+`dependsOn`, `<<` , `.doFirst` 和 `.doLast` 的方式可以混合使用，而语句的执行是:
+
+`dependsOn` -> `.doFirst` -> `.doLast` / `<<`
+
+> **>** gradle hello -q  
+Hello Earth  
+Hello Venus  
+Hello Mars
+
+## 短标记法$
+`$` 可以将task对象化，使用 `$task` 的形式可以把task当成一个变量，使用 `$task.property` 的形式访问task对象的属性(name...)
+
+#### 例子08：$
+```groovy
+task hello << {
+    println 'Hello world!'
+}
+hello.doLast {
+    println "Greetings from the $hello.name task."
+}
+```
+
+> **>** gradle hello -q  
+Hello world!  
+Greetings from the hello task.  
 
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
