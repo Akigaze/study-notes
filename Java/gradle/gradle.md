@@ -289,6 +289,61 @@ task other << {
 Default Cleaning!  
 Default Running!  
 
+## 插件
+插件是 Gradle 的扩展, 它会通过某种方式配置你的项目, 典型的有加入一些预配置任务. Gradle 自带了许多插件, 你也可以很简单地编写自己的插件并和其他开发者分享它.
+
+**Java 插件** 就是一个这样的插件. 这个插件在你的项目里加入了许多任务， 这些任务会编译和单元测试你的源文件, 并且把它们都集成一个 JAR 文件里. **Java 插件** 是基于合约的. 这意味着插件已经给项目的许多方面定义了默认的参数, 比如 Java 源文件的位置.
+
+通过插件可以在依赖管理，测试，项目构建，部署等方面获得便利，提高效率
+
+### 常用插件
+- java
+
+### 添加插件
+`apply plugin: 'pluginName'` 在 `build.gradle` 文件中加入指定的插件。
+
+## java 插件
+### java插件对项目的几个默认目录：
+- `src/main/java` ：项目的正式源码
+- `src/test/java` ：项目的测试源码
+- `src/main/resources` ：项目要打包进 jar 的资源文件
+- `build` ：存放项目构建输出的所有文件
+- `build/libs` ：存放生成的 jar 文件
+
+### 常用的Task：
+- build ：构建项目，编译和测试你的代码,并生成一个包含所有类与资源的 JAR 文件。  
+该命令的输出如下：
+> **>** gradle build  
+:compileJava  
+:processResources  
+:classes  
+:jar  
+:assemble  
+:compileTestJava  
+:processTestResources  
+:testClasses  
+:test  
+:check  
+:build  
+**BUILD SUCCESSFUL**
+
+
+- clean ：删除 build 目录。
+- assemble ：编译并打包你的代码, 但是并不运行单元测试。
+- check ：编译并测试你的代码。
+
+### 外部的依赖
+在 `build.gradle` 文件中，在 `repositories` 属性中加入依赖仓库，在 `dependencies ` 属性中加入具体依赖的 jar 包名称。
+```groovy
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+```
+
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
 
