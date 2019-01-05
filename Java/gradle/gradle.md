@@ -17,7 +17,7 @@ output: Hello Gradle!
 通过 `gradle hello -q` 命令, 就可以执行该文件中的 task, 在控制台输出 Hello Gradle, 而此时项目中并不需要其他任何文件.
 执行完gradle命令之后, 项目中会生成一个 `.gradle` 目录.
 
-该task中的doLast也可以使用 `<<` 代替，使用快捷的任务定义模式：
+该task中的doLast也可以使用 `<<` 代替, 使用快捷的任务定义模式：
 ```groovy
 task hello << {
     println 'Hello world!'
@@ -25,7 +25,7 @@ task hello << {
 ```
 
 ## Groovy
-Gradle 使用 Groovy 语言来构建 `build.gradle` 脚本，而 Groovy 与Java非常相似：
+Gradle 使用 Groovy 语言来构建 `build.gradle` 脚本, 而 Groovy 与Java非常相似：
 #### 例子02：Groovy构建task
 ```groovy
 task upper << {
@@ -52,7 +52,7 @@ task task1(dependsOn: task2) << {
 }
 ```
 
-表示task2必须在task2之后执行，若task2在task1之后声明，则会先加载执行task2，这称为 Lazy dependsOn 。
+表示task2必须在task2之后执行, 若task2在task1之后声明, 则会先加载执行task2, 这称为 Lazy dependsOn .
 
 #### 例子03：dependsOn
 ```groovy
@@ -70,7 +70,7 @@ Hello world!
 I'm Gradle
 
 ## 动态任务
-Gradle能利用Groovy语法动态创建task，使用类似lambda表达式的语句：
+Gradle能利用Groovy语法动态创建task, 使用类似lambda表达式的语句：
 
 #### 例子04：动态创建任务
 ```groovy
@@ -88,7 +88,7 @@ I'm task number 1
 
 ## 任务功能拓展
 ### 1. 使用dependsOn为task添加依赖
-使用 `task0.dependsOn task1,task2` 为task0依次添加task1和task2为依赖，执行task时按照依赖添加的顺序执行。
+使用 `task0.dependsOn task1,task2` 为task0依次添加task1和task2为依赖, 执行task时按照依赖添加的顺序执行.
 
 #### 例子05：dependsOn
 ```groovy
@@ -105,7 +105,7 @@ Good Morning
 Study Gradle  
 
 ### 2. 使用task定义为task添加内容
-在task定义之后，可以使用`taskName << {  }` 的表达式为task添加内容，对于同一个task的重复描述Gradle最终会把内容按定义的顺序合并
+在task定义之后, 可以使用`taskName << {  }` 的表达式为task添加内容, 对于同一个task的重复描述Gradle最终会把内容按定义的顺序合并
 
 #### 例子06：使用 <<
 ```groovy
@@ -122,7 +122,7 @@ Hello Earth
 Hello Jupiter  
 
 ### 3. 使用`.doFirst`和`.doLast`添加内容
-`task.doFirst{...}` 和 `task.doLast{...}` 可以给已经定义的task添加内容，doLast添加的内容会在doFirst之后执行。
+`task.doFirst{...}` 和 `task.doLast{...}` 可以给已经定义的task添加内容, doLast添加的内容会在doFirst之后执行.
 
 #### 例子07：.doFirst和.doLast
 ```groovy
@@ -141,7 +141,7 @@ hello.doLast {
 1. `.doFirst`：后加的在前
 2. `.doLast`：先加的在前
 
-`dependsOn`, `<<` , `.doFirst` 和 `.doLast` 的方式可以混合使用，而语句的执行是:
+`dependsOn`, `<<` , `.doFirst` 和 `.doLast` 的方式可以混合使用, 而语句的执行是:
 
 `dependsOn` -> `.doFirst` -> `.doLast` / `<<`
 
@@ -151,7 +151,7 @@ Hello Venus
 Hello Mars
 
 ## 短标记法$
-`$` 可以将task对象化，使用 `$task` 的形式可以把task当成一个变量，使用 `$task.property` 的形式访问task对象的属性(name...)
+`$` 类似于JS中的字符串模板, 使用 `$task.property` 的形式可以在字符串中输出task的属性(name...)
 
 #### 例子08：$
 ```groovy
@@ -208,6 +208,87 @@ dependencies {
 }
 ```
 
+## ext自定义属性
+创建task使, 可以使用 `ext` 为task添加自定义的属性, 使用 `ext.property=value` 的形式. 但如果是 Gradle task 内置的属性, 像 `name` 这些, 是无法用 `ext` 重写的.
+
+#### 例子09：ext
+```groovy
+task developer {
+    ext.name = "Quinn"
+    ext.family = "Hwang"
+}
+task hello << {
+    println "Hello, $developer.name $developer.family."
+}
+```
+
+> **>** gradle hello -q  
+hello, developer Hwang.  
+
+## 调用 Ant
+在 `build.gradle` 中, 可以使用 `ant.property`,  `ant.function` 的方式来直接调用 Ant 的方法和属性, 因为 Gradle 本身就已经集成了 Ant , 所以可以直接使用 Ant .
+
+#### 例子10：调用 Ant
+```groovy
+task loadfile << {
+    def files = file('./resource').listFiles().sort()
+    files.each { File file ->
+        if (file.isFile()) {
+            ant.loadfile(srcFile: file, property: file.name)
+            println " *** $file.name ***"
+            println "${ant.properties[file.name]}"
+        }
+    }
+}
+```
+
+> **>** gradle -q loadfile  
+\*\*\* developer.txt \*\*\*  
+Quinn Huang QH  
+Akigaze Hwang AH  
+\*\*\* README.md \*\*\*  
+Hello Gradle!  
+It seems difficult.  
+
+`ant.loadfile` 和 `ant.properties` 就是 Ant 的方法和属性
+
+## 定义方法
+在 `build.gradle` 文件中可以自定义方法, 并在task中调用, 方法定义的语法与Java相似, 当方法中只有一个返回值的时候, 可以省略 `return`.
+```groovy
+File[] fileList(String dir) {
+    file(dir).listFiles({file -> file.isFile() } as FileFilter).sort()
+}
+task loadfile << {
+    fileList('../resources').each {File file ->
+        ant.loadfile(srcFile: file, property: file.name)
+        println "I'm fond of $file.name"
+    }
+}
+```
+
+> **>** gradle -q loadfile  
+I'm fond of developer.txt  
+I'm fond of README.md
+
+## 默认任务
+`build.gradle` 脚本中可以为一个模块或项目定义一个或多个默认任务. 使用 `defaultTasks 'task'` 添加默认 task, 使用 `gradle -q` 就能直接执行所有的默认任务.
+```groovy
+defaultTasks 'clean', 'run'
+task clean << {
+    println 'Default Cleaning!'
+}
+task run << {
+    println 'Default Running!'
+}
+task other << {
+    println "I'm not a default task!"
+}
+```
+
+> **>** gradle -q  
+Default Cleaning!  
+Default Running!  
+
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
 
@@ -247,3 +328,13 @@ zipStorePath=wrapper/dists
 > **>** gradle wrapper --gradle-version xx.xx
 
 指定配置的Gradle版本
+
+## 跳过的部分
+1. 通过 DAG 配置
+
+# Link
+### Gitbook
+Gradle User Guide 中文版   
+https://dongchuan.gitbooks.io/gradle-user-guide-/  
+Gradle In Action中文版  
+https://lippiouyang.gitbooks.io/gradle-in-action-cn/content/
