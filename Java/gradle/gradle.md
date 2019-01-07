@@ -167,6 +167,47 @@ hello.doLast {
 Hello world!  
 Greetings from the hello task.  
 
+## 定义task
+使用 `task` 关键字定义task: `task name(options){...}`。其中 `param` 可以省略，此时可以不用加括号
+### options
+- type
+- group
+- description
+
+#### 例子09：定义task
+```groovy
+task copy(type: Copy, group: "Custom", description: "Copies sources to the dest directory"){
+    ...
+}
+```
+
+## 依赖管理
+**dependencies(依赖项)**：指传入项目的文件  
+**publications(发布项)**：项目传出发布的文件  
+**dependency resolution(依赖解析)**：依赖关系可能需要从远程的 Maven 或者 Ivy 仓库中下载, 也可能是在本地文件系统中, 或者是通过多项目构建另一个构建. 我们称这个过程为依赖解析
+**transitive dependencies(依赖传递)**：一来项之间存在的相互依赖
+
+## 依赖配置
+在 **java插件** 中，主要的依赖配置有4个：
+1. compile：用来编译项目源代码的依赖.
+2. runtime：在运行时被生成的类使用的依赖. 默认的, 也包含了编译时的依赖.
+3. testCompile：编译测试代码的依赖. 默认的, 包含生成的类运行所需的依赖和编译源代码的依赖.
+4. testRuntime：运行测试所需要的依赖. 默认的, 包含上面三个依赖.
+
+一个依赖由`group`, `name` 和 `version` 三部分组成，完整的配置方式是：  
+`dependencyOption group: 'xxx', name: 'xxx', version: 'xxx'`  
+也可以简写成：  
+`dependencyOption group:name:version`
+
+这些依赖都配置在 `build.gradle` 的 `dependencies` 属性中：
+#### 例子10：dependencies
+```groovy
+dependencies {
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '3.6.7.Final'
+    //等同于 compile 'org.hibernate:hibernate-core:3.6.7.Final'
+}
+```
+
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
 
