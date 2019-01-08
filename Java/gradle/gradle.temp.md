@@ -237,24 +237,126 @@ dependencies {
 }
 ```
 
-## 09. 定位 tasks
+## 09. ext自定义属性
+创建task使, 可以使用 `ext` 为task添加自定义的属性, 使用 `ext.property=value` 的形式. 但如果是 Gradle task 内置的属性, 像 `name` 这些, 是无法用 `ext` 重写的.
+
+#### 例子9.1：ext
+```groovy
+task developer {
+    ext.name = "Quinn"
+    ext.family = "Hwang"
+}
+task hello << {
+    println "Hello, $developer.name $developer.family."
+}
+```
+
+> **>** gradle hello -q  
+hello, developer Hwang.  
+
+## 10. 调用 Ant
+在 `build.gradle` 中, 可以使用 `ant.property`,  `ant.function` 的方式来直接调用 Ant 的方法和属性, 因为 Gradle 本身就已经集成了 Ant , 所以可以直接使用 Ant .
+
+#### 例子10.1：调用 Ant
+```groovy
+task loadfile << {
+    def files = file('./resource').listFiles().sort()
+    files.each { File file ->
+        if (file.isFile()) {
+            ant.loadfile(srcFile: file, property: file.name)
+            println " *** $file.name ***"
+            println "${ant.properties[file.name]}"
+        }
+    }
+}
+```
+
+> **>** gradle -q loadfile  
+\*\*\* developer.txt \*\*\*  
+Quinn Huang QH  
+Akigaze Hwang AH  
+\*\*\* README.md \*\*\*  
+Hello Gradle!  
+It seems difficult.  
+
+`ant.loadfile` 和 `ant.properties` 就是 Ant 的方法和属性
+
+## 11. 定义方法
+在 `build.gradle` 文件中可以自定义方法, 并在task中调用, 方法定义的语法与Java相似, 当方法中只有一个返回值的时候, 可以省略 `return`.
+#### 例子11.1：
+```groovy
+File[] fileList(String dir) {
+    file(dir).listFiles({file -> file.isFile() } as FileFilter).sort()
+}
+task loadfile << {
+    fileList('../resources').each {File file ->
+        ant.loadfile(srcFile: file, property: file.name)
+        println "I'm fond of $file.name"
+    }
+}
+```
+
+> **>** gradle -q loadfile  
+I'm fond of developer.txt  
+I'm fond of README.md
+
+## 12. 默认任务
+`build.gradle` 脚本中可以为一个模块或项目定义一个或多个默认任务. 使用 `defaultTasks 'task'` 添加默认 task, 使用 `gradle -q` 就能直接执行所有的默认任务.
+#### 例子12.1
+```groovy
+defaultTasks 'clean', 'run'
+task clean << {
+    println 'Default Cleaning!'
+}
+task run << {
+    println 'Default Running!'
+}
+task other << {
+    println "I'm not a default task!"
+}
+```
+
+> **>** gradle -q  
+Default Cleaning!  
+Default Running!  
+
+### 13. 外部的依赖
+在 `build.gradle` 文件中，在 `repositories` 属性中加入依赖仓库，在 `dependencies ` 属性中加入具体依赖的 jar 包名称。
+#### 例子13.1:
+```groovy
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+```
+
+
+## 14. 定位 tasks
 1. 直接使用task名称
 2. 使用 `project.task`
 3. 使用 `tasks` 集合，包括 `tasks.task` 和 `tasks['task']` 两种形式
 4. 通过 `tasks.getByPath()` ？？？
 
-## 10. 插件
-### 10.1 插件的类型
+## 15. 插件
+插件是 Gradle 的扩展, 它会通过某种方式配置你的项目, 典型的有加入一些预配置任务. Gradle 自带了许多插件, 你也可以很简单地编写自己的插件并和其他开发者分享它.
 
+**Java 插件** 就是一个这样的插件. 这个插件在你的项目里加入了许多任务， 这些任务会编译和单元测试你的源文件, 并且把它们都集成一个 JAR 文件里. **Java 插件** 是基于合约的. 这意味着插件已经给项目的许多方面定义了默认的参数, 比如 Java 源文件的位置.
+
+通过插件可以在依赖管理，测试，项目构建，部署等方面获得便利，提高效率
+
+### 15.1 插件的类型
 在Gradle中一般有两种类型的插件, 脚本插件和二进制插件. 脚本插件是用户自己构建的脚本, 它会进一步配置构建, 通常实行声明的方式操纵的构建，即类似于task声明的方式. 二进制插件是实现了Plugin接口的类, 并且采用编程的方式来操纵构建. 二进制插件可以驻留在构建脚本, 项目层级内或外部的插件jar.
 
 通常引入插件会将插件中的task也引入到项目中，因此可以简单理解为：插件就是一堆已经写好的task的集合，所以自定义插件实际上也就是在写task文件
 
-### 10.2 应用插件
+### 15.2 应用插件
 脚本插件通常使用 `apply from:` 引入项目，指定脚本相对于 `build.gradle` 文件的相对路径  
 
 脚本插件多采用 **DSL** 引入，即在 `plugins` 属性中指定插件的id(或version)
-#### 例子10.2.1：引用插件
+#### 例子15.2.1：引用插件
 ```groovy
 apply from: 'other.gradle'
 plugins {
@@ -262,6 +364,39 @@ plugins {
     id "com.jfrog.bintray" version "0.4.1"
 }
 ```
+
+### 15.3 常用插件
+- java
+
+### 15.4 java 插件
+#### 15.4.1 java插件对项目的几个默认目录：
+- `src/main/java` ：项目的正式源码
+- `src/test/java` ：项目的测试源码
+- `src/main/resources` ：项目要打包进 jar 的资源文件
+- `build` ：存放项目构建输出的所有文件
+- `build/libs` ：存放生成的 jar 文件
+
+#### 15.4.2 常用的Task：
+- build ：构建项目，编译和测试你的代码,并生成一个包含所有类与资源的 JAR 文件。  
+该命令的输出如下：
+> **>** gradle build  
+:compileJava  
+:processResources  
+:classes  
+:jar  
+:assemble  
+:compileTestJava  
+:processTestResources  
+:testClasses  
+:test  
+:check  
+:build  
+**BUILD SUCCESSFUL**
+
+
+- clean ：删除 build 目录。
+- assemble ：编译并打包你的代码, 但是并不运行单元测试。
+- check ：编译并测试你的代码。
 
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
