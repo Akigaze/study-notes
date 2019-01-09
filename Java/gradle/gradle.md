@@ -52,8 +52,7 @@ task task1(dependsOn: task2) << {
 }
 ```
 
-表示task2必须在task2之后执行，若task2在task1之后声明，则会先加载执行task2，这称为 Lazy dependsOn 。
-
+表示task2必须在task2之后执行，若task2在task1之后声明，则会先加载执行task2，这称为 Lazy dependsOn。
 #### 例子3.1：dependsOn
 ```groovy
 task hello << {
@@ -68,6 +67,34 @@ task intro(dependsOn: hello) << {
 > **>** gradle intro -q  
 Hello world!  
 I'm Gradle
+
+这里的依赖并不是要强制执行被依赖的task，而是只要被依赖的task在依赖的task之前被执行了即可；若多个task都依赖与同一个task，根据依赖的传递，每个task其实只会被执行一次
+#### 例子3.2：多任务依赖
+```groovy
+task compile << {
+    println 'compiling source'
+}
+task compileTest(dependsOn: compile) << {
+    println 'compiling unit tests'
+}
+task test(dependsOn: [compile, compileTest]) << {
+    println 'running unit tests'
+}
+task dist(dependsOn: [compile, test]) << {
+    println 'building the distribution'
+}
+```
+
+> **>** gradle dist tests  
+*>* Task :compile  
+compiling source  
+*>* Task :compileTest  
+compiling unit tests  
+*>* Task :test  
+running unit tests  
+*>* Task :dist  
+building the distribution  
+
 
 ## 04. 动态任务
 Gradle能利用Groovy语法动态创建task，使用类似lambda表达式的语句：
@@ -169,22 +196,22 @@ Greetings from the hello task.
 
 ## 07. 定义task
 使用 `task` 关键字定义task: `task name(options){...}`。其中 `param` 可以省略，此时可以不用加括号
-### options
+### 07.1 options
 - type
 - group
 - description
 
-#### 例子7.1：定义task
+#### 例子7.1.1：定义task
 ```groovy
 task copy(type: Copy, group: "Custom", description: "Copies sources to the dest directory"){
     ...
 }
 ```
 
-### task定义语句
+### 07.2 task定义语句
 #### task(name)
 将task的名字放在括号中
-#### 例子7.2:
+#### 例子7.2.1:
 ```groovy
 task(hello) << {
     println "hello"
@@ -193,7 +220,7 @@ task(hello) << {
 
 #### task('name')
 task的名字也可以使用字符串的形式
-#### 例子7.3:
+#### 例子7.2.2:
 ```groovy
 task('hello') <<
 {
@@ -202,7 +229,7 @@ task('hello') <<
 ```
 
 #### tasks.create(name: 'name')
-#### 例子7.4:
+#### 例子7.2.3:
 使用 `create` 方法，传入name作为参数
 ```groovy
 tasks.create(name: 'hello') << {
@@ -210,6 +237,59 @@ tasks.create(name: 'hello') << {
 }
 ```
 
+### 07.3 执行task
+使用 `gradle task1 task2` 的形式一次执行多个task，但是如果有同名的task，则只会执行一次，且在之前的task的依赖出现的task，也不会再次执行
+#### 例子7.3.1：
+```groovy
+task compile << {
+    println 'compiling source'
+}
+task compileTest(dependsOn: compile) << {
+    println 'compiling unit tests'
+}
+task test(dependsOn: [compile, compileTest]) << {
+    println 'running unit tests'
+}
+```  
+
+> **>** gradle test compile test  
+*>* Task :compile  
+compiling source  
+*>* Task :compileTest  
+compiling unit tests  
+*>* Task :test  
+running unit tests  
+
+### 07.4 排除task
+使用 `-x` 选项可以将选项后面的第一个task排除掉，即在本次命令中该task将不会被执行；需要排除多个task时，可以使用多次 `-x` 指定多个task，可用于排除task的依赖
+#### 例子7.4.1：
+```groovy
+task compile << {
+    println 'compiling source'
+}
+task compileTest(dependsOn: compile) << {
+    println 'compiling unit tests'
+}
+task test(dependsOn: [compile, compileTest]) << {
+    println 'running unit tests'
+}
+```
+> **>** gradle test -x compile -x compileTest  
+*>* Task :test  
+running unit tests  
+
+### 7.5 任务同步
+默认情况下, 只要有任务调用失败, Gradle就会中断执行. 这可能会使调用过程更快, 但那些后面隐藏的错误就没有办法发现了.
+
+使用 `--continue` 选项, Gralde 会调用每一个任务以及它们依赖的任务, 而不是一旦出现错误就会中断执行, 所有错误信息都会在最后被列出来.
+
+一旦某个任务执行失败,那么所有依赖于该任务的子任务都不会被调用.例如由于 test 任务依赖于 complie 任务,所以如果 compile 调用出错, test 便不会被直接或间接调用.
+
+#### 例子7.5.1：
+> **>** gradle test dist --continue
+
+### 7.6 简化任务名
+执行task时，并不需要输入任务的全名， 只需提供足够的可以唯一区分出该任务的字符即可。如 `dist` 可以简写成 `di`；同时若task是采用驼峰命名，还可以直接使用每个单词的首字母，大小写与驼峰形式保持一致，如 `integrationTest` 简写成 `iT`.
 ## 08. 依赖管理
 **dependencies(依赖项)**：指传入项目的文件  
 **publications(发布项)**：项目传出发布的文件  
@@ -397,6 +477,23 @@ plugins {
 - clean ：删除 build 目录。
 - assemble ：编译并打包你的代码, 但是并不运行单元测试。
 - check ：编译并测试你的代码。
+- compileJava：所有产生编译 classpath 的任务，包括编译配置项目的所依赖的 jar 文件，使用 javac 命令编译产生 java源文件
+- processResources：复制生产资源到生产 class 文件目录
+- classes：compileJava任务和processResources任务
+- compileTestJava：compile任务加上所有产生测试编译的classpath的任务
+- processTestResources：复制测试资源到测试 class 文件目录
+- testClasses：compileTestJava 和 processTestResources 任务
+- jar：组装 Jar 文件
+- javadoc：使用 javadoc 命令为 Java 源码生产 API 文档
+- test：compile，compileTest，加上所有产生 test runtime classp 的任务，使用 JUnit或者TestNG 进行单元测试
+- uploadArchives：在archives配置中产生信息单元的文件，上传信息单元在archives配置中，包括 Jar 文件
+- cleanTaskName：删除指定任务名所产生的项目构建目录，CleanJar会删除jar任务创建的jar文件，cleanTest将会删除由 test 任务创建的测试结果
+
+## 16. 选择执行构建
+使用 `-b` 或 `-p` 参数，可以更改执行 gradle 命令时所依赖的配置文件，即将配置文件从 `build.gradle` 改为其他文件或目录
+
+1. `-b`: 参数用以指定脚本具体所在位置, 格式为 `gradel -b dirpwd/xxx.gradle task`.
+2. `-p`: 参数用以指定脚本所在目录即可，格式为 `gradle -p dirpwd task`
 
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
