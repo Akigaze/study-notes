@@ -27,6 +27,20 @@
 ## 降低模块版本
 > npm install <package>@version
 
+## 登录NPM账户
+> npm login
+
+## 发布和更新npm包
+在要发布的包的目录下执行命令：
+> npm publish
+
+## 撤销已发布的包
+在要撤销的包的目录下执行命令：
+> npm unpublish --force
+
+该撤销只会撤销项目的当前版本，若发表过多个版本，则要每个版本都撤销一次，默认只撤销 `package.json` 中标明的版本
+
+
 ## 合并多个命令
 在`package.json`的`script`属性中可以定制用户的npm命令，在一个若想在一个script中同时执行多个命令，并且命令有前后顺序，后一个命令必须等待前一个命令，本可以使用 `&` 连接过个命令
 ```json
@@ -49,3 +63,6 @@ npm常用命令速查表
 http://biaoyansu.com/20.cheatsheet  
 npm火速上手  
 http://biaoyansu.com/20.0
+### Blog
+利用npm安装/删除/发布/更新/撤销发布包  
+https://www.cnblogs.com/penghuwan/p/6973702.html
