@@ -495,6 +495,100 @@ plugins {
 1. `-b`: 参数用以指定脚本具体所在位置, 格式为 `gradel -b dirpwd/xxx.gradle task`.
 2. `-p`: 参数用以指定脚本所在目录即可，格式为 `gradle -p dirpwd task`
 
+## 17. 修改项的结构
+```groovy
+//Replaces conventional source code directory with list of different directories
+sourceSets {
+    main { java { srcDirs = ['src'] } }
+//Replaces conventional test source code directory with list of different directories    
+    test { java { srcDirs = ['test'] } }
+}
+//Changes project output property to directory out
+buildDir = 'out'
+```
+
+## 18. 构建块
+每个Gradle构建都包括三个基本的构建块：**项目(projects)**、**任务(tasks)** 和 **属性(properties)**，每个构建至少包括一个项目，项目包括一个或者多个任务，项目和任务都有很多个属性来控制构建过程。
+
+Gradle运用了 **领域驱动的设计理念（DDD）** 来给自己的领域构建软件建模，因此Gradle的项目和任务都在Gradle的API中有一个直接的 **class** 来表示。
+### 18.1 项目(Project)
+当开始构建过程后，Gradle基于你的配置实例化 `org.gradle.api.Project` 这个类以及让这个项目通过 `project` 变量来隐式的获得.
+
+![](..\pic\gradle\org.gradle.api.Project.png)
+
+ `project` 允许你访问你项目所有的Gradle特性，比如任务的创建和依赖了管理:
+#### 例子18.1.1：
+```groovy
+task printDescription {
+    doLast {
+        project.setDescription("myProject")
+        println "Description of project $name: " + project.description
+    }
+}
+```
+
+### 18.2 任务(Task)
+任务包括 **任务动作(actions)** 和 **任务依赖**，一个动作就是任务执行的时候一个原子的工作，这可以简单到打印hello world,也可以复杂到编译源代码。很多时候一个任务需要在另一个任务之后执行，尤其是当一个任务的输入依赖于另一个任务的输出时，比如项目打包成JAR文件之前先要编译成class文件，Gradle API中任务的接口是：`org.gradle.api.Task`。
+
+![](..\pic\gradle\org.gradle.api.Task.png)
+
+每个新创建的任务都是 `org.gradle.api.DefaultTask` 类型，它是 `org.gradle.api.Task` 的标准实现，`DefaultTask` 所有的域都是私有的，意味着他们只能通过 setter 和 getter 方法来访问，
+
+### 18.3 属性(properties)
+每个Project和Task实例都提供了setter和getter方法来访问属性，Gradle允许你通过外部属性来定义自己的变量，一般使用 `ext` 命名空间在 `build.gradel` 文件中给项目或任务添加属性。
+
+通过在 `/.gradle` 路径或者项目根目录下的 `gradle.properties` 文件来定义属性可以直接注入到你的项目中，他们可以通过 project实例来访问，注意/.gradle目录下只能有一个 Gradle属性文件即使你有多个项目，在属性文件中定义的属性可以被所有的项目访问.
+
+### 18.4 声明任务的动作
+动作就是在你的任务中放置构建逻辑的地方，`Task` 接口提供了两个方法来声明任务的动作： `doFirst` 和 `doLast`，当任务执行的时候，定义在闭包里的动作逻辑就按顺序执行。
+
+### 18.5 任务依赖执行顺序
+
+Gradle并不保证依赖的任务能够按顺序执行，`dependsOn` 方法只是定义这些任务应该在这个任务之前执行，但是这些依赖的任务具体怎么执行它并不关心。在Gradle里面，执行顺序是由任务的输入输出特性决定的.
+
+### 18.6 后置任务
+
+在实际情况中，你可能需要在一个任务执行之后进行一些清理工作，一个典型的例子就是Web容器在部署应用之后要进行集成测试，Gradle提供了一个 `finalizer` 任务来实现这个功能，你可以用 `finalizedBy` 方法来结束一个指定的任务，开启一个新的任务
+```groovy
+task first << { println "first" }
+task second << { println "second" }
+//声明first结束后执行second任务
+first.finalizedBy second
+```
+
+> **>** gradle first -q  
+first  
+second  
+
+### 18.7 添加任务配置块
+
+在定义任务时，可以不使用的动作或者使用左移操作符，在Gradle里称之为 **任务配置块(task configuration)**，这种配置任务块会在执行任何任务之前执行
+```groovy
+task printVersion {
+    doLast {
+        logger.quiet "Version: 0.0.1"
+    }
+}
+task config {
+    print '.....task configuration.....'
+}
+```
+
+> **>** gradle -q printVersion  
+.....task configuration.....  
+Version: 0.0.1
+
+## 19. Gradle的构建生命周期
+
+无论你什么时候执行一个 `gradle build`,都会经过三个不同的阶段：**初始化**、**配置** 和 **执行**。
+
+1. 在初始化阶段，Gradle给你的项目创建一个 `Project` 实例，你的构建脚本只定义了单个项目，在多项目构建的上下文环境中，构建的阶段更为重要。根据你正在执行的项目，Gradle找出这个项目的依赖。
+
+2. 下一个阶段就是配置阶段，Gradle构建一些在构建过程中需要的一些模型数据，当你的项目或者指定的任务需要一些配置的时候这个阶段很有帮助。不管你执行哪个build哪怕是gradle tasks，配置代码都会执行
+
+3. 在执行阶段任务按顺序执行，执行顺序是通过依赖关系决定的，标记为up-to-date的任务会跳过，比如任务B依赖于任务A，当你运行gradle B的时候执行顺序将是A->B。
+
+
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
 
@@ -534,3 +628,12 @@ zipStorePath=wrapper/dists
 > **>** gradle wrapper --gradle-version xx.xx
 
 指定配置的Gradle版本
+
+# Link
+### Offical
+https://gradle.org/
+### Git Book
+Gradle User Guide 中文版  
+https://dongchuan.gitbooks.io/gradle-user-guide-/content/  
+Gradle In Action(Gradle实战)中文版  
+https://lippiouyang.gitbooks.io/gradle-in-action-cn/content/
