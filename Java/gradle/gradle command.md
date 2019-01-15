@@ -60,6 +60,8 @@ To see more detail about a task.
 ## gradle <task1\> <task2\>
 同时执行多个任务
 
+## gradle dependencies
+查看项目中的依赖关系
 ## Gradle 参数
 ### -q
 `-q`代表 `quiet` 模式. 它不会生成 Gradle 的日志信息 (log messages), 所以用户只能看到 tasks 的输出. 通常 `run` 等 `<task>` 可以使用该参数输出简洁的结果

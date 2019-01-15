@@ -588,7 +588,94 @@ Version: 0.0.1
 
 3. 在执行阶段任务按顺序执行，执行顺序是通过依赖关系决定的，标记为up-to-date的任务会跳过，比如任务B依赖于任务A，当你运行gradle B的时候执行顺序将是A->B。
 
+## 20. 依赖管理
+在Java领域里支持声明的自动依赖管理的有两个项目：
+1. Apache Ivy(Ant项目用的比较多的依赖管理器)
+2. Maven(在构建框架中包含一个依赖管理器)
 
+**依赖管理的流程**  
+
+![](..\pic\gradle\dependency-manager.png)
+
+### 20.1 DependencyHandler
+Gradle 中依赖的种类：  
+
+![](..\pic\gradle\dependency-type.png)
+
+每个Gradle项目都有一个 `DependencyHandler` 的实例，你可以通过 `getDependencies()` 方法来获取依赖处理器的引用，上表中每一种依赖类型在依赖处理器中都有一个相对应的方法。每一个依赖都是 `Dependency` 的一个实例，`group`, `name`, `version`, 和 `classifier` 这几个属性用来标识一个依赖，下图清晰的表示了 **项目(Project)** 、 **依赖处理器(DependencyHandler)**  和 **依赖** 三者之间的关系：
+
+![](..\pic\gradle\relation-between-project-and-dependency.png)
+
+在Gradle的术语里，外部库通常是以JAR文件的形式存在，称之为外部模块依赖，这种类型的依赖是通过属性来唯一的标识。
+
+### 20.2 依赖的属性
+当依赖管理器从仓库中查找依赖时，需要通过属性的结合来定位，最少需要提供一个 `name` 。
+1. `group` ： 这个属性用来标识一个组织、公司或者项目，可以用点号分隔，Hibernate的group是 `org.hibernate` 。
+2. `name` ： name属性唯一的描述了这个依赖，hibernate的核心库名称是 `hibernate-core` 。
+3. `version` ： 一个库可以有很多个版本，通常会包含一个主版本号和次版本号，比如Hibernate核心库 `3.6.3-Final` 。
+4. `classifier` ： 有时候需要另外一个属性来进一步的说明，比如说明运行时的环境，Hibernate核心库没有提供classifier。
+
+### 20.2 排除传递依赖
+Gradle允许你完全控制传递依赖，你可以选择排除全部的传递依赖也可以排除指定的依赖。排除依赖时，依赖需要写在 `cargo` 方法，在后面的花括号添加排除的依赖的信息，如：`cargo('xxx:xxx:xxx') { ... }`
+
+可以使用 `exclude` 来排除指定的依赖，但 `exclude` 属性的值和正常的依赖声明不太一样，你只需要声明 `group` 或 `module`，Gradle不允许你只排除指定版本的依赖。
+#### 例子20.2.1：
+```groovy
+dependencies {
+    cargo('org.codehaus.cargo:cargo-ant:1.3.1') {
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
+    cargo 'xml-apis:xml-apis:2.0.2'
+}
+```
+
+Gradle允许你使用transitive属性来排除所有的传递依赖：
+#### 例子20.2.2：
+```groovy
+dependencies {
+    cargo('org.codehaus.cargo:cargo-ant:1.3.1') {
+        transitive = false
+    }
+}
+```
+
+当要使用最新版本的依赖时，可以使用 `latest-integration` 指代版本，或者使用 `+` 指代一个最新版本数，如：`1.+`
+
+## 21. 配置仓库
+Gradle 仓库的类型：
+
+![](..\pic\gradle\repository-type.png)
+
+Repository 仓库的API：
+
+![](..\pic\gradle\repository-api.png)
+
+
+### 21.1 Maven
+Maven仓库是Java项目中使用最为广泛的一个仓库，库文件一般是以JAR文件的形式存在，用XML(POM文件)来来描述库的元数据和它的传递依赖。所有的库文件都存储在仓库的指定位置，当你在构建脚本中声明了依赖时，`group`, `name`, `version` 等属性用来找到库文件在仓库中的准确位置。group属性标识了Maven仓库中的一个子目录，下图展示了Cargo依赖属性是怎么对应到仓库中的文件的：
+
+![](..\pic\gradle\maven-artifact.png)
+
+### 21.2 添加Maven仓库
+RepositoryHandler接口提供了两个方法来定义Maven仓库，`mavenCentral` 方法添加一个指向仓库列表的引用，`mavenLocal`方法引用你文件系统中的本地Maven仓库，本地仓库默认在 `/.m2/repository` 目录下。
+
+如果指定的依赖不存在与Maven仓库或者你想通过建立自己的企业仓库来确保可靠性，你可以使用自定义的仓库。仓库管理器允许你使用 **Maven布局** 来配置一个仓库，这意味着你要遵守 `artifact` 的存储模式。你也可以添加验证凭证来提供访问权限，Gradle的API提供两种方法配置自定义的仓库：`maven()`和 `mavenRepo()`。
+```groovy
+repositories {
+    mavenCentral() //指定maven中央仓库
+    mavenLocal() //指定默认的本地maven仓库
+    //自定义本地maven仓库
+    maven {
+        name 'Custom Maven Repository',
+        url 'http://repository.forge.cloudbees.com/release/')
+    }
+}
+```
+
+## Exec Task
+> Command-line tools can be invoked through Gradle Exec tasks.
+
+`Exec` 类型的task可以执行命令行的命令
 ## gradle vs gradlew
 gradle 命令时本地使用的命令, 即当本地安装配置了 Gradle 才能使用的命令
 
