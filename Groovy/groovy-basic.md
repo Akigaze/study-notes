@@ -107,8 +107,40 @@ line three
 '''
 ```
 
+### 双引号(Double quoted string)
+> Double quoted strings are plain `java.lang.String` if there’s no interpolated expression, but are `groovy.lang.GString` instances if interpolation is present.
+
+在没有使用插值的情况下，双引号的字符串是 `java.lang.String` 类型的，当使用插值时，被解释为 `groovy.lang.GString` 类型。
+
+>  The placeholder expressions are surrounded by `${}` or prefixed with `$` for dotted expressions.
+
+使用双引号的字符串可以使用插值，插值的占位符有两种形式：
+1. `${}`：`{}` 中可以写 **变量** 或 **表达式**，且表达式可以没有任何返回，此时插值返回的值为 `null`.
+2. `$object.property`：使用 `$` 引入变量，但必须用 `.property`的表达式，常用于map的结构。
+
+若想使用 `$object.method()` 的表达式，程序会报 `groovy.lang.MissingPropertyException` 的异常，因为这种插值的形式只适用于属性，不适用方法。
+
+```groovy
+void braceAfter$(){
+    def name = "Quinn"
+    def greeting = "Hello, ${name}. 1 + 2 = ${1+2}"
+    assert greeting == "Hello, Quinn. 1 + 2 = 3"
+}
+
+void dottedExpressionPrefix$(){
+    def person = [name: 'Guillaume', age: 36]
+    assert "$person.name is $person.age years old" == 'Guillaume is 36 years old'
+}
+```
+
 
 ---
 # Link
 ### Offical
 http://www.groovy-lang.org/index.html
+### SmartThings
+https://docs.smartthings.com/en/latest/getting-started/overview.html
+### Learn Groovy in Y minutes
+https://learnxinyminutes.com/docs/groovy/
+### TutorialsPoint Groovy
+https://www.tutorialspoint.com/groovy/index.htm

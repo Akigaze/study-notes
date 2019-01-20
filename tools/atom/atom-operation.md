@@ -13,11 +13,18 @@ Atom的`core packages`中，有一个`autosave`的插件，在插件的`settings
 
 # 常用快捷键
 ### ctrl + d
-在有选中的状态下，快速选中下一个，相当于IntelliJ IDEA的 alt + j
+在有选中的状态下，快速选中下一个，相当于IntelliJ IDEA的 `alt + j`
 ### ctrl + k
-在有选中的状态下，跳过当前选中，配合 ctrl + d 使用
+在有选中的状态下，跳过当前选中，配合 `ctrl + d` 使用
 ### ctrl + g
 进入行号跳转面板，输入行号跳转到当前文件对应行
+
+### ctrl + shift + D
+复制当前行到下一行
+
+### ctrl + shift + K
+删除当前
+
 # Link
 ## Atom China
 Atom 常用快捷键  
