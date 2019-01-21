@@ -114,6 +114,7 @@ line three
 
 >  The placeholder expressions are surrounded by `${}` or prefixed with `$` for dotted expressions.
 
+#### 插值(Interpolation)
 使用双引号的字符串可以使用插值，插值的占位符有两种形式：
 1. `${}`：`{}` 中可以写 **变量** 或 **表达式**，且表达式可以没有任何返回，此时插值返回的值为 `null`.
 2. `$object.property`：使用 `$` 引入变量，但必须用 `.property`的表达式，常用于map的结构。
@@ -131,6 +132,54 @@ void dottedExpressionPrefix$(){
     def person = [name: 'Guillaume', age: 36]
     assert "$person.name is $person.age years old" == 'Guillaume is 36 years old'
 }
+```
+
+#### 闭包插值(Closure Expression)
+`->` 在 `${}` 中是个 **闭包** 的定义符号，如果插值是一个闭包表达式，则在解释这个字符串时，会执行闭包的表达式，返回的结果就是插值的值。
+
+在Groovy中，闭包若没有参数，可以省略参数，直接使用 `{-> expression}`.
+
+```groovy
+def sParameterLessClosure = "1 + 2 == ${-> 3}"
+assert sParameterLessClosure == '1 + 2 == 3'
+
+def sOneParamClosure = "1 + 2 == ${ w -> w << 5}"
+assert sOneParamClosure == '1 + 2 == 5'
+```
+
+使用闭包插值有一个好处，就是 **懒加载(Lazy Evaluation)**.
+
+```groovy
+def value = 1
+def eagerGString = "value == ${value}"
+def lazyGString = "value == ${ -> value }"
+
+assert eagerGString == "value == 1"
+assert lazyGString ==  "value == 1"
+
+value = 'love'
+assert eagerGString == "value == 1"
+assert lazyGString ==  "value == love"
+```
+
+#### GString与String
+`GString` 类型可以自动转换成 `String` 类型，而使用 `toString()` 方法可以将一个 `GString` 对象手动转成一个 `String` 对象。
+
+`GString` 与 `String` 的 hasCode 不同的，即使表达的是同样的字符串，但是这两个数据的类型的hasCode是不一样的，就如 `key = "a"` 和 `"${key}"` 的hasCode是不同的。
+
+map通常不用 `GString` 类型做key，因为在map使用 `[key]` 取值时，map会将key转成相应的 `String` 类型，使用的是 `String` 的字符串的hasCode。
+
+同一个结果的 `GString` 的hasCode就是一样的，`String` 也是。
+
+```groovy
+assert "one: ${1}".hashCode() != "one: 1".hashCode()
+
+def key = "a"
+def keyB = "b"
+def m = ["${key}": "letter ${key}", "b": "letter b"]
+assert m["a"] == null
+assert m["${key}"] == null
+assert m["${keyB}"] == "letter b"
 ```
 
 
