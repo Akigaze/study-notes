@@ -92,7 +92,8 @@ assert 'ab' == 'a' + 'b'
 def aMultilineString = '''
 line one
 line two
-line three'''
+line three
+'''
 
 aMultilineString.stripIndent()
 ```
@@ -117,7 +118,8 @@ line three
 #### 插值(Interpolation)
 使用双引号的字符串可以使用插值，插值的占位符有两种形式：
 1. `${}`：`{}` 中可以写 **变量** 或 **表达式**，且表达式可以没有任何返回，此时插值返回的值为 `null`.
-2. `$object.property`：使用 `$` 引入变量，但必须用 `.property`的表达式，常用于map的结构。
+2. `$value`：输出单个变量时，可以省略 `${}` 中的 `{}`
+3. `$object.property`：使用 `$` 引入变量，但必须用 `.property`的表达式，常用于map的结构。
 
 若想使用 `$object.method()` 的表达式，程序会报 `groovy.lang.MissingPropertyException` 的异常，因为这种插值的形式只适用于属性，不适用方法。
 
@@ -182,7 +184,98 @@ assert m["${key}"] == null
 assert m["${keyB}"] == "letter b"
 ```
 
+### 三双引号(Triple double quoted)
+三双引号结合了 **三单引号** 和 **双引号** 的特性，支持多行和插值。
 
+> Neither double quotes nor single quotes need be escaped in triple double quoted strings.
+
+在 **三双引号** 和 **三单引号** 中的 **单引号** 和 **双引号** 都不需要转义。
+
+```groovy
+def name = 'Groovy'
+def template = """
+    Dear Mr ${name},
+    You're the winner of the lottery!
+    "Yours sincerly",
+    Dave
+"""
+
+assert template.contains('Groovy')
+assert template.contains('\'')
+assert template.contains('"')
+```
+
+### 斜杠字符串(Slashy string)
+Groovy支持使用斜杠(`/`)代替引号写字符串，类似于JavaScript中正则表达式的写法。`/` 的使用可以说和三双引号一样，支持 **多行**，**差值**，**特殊字符无需转义**(`/`自身除外).
+
+空字符串不能使用 `//` 来表示，因为 `//` 是注释的符号。
+
+```groovy
+def escapeSlash = /The character \/ is a forward slash/
+assert escapeSlash == 'The character / is a forward slash'
+
+def multilineSlashy = /one
+two
+three/
+assert multilineSlashy.contains('\n')
+
+def color = 'blue'
+def interpolatedSlashy = /a ${color} car/
+assert interpolatedSlashy == 'a blue car'
+```
+
+### 美元斜杠字符串($//$)
+可以使用 `$/ /$` 代替引号，起作用于 `//` 相同，但在 `$//$` 的字符传中，所有字符都无需转义，而且转义符变成 `$` 符号。
+
+```groovy
+def name = "Guillaume"
+def date = "April, 1st"
+
+def dollarSlashy = $/
+    Hello $name,
+    today we're ${date}.
+
+    $ dollar sign
+    $$ escaped dollar sign
+    \ backslash
+    / forward slash
+    $/ escaped forward slash
+    $$$/ escaped opening dollar slashy
+    $/$$ escaped closing dollar slashy
+/$
+
+assert [
+    'Guillaume',
+    'April, 1st',
+    '$ dollar sign',
+    '$ escaped dollar sign',
+    '\\ backslash',
+    '/ forward slash',
+    '/ escaped forward slash',
+    '$/ escaped opening dollar slashy',
+    '/$ escaped closing dollar slashy'
+].every { dollarSlashy.contains(it) }
+```
+
+## 字符(Character)
+在Groovy中，没有明确的字符类型字面量，有三种方法可以获得字符类型的数据:
+1. 定义：使用 `char` 关键字，将一个字符的字符串定义成字符类型
+2. as转换：使用 `as char` 方法，将一个字符的字符串转换成字符类型
+3. 强制类型转换：在单个字符的字符串前使用 `(char)` 进行类型强制转换
+
+```groovy
+char c1 = 'A'
+assert c1 instanceof Character
+
+def c2 = "B" as char
+assert c2 instanceof Character
+
+def c3 = (char)'C'
+assert c3 instanceof Character
+
+def c4 = 'D'
+assert c4 instanceof String
+```
 ---
 # Link
 ### Offical
