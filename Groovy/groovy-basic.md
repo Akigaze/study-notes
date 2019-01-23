@@ -11,7 +11,7 @@ println "hello" // a comment till the end of the line
 /* a standalone multiline comment
    spanning two lines */
 println "hello" /* a multiline comment starting
-                   at the end of a statement */
+                at the end of a statement */
 println 1 /* one */ + 2 /* two */
 
 /**
@@ -276,6 +276,138 @@ assert c3 instanceof Character
 def c4 = 'D'
 assert c4 instanceof String
 ```
+
+## 数字(Number)
+> Groovy supports different kinds of integral literals and decimal literals, backed by the usual `Number` types of Java
+
+### 整型(Integral literals)
+- `byte`
+- `char`
+- `short`
+- `int`
+- `long`: 数字以 `l` 结尾
+- `java.lang.BigInteger`：数字以 `g` 结尾
+
+Groovy中，整形默认是 `int` 类型。
+
+使用 `def` 定义数字时，Groovy会根据数字的精度自动选择类型，默认是 `int`，精度更高就是 `long` 或 `BigInteger`.
+
+数字之间的类型转换可以在数字后面使用 `as type` 的形式转换。
+
+```groovy
+byte  by = 1
+assert by instanceof Byte
+char  ch = 2
+assert ch instanceof Character
+short sh = 3
+assert sh instanceof Short
+def a = 1
+assert a instanceof Integer
+// Integer.MAX_VALUE 2147483647
+
+def c0 = 100L
+assert c0 instanceof Long
+def c = 2147483648
+assert c instanceof Long
+// Long.MAX_VALUE  9223372036854775807
+
+def e0 = 1000g
+assert e0 instanceof BigInteger
+def e = 9223372036854775808
+assert e instanceof BigInteger
+```
+
+Groovy中，如果数字有明确的类型，则一般不会自动进行类型的转换，若没有明确的类型，**低精度** 可以自动转换成 **高精度** 的数字。
+
+### 进制
+- 二进制(Binary): 以 `0b` 开头的由 `0` 和 `1` 组成
+- 八进制(Octal): 以 `0` 开头的数字
+- 十六进制(Hexadecimal): 以 `0x开头的数字`
+
+### 小数类型(Decimal literals)
+- `float`: `f` 结尾
+- `double`：`d` 结尾
+- `java.lang.BigDecimal`: 以 `g` 结尾
+
+小数类型默认是 `BigDecimal` 类型。
+
+```groovy
+float  f = 1.234
+assert f instanceof Float
+def  f1 = 1.234f
+assert f1 instanceof Float
+double d = 2.345
+assert d instanceof Double
+def d1 = 2.345d
+assert d1 instanceof Double
+BigDecimal bd =  3.456
+assert bd instanceof BigDecimal
+def bd1 = 1.0002
+assert bd1 instanceof BigDecimal
+```
+
+>
+Decimal numbers can’t be represented using a binary, octal or hexadecimal representation.
+
+小数类型没有 **二进制**，**八进制** 和 **十六进制** 的写法。
+
+### 除法操作(Division Operator)
+> The division operators `/` (and `/=` for division and assignment) produce a double result if either operand is a `float` or `double`, and a `BigDecimal` result otherwise (when both operands are any combination of an integral type `short`, `char`, `byte`, `int`, `long`, `BigInteger` or `BigDecimal`).
+
+当进行除法运算的两个数中有 `float` 或 `double` 的数字时，结果是 `double` 类型，否则是 `BigDecimal` 类型。
+
+```groovy
+assert 1.2f/2.0d instanceof Double
+assert 1.2g/2.0d instanceof Double
+assert 10/2.0d instanceof Double
+assert 10/2.0g instanceof BigDecimal
+assert 10/5l instanceof BigDecimal
+```
+
+### 指数运算(power operator)
+在Groovy中，指数运算的操作符是 `**` ,前面的数是 **基数**，后面的数是 **指数**。
+```groovy
+// base and exponent are ints and the result can be represented by an Integer
+assert 10 ** 9 instanceof Integer  //  1_000_000_000
+assert 10 ** 9 == 1_000_000_000
+
+// the base is a long, so fit the result in a Long(although it could have fit in an Integer)
+assert 5L ** 2 instanceof Long   //  25
+assert 5L ** 2 ==  25
+
+// the result can't be represented as an Integer or Long, so return a BigInteger
+assert 100 ** 10 instanceof BigInteger // 10e20
+assert 1234 ** 123 instanceof BigInteger // 170515806212727042875...
+
+// the base is a BigDecimal and the exponent a negative int, but the result can be represented as an Integer
+assert 0.5 ** -2 instanceof Integer  // 4
+assert 0.5 ** -2 == 4
+
+// the base is an int, and the exponent a negative float, but again, the result can be represented as an Integer
+assert 1 ** -0.3f instanceof Integer //  1
+assert 1 ** -0.3f ==  1
+
+// the base is an int, and the exponent a negative int, but the result will be calculated as a Double(both base and exponent are actually converted to doubles)
+assert 10 ** -1 instanceof Double  //  0.1
+assert 10 ** -1 ==  0.1
+
+// the base is a BigDecimal, and the exponent is an int, so return a BigDecimal
+assert 1.2  **  10 instanceof BigDecimal //  6.1917364224
+assert 1.2  **  10 ==  6.1917364224
+
+// the base is a float or double, and the exponent is an int, but the result can only be represented as a Double value
+assert 5.6d ** 2 instanceof Double  //  31.359999999999996
+assert 5.6d ** 2 ==  31.359999999999996
+
+// the exponent is a decimal value and the result can only be represented as a Double value
+assert 2 ** 0.1f instanceof Double  //  1.0717734636432956
+assert 2 ** 0.1f ==  1.0717734636432956
+```
+
+## 布尔类型(Booleans)
+- 类型：`boolean`
+- 值：`true` , `false`
+
 ---
 # Link
 ### Offical
