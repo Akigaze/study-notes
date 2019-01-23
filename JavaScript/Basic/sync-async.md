@@ -103,7 +103,7 @@ let message = () => {
     callbackFn(response)
 }
 ```
-![事件循环](pic\event-loop.png)
+![事件循环](..\pic\event-loop.png)
 
 ---
 # 异步操作的模式

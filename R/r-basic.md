@@ -315,3 +315,11 @@ repeat{
 ## break-next
 * break
 * next：相当于 `continue`
+
+# Link
+### Quick-R  
+https://www.statmethods.net/  
+### R Tutorial  
+http://cyclismo.org/tutorial/R/  
+### R-Bloggers  
+https://www.r-bloggers.com/how-to-learn-r-2/  

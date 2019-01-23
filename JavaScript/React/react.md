@@ -336,7 +336,7 @@ babel-preset-stage-1 是用于翻译class中使用箭头函数定义类方法的
 - webpack.config.js
 - package.json
 
-![项目结构](pic/react/project-structure-1.png)
+![项目结构](../pic/react/project-structure-1.png)
 
 ## 3.配置文件
 
@@ -414,15 +414,15 @@ webpack打包项目的命令和运行服务
 1. 提供一个App的容器，如：`<div id="root"></div>`
 2. 引用webpack打包后的bundle.js文件
 
-![index.html](pic/react/index-html-2.png)
+![index.html](../pic/react/index-html-2.png)
 
 ### index.js
 使用`ReactDOM`将APP组件渲染到index.html的容器中
-![index.js](pic/react/index-js-3.png)
+![index.js](../pic/react/index-js-3.png)
 
 ### app.js
 将其他子组件组装成一个app
-![app.js](pic/react/app-js-4.png)
+![app.js](../pic/react/app-js-4.png)
 
 ---
 ## create-react-app

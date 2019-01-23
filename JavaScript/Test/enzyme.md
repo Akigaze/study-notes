@@ -25,7 +25,7 @@ jsdom 由于nodeJS没有DOM环境，jsdom可以提供一个node的DOM环境，�
 
 Jasmine似乎不支持ES6的一些语法(import)，所以在测试文件开头都要导入`babel-register`或`babel-core\register`进行语法的转码，而`babel-core\register`在Babel 7.x之后就从`babel-core`移除
 
-![Jasmine的Enzyme测试环境依赖](./pic/enzyme/jasmine-enzyme-dependency.png)
+![Jasmine的Enzyme测试环境依赖](../pic/enzyme/jasmine-enzyme-dependency.png)
 
 ## 配置
 - babel setup
@@ -117,7 +117,7 @@ import "ignore-styles";
 }
 ```
 
-![helpers配置](./pic/enzyme/jasmine-enzyme-spec-setup.png)
+![helpers配置](../pic/enzyme/jasmine-enzyme-spec-setup.png)
 
 ## 使用Enzyme
 在引入被测试的组件之前，必须向引入"react"
