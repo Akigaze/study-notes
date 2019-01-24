@@ -469,6 +469,14 @@ module.exports = {
 };
 ```
 
+## react re-render问题
+如果组件只有单纯的 `setState` 引起的state变化，而没有 `props` 的变化，则每次 `setState` 都会引起 `re-render`，不论state的属性是否发生变化。
+
+在 `props` 发生改变的情况下，组件也会 `re-render`.
+
+在 `setState` 的同时，组件的 `props` 也发生变化的情况下，这种变化一般是从父组件发起，在父组件render的时候，传给子组件的 `props` 发生变化，从而引发子组件的 `re-render`，这时，`setState` 引起的 `re-render` 会和 `props` 变化引起的 `re-render` 合并成一个。
+
+
 # Link
 ### React Official
 https://reactjs.org/
