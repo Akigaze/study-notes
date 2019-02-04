@@ -408,6 +408,99 @@ assert 2 ** 0.1f ==  1.0717734636432956
 - 类型：`boolean`
 - 值：`true` , `false`
 
+## List(列表)
+Groovy的列表是JDK `java.util.List` 类型，默认的实现类型是 `java.util.ArrayList`，所以List的方法都是可以使用的。也可以使用 `as`，关键字转换List的类型，或者在声明变量是直接指定类型，如(LInkList).
+
+Groovy中定义List变量可以像JS那样，直接使用 `[]` 指定其中的元素，并且元素的可以是各种类型。
+
+访问List的元素的形式：
+1. `[index]` ：默认index从零开始，负数的index表示从最后一个元素开始，这一点与Python相同。
+2. `[index1,index2,index3]`:列举多个index，使用逗号作为分隔，返回一个这部分元素组成的List。
+3. `[index1..index2]`: `..`表示一个连续范围，取出从index1到index2的所有元素组成的List。
+
+添加修改元素的形式：
+1. `list[index] = 0`: 直接指定某个index的元素，使用等号为其赋值。
+2. `list << 0`: `<<` 左移运算法，将元素添加到List的末尾。
+
+```groovy
+def numbers = [1, 2, 3]
+assert numbers instanceof List
+assert numbers instanceof ArrayList
+assert numbers.size() == 3
+
+def arrayList = [1, "a", true]
+assert arrayList.indexOf("a") == 1
+assert arrayList.indexOf("a") != -2
+assert arrayList instanceof ArrayList
+
+def linkedList = [2, 3, 4] as LinkedList
+assert linkedList instanceof LinkedList
+
+LinkedList otherLinked = [3, 4, 5]
+assert otherLinked instanceof LinkedList
+
+def letters = ['a', 'b', 'c', 'd']
+assert letters[0] == 'a'
+assert letters[-1] == 'd'
+letters[2] = 'C'
+assert letters[2] == 'C'
+letters << 'e'
+assert letters[4] == 'e'
+assert letters[1, 3] == ['b', 'd']
+assert letters[2..4] == ['C', 'd', 'e']
+```
+
+## Arrays(数组)
+Groovy与Java的数组相似，都是某种类型的变量的集合，但Groovy的数组不能单单用 `def` 声明，必须使用`as`或者声明时指定具体类型。
+
+初始化数组和访问元素，修改变量的方式与List相同。此外，访问数组的长度使用 `size()` 方法，而不用 `lenght`.
+
+```groovy
+String[] arrStr = ['Ananas', 'Banana', 'Kiwi']
+assert arrStr instanceof String[]
+assert !(arrStr instanceof List)
+assert arrStr.size() == 3
+
+def matrix3 = new Integer[3][3]
+assert matrix3.size() == 3
+Integer[][] matrix2
+matrix2 = [[1, 2], [3, 4]]
+assert matrix2 instanceof Integer[][]
+
+String[] names = ['Cédric', 'Guillaume', 'Jochen', 'Paul']
+names[2] = 'Blackdrag'
+assert names[0] == 'Cédric'
+assert names[1..3] == ['Guillaume','Blackdrag', 'Paul']
+```
+
+## Maps(映射)
+Groovy中的Map是 `java.util.LinkedHashMap` 类型，它的定义方式与JS的对象相似，只是JS是使用`{}`，而Groovy是使用 `[]`，在加上 `key-value` 的键值对形式。
+
+Map中的key会被自动转成字符串的形式，所以如果需要将某个变量的值作为key，就需要对这个变量加 `()`；对于有特殊符号的key，可以使用引号直接转成字符串作为key。
+
+若访问key不存在的元素，直接返回 `null`.
+
+```groovy
+def colors = [red: '#FF0000', green: '#00FF00', blue: '#0000FF']
+assert colors['red'] == '#FF0000'
+assert colors.green  == '#00FF00'
+colors['pink'] = '#FF00FF'
+colors.yellow  = '#FFFF00'
+assert colors.pink == '#FF00FF'
+assert colors['yellow'] == '#FFFF00'
+assert colors instanceof LinkedHashMap
+
+def key = 'name'
+def person = [key: 'Guillaume']
+assert !person.containsKey('name')
+assert person.containsKey('key')
+person = [(key): 'Guillaume']
+assert person.containsKey('name')
+assert !person.containsKey('key')
+
+assert colors.unknown == null
+```
+
 ---
 # Link
 ### Offical
