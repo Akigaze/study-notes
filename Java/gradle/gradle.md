@@ -716,6 +716,18 @@ zipStorePath=wrapper/dists
 
 指定配置的Gradle版本
 
+## Jar Cache
+Gradle下载的jar包存放路径：  
+> C:\Users\Akigaze\.gradle\caches\modules-2\files-2.1
+
+而修改jar包的缓存路径，只需添加一个 `GRADLE_USER_HOME` 的环境变量即可
+
+## build timeout
+有时Gradle build会有网络超时问题，此时可以把repository的地址切换成阿里云的仓库：
+```groovy
+maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+google()
+```
 # Link
 ### Offical
 https://gradle.org/
