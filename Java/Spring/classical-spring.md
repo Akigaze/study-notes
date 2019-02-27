@@ -100,6 +100,11 @@ class Phone{
 - <value\>
 - <ref\>
 - <null\>
+- <list\>
+- <set\>
+- <map\>
+- <entry\>
+- <props\>
 
 ## IOC container
 1. BeanFactory: Spring 底层的IOC容器，主要面向框架内部
@@ -227,6 +232,16 @@ public class Car {
     <property name="car.maxSpeed" value="300"/>
 </bean>
 ```
+
+#### create collection bean
+定义在 `<constructor-arg>` 或 `<property>` 中作为参数的集合bean：
+- 使用 `<list>` 标签创建 `java.util.List` 或 数组类型的bean对象
+- 使用 `<set>` 标签创建 `java.util.Set` 类型的bean对象，用法与 `<list>` 相似
+- 使用 `<map>` 标签和 `<entry>` 子标签创建 `java.util.Map` 类型的bean对象
+- 使用 `<props>` 标签和 `<prop>` 子标签创建 `java.util.Properties` 类型的bean对象。
+
+独立的集合bean对象，可被其他bean共享：
+
 
 # Link
 ### Offical
