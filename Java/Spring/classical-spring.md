@@ -19,7 +19,7 @@
 - spring-core
 - spring-expression
 
-#### Example: Hello World
+##### Example: Hello World
 ##### 1 实体类
 ```java
 package com.hello;
@@ -76,7 +76,7 @@ public class HelloMain {
 1. 依赖注入，IOC的另一种表述方式
 2. 组件以特定的方式接受容器推送的资源
 
-#### Example
+##### Example
 ```java
 class Card{
     ...
@@ -93,11 +93,140 @@ class Phone{
 ![](./pic/use ioc1.png)
 
 ## config bean by XML
-### <beans\>
-### <bean\>
-1. class: 全类名，Spring会通过反射的方式创建bean，因此该类需要有一个 **无参构造方法**
-2. id: bean的唯一标示，相当于对象名，在配置文件中是唯一的
+- <beans\>
+- <bean\>
+- <property\>
+- <constructor-arg\>
+- <value\>
+- <ref\>
+- <null\>
 
+## IOC container
+1. BeanFactory: Spring 底层的IOC容器，主要面向框架内部
+2. ApplicationContext: 面向使用Spring的开发人员的IOC容器
+
+### ApplicationContext
+- interface ApplicationContext
+- interface ConfigurableApplicationContext
+- class ClassPathXmlApplicationContext
+- class FileSystemXmlApplicationContext
+- WebApplicationContext
+
+默认情况下，`ApplicationContext` 容器在初始化的时候，会自动实例化容器中的bean对象，并通过 `setter` 或 `constructor` 的方式为bean注入属性。
+
+### get bean
+通过 `BeanFactory` 接口的 `getBean` 方法，获取bean，`ApplicationContext` 就继承了 `BeanFactory` 接口。
+
+### Dependency Injection
+1. setter: 属性注入
+2. constructor: 构造器注入
+3. 工厂方法注入(很少用)
+
+#### setter injection
+在 `xml` 配置文件中使用 `<property>` 标签注入属性，指定的属性必须有相应的 `setter` 方法。
+
+#### constructor injection
+在 `xml` 配置文件中使用 `<constructor-arg>` 标签通过相应的构造方法注入属性。
+##### Example
+1. 实体类 Car
+```java
+package com.beans.injection;
+public class Car {
+    private String brand;
+    private double price;
+    private int maxSpeed;
+    public Car(String brand, double price) {
+        this.brand = brand;
+        this.price = price;
+    }
+    public Car(String brand, int maxSpeed) {
+        this.brand = brand;
+        this.maxSpeed = maxSpeed;
+    }
+}
+```
+
+2. src/applicationContext.xml
+```xml
+<bean id="bmw" class="com.beans.injection.Car">
+    <constructor-arg value="BMW" index="0"/>
+    <constructor-arg value="200000" index="1" type="double"/>
+</bean>
+<bean id="bench" class="com.beans.injection.Car">
+    <constructor-arg value="Bench" index="0"/>
+    <constructor-arg value="200" index="1" type="int"/>
+</bean>
+```
+
+#### bean reference
+1. 通过 `ref` 属性或 `<ref>` 标签对bean进行引用
+2. 创建内部bean
+
+##### bean reference by ref
+在 `<property>` 和 `<constructor-arg>` 标签中，可以通过 `ref` 属性(或 `<ref>` 标签)引用其他的bean，只需指明bean的id即可。
+##### Example
+1. 实体类 Person
+```java
+package com.beans.injection;
+@Getter
+@Setter
+public class Person {
+    private String name;
+    private int age;
+    private Car car;
+}
+package com.beans.injection;
+public class Car {
+    ...
+}
+```
+
+2. src/applicationContext.xml
+```xml
+<bean id="bmw" class="com.beans.injection.Car">...</bean>
+<bean id="Jam" class="com.beans.injection.Person">
+    <property name="name" value="Jam"/>
+    <property name="age" value="30"/>
+    <!--<property name="car" ref="bmw"/>-->
+    <property name="car">
+        <ref bean="bmw"/>
+    </property>
+</bean>
+```
+
+##### bean reference by inner bean
+在 `<property>` 和 `<constructor-arg>` 标签中，通过创建 `<bean>` 作为属性的值。
+
+这种方式创建的bean是内部bean，所以其他的bean无法访问，因此内部bean不需要id属性。
+
+##### Example
+```xml
+<bean id="Sam" class="com.beans.injection.Person">
+    <constructor-arg value="Sam"/>
+    <constructor-arg value="40"/>
+    <constructor-arg>
+        <bean class="com.beans.injection.Car">
+            <constructor-arg value="Bench"/>
+            <constructor-arg value="200" type="int"/>
+        </bean>
+    </constructor-arg>
+</bean>
+```
+
+##### cascade property
+如果属性是对象，还可以通过 `<property>` 标签为属性的属性赋值，使用 `name` 指定引用的对象和属性(`name="property.property"`)，此时该属性的引用不能为null。
+
+##### Example
+```xml
+<bean id="Jam" class="com.beans.injection.Person">
+    <property name="name" value="Jam"/>
+    <property name="age" value="30"/>
+    <property name="car">
+        <ref bean="bmw"/>
+    </property>
+    <property name="car.maxSpeed" value="300"/>
+</bean>
+```
 
 # Link
 ### Offical
