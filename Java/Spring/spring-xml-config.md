@@ -95,3 +95,52 @@
     <prop key="driver">com.mysql.jdbc.Driver</prop>
 </props>
 ```
+
+# namespace of  Spring XML Config
+## util namespace
+需要在 `<beans>` 标签中加入以下名称空间的url
+> xmlns:util="http://www.springframework.org/schema/util"  
+xsi:schemaLocation="http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+
+使用时，以 `<util:tag>` 的形式，引入该名称空间的标签。
+### tags
+1. `<util:list>`: 相当于 `<list>` 标签
+2. `<util:set>`: 相当于 `<set>` 标签
+3. `<util:map>`: 相当于 `<map>` 标签
+4. `<util:properties>`: 相当于 `<props>` 标签
+5. `<util:property-path>`
+6. `<util:constant>`
+
+#### Example
+```xml
+<util:list id="cars" >
+    <ref bean="bench"/>
+    <ref bean="bmw"/>
+    <bean id="toyota" class="com.beans.injection.Car">
+        <constructor-arg value="Toyota" index="0"/>
+        <constructor-arg value="180" type="int"/>
+    </bean>
+</util:list>
+```
+
+## p namespace
+需要在 `<beans>` 标签中加入以下名称空间的url
+> xmlns:p="http://www.springframework.org/schema/p"
+
+### feature
+- 简化bean的属性配置
+- 不写标签的情况下，直接在 `<bean>` 标签中通过标签属性的方式为bean的属性赋值
+- 不是一个标签的名称空间，所以无需在 `xsi:schemaLocation` 添加它的名称空间url和xsd
+- 要求类的属性要有相应的 setter，并且最好有无参构造方法
+
+### p property
+-  自动读取bean的属性，为 `<bean>` 标签生成属性
+- `p:property` 的形式指代bean对象的属性，可以赋予字面量的值
+- `p:property-ref` 的形式，可以引用其他bean的id作为属性的值
+
+#### Example
+```xml
+<bean id="ma-yun" class="com.beans.injection.Millionaire"
+    p:name="Ma Yun" p:age="50" p:asset="100000000" p:cars-ref="cars">
+</bean>
+```

@@ -239,9 +239,10 @@ public class Car {
 - 使用 `<set>` 标签创建 `java.util.Set` 类型的bean对象，用法与 `<list>` 相似
 - 使用 `<map>` 标签和 `<entry>` 子标签创建 `java.util.Map` 类型的bean对象
 - 使用 `<props>` 标签和 `<prop>` 子标签创建 `java.util.Properties` 类型的bean对象。
+-  `<list>`，`<set>`，`<map>` 和 `<props>` 只能创建局部的bean对象，因此无法再 `<beans>` 内直接使用。
 
-独立的集合bean对象，可被其他bean共享：
-
+独立的集合bean对象，可被其他bean共享：  
+使用 `util` 名称空间的标签在 `<beans>` 标签内直接创建list，set，map，properties等bean对象，这些对象可以被全局引用。
 
 # Link
 ### Offical
@@ -256,3 +257,7 @@ https://github.com/spring-projects
 
 ### How2J Spring
 http://how2j.cn/k/spring/spring-ioc-di/87.html
+
+### Bilibili
+1. 尚硅谷首套_Spring4 视频教程  
+https://www.bilibili.com/video/av21335209
