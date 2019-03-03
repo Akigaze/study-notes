@@ -105,6 +105,7 @@ class Phone{
 - <map\>
 - <entry\>
 - <props\>
+- <prop\>
 
 ## IOC container
 1. BeanFactory: Spring 底层的IOC容器，主要面向框架内部
@@ -118,6 +119,11 @@ class Phone{
 - WebApplicationContext
 
 默认情况下，`ApplicationContext` 容器在初始化的时候，会自动实例化容器中的bean对象，并通过 `setter` 或 `constructor` 的方式为bean注入属性。
+
+### ClassPathXmlApplicationContext
+指定xml配置文件：
+1. xml在src目录下，则直接写 `文件名.扩展名`
+2. xml在src目录的其他包下，则指定文件目录要以 `/`(斜杠) 或 `\\`(双反斜杠) 开头，如 `/com/beans/autowire/bean-autowire-config.xml`
 
 ### get bean
 通过 `BeanFactory` 接口的 `getBean` 方法，获取bean，`ApplicationContext` 就继承了 `BeanFactory` 接口。
@@ -243,6 +249,33 @@ public class Car {
 
 独立的集合bean对象，可被其他bean共享：  
 使用 `util` 名称空间的标签在 `<beans>` 标签内直接创建list，set，map，properties等bean对象，这些对象可以被全局引用。
+
+### Autowire
+- 设置bean自动装配属性
+- `<bean>` 的 `autowire` 属性进行设置
+- 使用类的 `setter` 为属性赋值
+- 若属性没有 `setter` 或没有可装配的bean，也不会有异常，只是不进行属性装配而已
+
+属性取值：
+1. byName：bean的id与自动装配的类的 setter 属性名相同
+2. byType：bean的类型与自动装配的类的 setter 参数类型相同
+3. constructor
+
+异常：
+- `org.springframework.beans.factory.NoUniqueBeanDefinitionException`：使用 `byType` 自动装配时，若同一类型的bean有多个，Spring无法决定使用哪一个进行装配
+
+#### Example
+```xml
+<bean id="address" class="com.beans.autowire.Address"
+      p:city="Guangzhou" p:street="Wushan" p:number="1024"/>
+<bean id="boss" class="com.beans.autowire.Entrepreneur"
+      p:name="Ma Yunyun" p:age="55" p:asset="10000000"/>
+<bean id="qi-lin-nan" class="com.beans.autowire.Shop"
+      p:name="Qi Lin Nan Shop" p:open="true" autowire="byName"/>
+<bean id="wu-shan" class="com.beans.autowire.Shop"
+      p:name="Wu Shan Shop" p:open="false" autowire="byType"/>
+```
+
 
 # Link
 ### Offical

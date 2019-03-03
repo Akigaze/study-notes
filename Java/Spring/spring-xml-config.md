@@ -131,10 +131,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/util http://www.spring
 - 简化bean的属性配置
 - 不写标签的情况下，直接在 `<bean>` 标签中通过标签属性的方式为bean的属性赋值
 - 不是一个标签的名称空间，所以无需在 `xsi:schemaLocation` 添加它的名称空间url和xsd
-- 要求类的属性要有相应的 setter，并且最好有无参构造方法
+- 使用类属性的 `setter` 为bean属性赋值，所以使用时注意类的构造方法
 
 ### p property
--  自动读取bean的属性，为 `<bean>` 标签生成属性
+-  自动读取类 `setter` ，为相应的属性生成 `<bean>` 标签的属性
 - `p:property` 的形式指代bean对象的属性，可以赋予字面量的值
 - `p:property-ref` 的形式，可以引用其他bean的id作为属性的值
 
