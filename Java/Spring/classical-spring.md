@@ -324,6 +324,32 @@ bean之间的依赖关系是指bean初始化或属性装载的先后顺序，或
 </bean>
 ```
 
+### Scope of Bean
+bean的作用域是指bean在IOC容器中存在的转态，默认情况下，一个id对应一个单例的bean对象，使用 `<bean>` 标签的 `scope` 属性设置bean的作用域
+
+scope的取值：
+1. `singleton`：创建单例的bean，bean只有在IOC容器初始时被创建并初始化
+2. `prototype`：创建原型的bean，每次获取bean(`getBean`) 时都new一个新的实例，而不是在IOC容器初始化时创建bean
+3. `request`
+4. `session`
+
+## config .xml by .properties
+从 `.properties` 文件中读取配置项的信息，用于 `.xml` 的Spring配置文件创建bean，如数据库连接之类的信息，方便后期的管理和维护
+
+1. 使用 `context` 名称空间的 `<context:property-placeholder>` 标签加载 `.properties` 的配置文件
+2. 使用 `${var}` 的占位符引用  `.properties` 文件中的配置项，为bean的属性赋值
+
+#### Example
+```xml
+<context:property-placeholder location="classpath:com/beans/db/db-connection.properties"/>
+<bean id="data-source" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="user" value="${user}"/>
+    <property name="password" value="${password}"/>
+    <property name="driverClass" value="${driver}"/>
+    <property name="jdbcUrl" value="${url}"/>
+</bean>
+```
+
 
 # Link
 ### Offical

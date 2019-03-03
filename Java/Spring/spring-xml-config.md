@@ -144,3 +144,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/util http://www.spring
     p:name="Ma Yun" p:age="50" p:asset="100000000" p:cars-ref="cars">
 </bean>
 ```
+
+## context namespace
+需要在 `<beans>` 标签中加入以下名称空间的url
+> xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+
+### tag of context
+
+#### <property-placeholder\>
+用于向 `.xml` 配置文件加载 `.properties` 等属性配置文件，并使用 `${var}` 的占位符形式指代属性文件中的属性值
+
+1. location: 指定加载的文件路径，可以使用 `classpath:` 指明是类路径下的文件，如 `classpath:com/db/db-connection.properties`
