@@ -350,6 +350,61 @@ scope的取值：
 </bean>
 ```
 
+## Spring Expression Language(SpEL, Spring表达式语言)
+1. 运行时查询和操作对象
+2. 类似于EL表达式，使用 `#{...}` 界定符
+3. SpEL可以写变量，也可以写各种表达式
+4. 方便对bean的属性进行动态赋值
+
+功能：
+1. 通过bean id实现对bean对象的引用
+2. 调用，访问bean对象的方法和属性
+3. 表达式运算
+4. 正则表达式匹配
+5. 调用类的静态方法和静态属性
+
+### 字面量
+- 数字：整数，浮点数，科学计数法
+- 字符串：使用 **单引号** 包起来了
+
+#### Example
+```xml
+<bean id="guang-zhou"
+    class="com.spel.City"
+    p:name="#{'广州'}"
+    p:alias="花城"
+    p:population="#{1000000}"
+    p:area="#{212.454}" p:gdp="#{3.5e9}"/>
+```
+
+### bean的属性和方法
+- `id.property`: 直接指定对象的属性名，实际上是通过 `getter` 会去对应属性的值
+- `id.method`: 调用指定bean对象的方法
+- `id`: 表示对bean的引用，用于对 `p:property` 或 `value` 进行赋值，不可用于 `p:property-ref` 或 `ref` 的赋值
+
+#### Example
+```xml
+<bean id="ball1"
+      class="com.spel.Ball"
+      p:circle="#{basketball}"
+      p:volume="#{basketball.calBallVolume()}"
+      p:type="#{basketball.radius > 100 ? '大球' : '小球'}"/>
+```
+
+异常：
+1. `org.springframework.beans.factory.NoSuchBeanDefinitionException`: 使用 `#{id}` 为 `p:property-ref` 或 `ref` 属性赋值，因为这两个属性需要的是bean的 **id字符串** ，而不是对象的引用，Spring会调用 `#{id}` 对象的 `toString` 方法将对象转成字符串
+
+### 静态方法和属性
+- `T(class).property`
+- `T(class).method`
+
+#### Example
+```xml
+<bean id="basketball"
+      class="com.spel.Circle"
+      p:radius="#{30}"  p:perimeter="#{T(java.lang.Math).PI * 2 * 30}" p:area="#{T(java.lang.Math).PI * T(java.lang.Math).pow(30, 2)}"/>
+</beans>
+```
 
 # Link
 ### Offical
