@@ -276,6 +276,54 @@ public class Car {
       p:name="Wu Shan Shop" p:open="false" autowire="byType"/>
 ```
 
+## Inherit and Abstract between beans
+bean之间的继承和抽象，并不是Java面向对象的继承和抽象，仅仅是指bean在配置方面的继承和抽象。
+
+### parent for Inherit
+- 使用 `<bean>` 标签的 `parent` 属性指定要继承的bean的id
+- 子bean会继承父bean已有的 **属性值设置**
+- 子bean可以设置自已的属性值，以覆盖父bean的设置，此时父bean不会被修改
+- `autowire`，`abstract` 等属性不会被继承
+- 父bean设置了子bean不存在 `setter` 的属性，会抛异常
+
+### Abstract bean
+- 使用 `<bean>` 标签的 `abstract` 属性，有 `true` 和 `false` 两个取值，默认 `false`
+- 抽象bean不能实例化，因此不能为类的属性赋值
+- 抽象bean也有id，可以指定为其他bean的 `parent`
+- 没有指定 `class` 属性的bean必须设置为抽象bean (`abstract="true"`)
+
+### 异常
+1. `org.springframework.beans.factory.BeanIsAbstractException`: 企图实例化抽象bean
+2. `java.lang.IllegalStateException`: No bean class specified on bean definition，存在没有指定class又没有设置为抽象的bean
+3. `org.springframework.beans.NotWritablePropertyException`: 设置了class没有的属性，可能父bean设置了子bean不存在的属性，子bean找不到对应属性的 `setter`
+
+#### Example
+```xml
+<bean id="p-address" class="com.beans.autowire.Address" p:city="Guangzhou" abstract="true"/>
+<bean id="address" p:street="Wushan" p:number="1024" parent="p-address"/>
+
+<bean id="a-address" p:city="Guangzhou" abstract="true"/>
+<bean id="address1" class="com.beans.autowire.Address" p:street="Wushan" p:number="1024" parent="a-address"/>
+```
+
+### Dependency between beans
+bean之间的依赖关系是指bean初始化或属性装载的先后顺序，或bean存在之间的依赖。
+
+- 使用 `<bean>` 标签的 `depends-on` 属性指定依赖的bean的id
+- 依赖和被依赖的bean之间可以没有任何引用关系
+- 只有当被依赖的bean存在，依赖的bean才能顺利初始化
+
+#### Example
+```xml
+<bean id="ma-yun" class="com.beans.injection.Millionaire"
+      p:name="Ma Yun" p:age="50" p:asset="100000000" p:cars-ref="cars"
+      depends-on="hao-cars" />
+<bean id="hao-cars" class="com.beans.injection.Car" p:maxSpeed="122">
+    <constructor-arg type="java.lang.String" value="Toyota"/>
+    <constructor-arg type="double" value="50000"/>
+</bean>
+```
+
 
 # Link
 ### Offical
