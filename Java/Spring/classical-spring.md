@@ -350,6 +350,127 @@ scope的取值：
 </bean>
 ```
 
+### life circle of bean
+IOC容器可以管理bean的生命周期，包括从构造bean到销毁bean的整个过程。
+
+IOC容器中bean的生命周期包括以下五个基本阶段
+1. constructor
+2. setter
+3. init-method：`<bean>` 标签的 `init-method` 属性设置，指定类的一个方法
+4. get bean，use bean
+5. destroy-method：在IOC容器关闭时执行，由`<bean>` 标签的 `destroy-method` 属性设置，指定类的一个方法
+
+当bean的scope为 `singleton` 时，会有一个完整的生命周期；而 `prototype` 的bean不会执行 `destroy-method`。
+
+关闭IOC容器可以通过 `ClassPathXmlApplicationContext` 对象的 `close` 方法。
+
+#### Example
+```xml
+<bean id="baiyexing" class="com.lifecircle.Book"
+      p:name="白夜行" p:author="东野圭吾" p:pageSize="500"
+      init-method="onSale" destroy-method="recycle"/>
+<bean id="fangxuehou" class="com.lifecircle.Book"
+      init-method="onSale" destroy-method="recycle" scope="prototype">
+    <constructor-arg type="java.lang.String" value="放学后"/>
+    <constructor-arg type="java.lang.String" value="东野圭吾"/>
+    <constructor-arg type="int" value="200"/>
+</bean>
+```
+
+```java
+public class Book {
+    private String name;
+    private String author;
+    private int pageSize;
+
+    ...constructor
+    ...Getter
+    ...Setter
+
+    public void onSale(){
+        System.out.println("the book is on sale and wait to be buy");
+    }
+
+    public void recycle(){
+        System.out.println("book is recycled");
+    }
+
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("bean-life-circle.xml");
+
+        Book baiyexing = (Book) context.getBean("baiyexing");
+        System.out.println(baiyexing);
+
+        System.out.println("--------- 华丽分割线 -----------");
+
+        Book fangxuehou = (Book) context.getBean("fangxuehou");
+        System.out.println(fangxuehou);
+
+        ((ClassPathXmlApplicationContext) context).close();
+    }
+}
+```
+
+> **output:**  
+create bean by no argument constructor  
+set book name:白夜行  
+白夜行 is on sale and wait to be buy  
+白夜行被使用
+--------- 华丽分割线 -----------  
+create bean by all argument constructor  
+放学后 is on sale and wait to be buy  
+放学后被使用
+白夜行 is recycled
+
+#### bean post processor(bean后置处理器)
+bean的后置处理器提供了构造bean是额外的处理手段，并且后置处理器会对 **所有bean** 进行处理。bean后置处理器会在 `init-method` 对前后对bean进行处理。
+
+实现bean后置处理器需要实现 `BeanPostProcessor` 接口：
+```java
+//org.springframework.beans.factory.config.BeanPostProcessor
+public interface BeanPostProcessor {
+    @Nullable
+    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+
+    @Nullable
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+}
+```
+
+方法：
+1. `postProcessBeforeInitialization`: 在 `init-method` 方法之前执行，返回值为bean对象，即执行 `init-method` 方法的对象
+2. `postProcessAfterInitialization`: 在 `destroy-method` 方法之后执行，返回值为bean对象会存储在IOC容器中
+
+bean后置处理器也需要先配置普通bean一样在Spring的配置文件中进行配置，但是Spring会根据类实现的接口(`BeanPostProcessor`)自动识别为后置处理器.
+
+#### Example
+```xml
+<bean class="com.lifecircle.BookPostProcessor"/>
+```
+```java
+public class BookPostProcessor implements BeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("process " + beanName + " before init");
+        ((Book)bean).setName("嫌疑人X的献身");
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("process " + beanName + " after init");
+        ((Book)bean).setName("解忧杂货铺");
+        return bean;
+    }
+}
+```
+
+![](./pic/bean life circle.png)
+
 ## Spring Expression Language(SpEL, Spring表达式语言)
 1. 运行时查询和操作对象
 2. 类似于EL表达式，使用 `#{...}` 界定符
@@ -374,7 +495,8 @@ scope的取值：
     p:name="#{'广州'}"
     p:alias="花城"
     p:population="#{1000000}"
-    p:area="#{212.454}" p:gdp="#{3.5e9}"/>
+    p:area="#{212.454}"
+    p:gdp="#{3.5e9}"/>
 ```
 
 ### bean的属性和方法
@@ -402,9 +524,12 @@ scope的取值：
 ```xml
 <bean id="basketball"
       class="com.spel.Circle"
-      p:radius="#{30}"  p:perimeter="#{T(java.lang.Math).PI * 2 * 30}" p:area="#{T(java.lang.Math).PI * T(java.lang.Math).pow(30, 2)}"/>
-</beans>
+      p:radius="#{30}"
+      p:perimeter="#{T(java.lang.Math).PI * 2 * 30}"
+      p:area="#{T(java.lang.Math).PI * T(java.lang.Math).pow(30, 2)}"/>
 ```
+
+
 
 # Link
 ### Offical
