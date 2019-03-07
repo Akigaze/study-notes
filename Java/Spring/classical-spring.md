@@ -529,7 +529,47 @@ public class BookPostProcessor implements BeanPostProcessor {
       p:area="#{T(java.lang.Math).PI * T(java.lang.Math).pow(30, 2)}"/>
 ```
 
+## Factory class for bean
+### 静态工程方法
+1. `<bean>`的 `class` 要指定工厂类
+2. `factory-method` 属性指定工厂类中的静态工厂方法
+3. 方法的参数要使用 `<constructor-arg>` 进行传递
+4. 返回的bean是工厂方法返回的对象
 
+#### Example
+```java
+public static Mobile productMobile(String brand){
+    Mobile mobile = new Mobile();
+    mobile.setBrand(brand);
+    return mobile;
+}
+```
+```xml
+<bean id="huawei" class="com.factory.StaticMobileFactory" factory-method="productMobile">
+    <constructor-arg value="Huawei"/>
+</bean>
+```
+### 实例工厂方法
+1. 创建工厂类的bean对象
+2. 创建实体类的bean对象
+3. 实体类的 `<bean>` 中添加 `factory-bean` 属性指定工厂bean的id
+4. 实体类的 `<bean>` 的 `factory-method` 属性指定工厂bean的工厂方法
+5. 方法的参数要使用 `<constructor-arg>` 进行传递
+
+#### Example
+```java
+public Mobile productMobile(String brand){
+    Mobile mobile = new Mobile();
+    mobile.setBrand(brand);
+    return mobile;
+}
+```
+```xml
+<bean id="vivo-factory" class="com.factory.InstanceMobileFactory"/>
+<bean id="vivo" class="com.factory.Mobile" factory-bean="vivo-factory" factory-method="productMobile">
+    <constructor-arg value="Vivo"/>
+</bean>
+```
 
 # Link
 ### Offical
