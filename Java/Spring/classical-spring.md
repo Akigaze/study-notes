@@ -571,6 +571,60 @@ public Mobile productMobile(String brand){
 </bean>
 ```
 
+### FactoryBean
+```java
+public interface FactoryBean<T> {
+    @Nullable
+    T getObject() throws Exception;
+
+    @Nullable
+    Class<?> getObjectType();
+
+    default boolean isSingleton() {
+        return true;
+    }
+}
+```
+
+- 实现 `FactoryBean` ，用于生产指定实体(T)的工厂类
+- `getObject` 方法返回生产的bean
+- `getObjectType` 方法返回bean的 **Class** 对象
+- `isSingleton` 方法返回是否为单例的bean
+- 在xml文件中配置该工厂实现类的 `<bean>`，而实际实例化的是调用 `getObject` 方法返回的bean
+
+#### Example
+```java
+public class MobileBeanFactory implements FactoryBean<Mobile> {
+    private Mobile mobile = new Mobile();
+    private String brand;
+
+    setter ...
+    getter ...
+
+    @Override
+    public Mobile getObject() throws Exception {
+        this.mobile.setBrand(this.brand);
+        return this.mobile;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return this.mobile.getClass();
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+}
+```
+```xml
+<bean id="mi" class="com.factory.MobileBeanFactory">
+    <property name="brand" value="Xiao Mi"/>
+</bean>
+```
+
+
 # Link
 ### Offical
 1. Home page  
