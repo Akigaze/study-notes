@@ -50,5 +50,50 @@ Spring自动扫描 **classpath** 下具有特定注解的类组件，并进行�
 
 ### @Qualifier
 为属性指定允许注入的bean的名称：`@Qualifier(value = "bookCrudRepository")`
-*********
+
+## Genericitys Injection(泛型注入)
+从Spring4.0之后，开始支持泛型的依赖注入。
+
+在bean的属性注入时，Spring会选择泛型类型相同的bean作为属性进行注入
+
+#### Example
+```java
+//父类
+public abstract class BaseService<T> {
+    @Autowired
+    protected BaseRepository<T> repository;
+    protected abstract void find();
+}
+
+public abstract class BaseRepository<T> {
+    @Autowired
+    protected T element;
+    protected abstract void findOne();
+}
+
+//子类
+@Service
+public class UserService extends BaseService<User> {
+    @Override
+    public void find() {
+        System.out.println("Service find...");
+        this.repository.findOne();
+    }
+}
+
+@Repository
+public class UserRepository extends BaseRepository<User> {
+    @Override
+    public void findOne() {
+            System.out.println("Repository find...");
+            System.out.println(element);
+    }
+}
+
+public static void main(String[] args) {
+    ApplicationContext context = new ClassPathXmlApplicationContext("bean-genericity.xml");
+    UserService service = (UserService) context.getBean("userService");
+    service.find();
+}
+```
 ````
