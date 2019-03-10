@@ -476,6 +476,12 @@ module.exports = {
 
 在 `setState` 的同时，组件的 `props` 也发生变化的情况下，这种变化一般是从父组件发起，在父组件render的时候，传给子组件的 `props` 发生变化，从而引发子组件的 `re-render`，这时，`setState` 引起的 `re-render` 会和 `props` 变化引起的 `re-render` 合并成一个。
 
+## this.props.children
+修改children的属性：
+### React.cloneElement(element, config, children)
+- element: 要被拷贝的元素，可以使children中的一个
+- config: 可选参数，表示需要修改的属性，属性和值会被添加到克隆出来的元素的props中，也可以添加 `ref`，`key` 属性
+- children: 可选属性，作为克隆的元素的children
 
 # Link
 ### React Official
