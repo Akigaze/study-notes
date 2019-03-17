@@ -12,7 +12,7 @@ input.map(function (item) {
 })
 ```
 
-![Babel](.\pic\babel-logo.png)  
+![Babel](..\pic\babel-logo.png)  
 ## 配置文件.babelrc
 配置文件`.babelrc`，存放在项目的根目录下，用来设置转码规则和插件，格式如下：
 

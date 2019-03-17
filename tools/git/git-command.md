@@ -29,12 +29,12 @@ git commit -m "提交的说明信息"
 
 ### 2.2将远程仓库克隆到本地
 指定远程仓库的仓库地址进行克隆
-> git clone "https://github.com/Akigaze/GluttonousSnake.git"
+> git clone https://github.com/Akigaze/GluttonousSnake.git
 
 此时会在本地生成一个与远程仓库 **同名** 的目录，该目录即为本地仓库，且目录下的文件已经加入git的版本控制
 
 克隆时指定本地仓库的名称
-> git clone "https://github.com/Akigaze/GluttonousSnake.git" "myreponame"
+> git clone https://github.com/Akigaze/GluttonousSnake.git myreponame
 
 ## 3.免密操作
 ### https方式
