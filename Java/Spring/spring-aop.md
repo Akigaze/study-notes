@@ -49,9 +49,10 @@ public class PositiveIntegerCalculatorProxy {
 
 Spring使用 `AspectJ` 作为切面的处理工具，使用时需要如下依赖：
 
-* om.springsource.org.aopalliance
+* aopalliance
 
-- com.springsource.org.aspectj.weaver
+- aspectj.weaver
+- aspectjrt
 - spring-aop
 - spring-aspects
 
@@ -223,6 +224,36 @@ public Object logAround(ProceedingJoinPoint proceedingJoinPoint) throws Exceptio
 	System.out.println(String.format("%s end", name));
 	//代理对象的执行相应方法的返回值
 	return result;
+}
+```
+
+### @Order 切面优先级
+
+- 设置不同切面的优先级，即同一个切面上同种类型的通知方式的优先级
+- 使用 `@Order(int)` 数字越小，优先级越高
+- 对于 `@Before` ，优先级又高，执行顺序越靠前
+- 对于 `@After` 和 `@AfterReturning` 和 `@AfterThrowing` ，优先级越高，执行顺序越靠后
+
+### @Pointcut 切入点表达式
+
+- 简化 `@Before` 等通知注解同参数的书写
+- 声明一个切入点方法，添加 `@Pointcut` 注解，像 `@Before` 一样指明关注的方法
+- 切入点方法不会被执行，所以一般是没有参数的空方法
+- 在 `@Before` 等通知注解中直接指定 `@Pointcut` 的方法即可，同一个类中就直接指定方法名，不同类或包就要指定全类名
+
+```java
+@Pointcut("execution(public * framework.helloworld.entity.IntegerCalculator.*(..))")
+public void commonAspectLog(){
+}
+// in the same class
+@Before("commonAspectLog()")
+public void logBefore(JoinPoint point){
+    ...
+}
+// in different class
+@Around("framework.aspectj.LogAspect.commonAspectLog()")
+public Object logAround(ProceedingJoinPoint proceedingJoinPoint) throws Exception {
+    ...
 }
 ```
 
