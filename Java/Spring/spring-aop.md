@@ -259,6 +259,52 @@ public Object logAround(ProceedingJoinPoint proceedingJoinPoint) throws Exceptio
 
 
 
+## XML config AOP
+
+1. 配置实体的bean和切面类的bean
+
+2. aop相关的配置都写在 `aop:config` 标签中
+
+3. `aop:pointcut` 配置切入点，即监听的方法
+
+   - `id`
+   - `expression` 切入点表达式，与 `@Before` 等注解的切入点表达式写法相同
+
+4. `aop:aspect` 配置一个切面，其中可以添加各种通知的标签
+
+   - `ref` 指定一个切面类的bean，以便会去切面的各种处理方法
+   - `order` 切面优先级
+
+5. 各种通知标签 `aop:before` ， `aop:after` ， `aop:after-returning` ， `after-throwing` ，`aop:around` ，标签通过 `pointcut-ref` 指定切入点， `method` 指定通知的处理方法 
+
+   - `aop:before` 
+   -  `aop:after`
+   - `aop:after-returning` ：`returning` 相当与 `@AfterRunning` 的 `returning` 参数
+   -  `after-throwing` ：`throwing` 相当与 `@AfterThrowing` 的 `throwing` 参数
+   -  `aop:around`
+
+
+```xml
+<bean id="floatCalculator" class="framework.helloworld.entity.FloatCalculator"/>
+<bean id="logAspect" class="framework.aspectj.xml.XmlLogAspect"/>
+<bean id="aroundAspect" class="framework.aspectj.xml.XmlAroundAspect"/>
+
+<aop:config>
+    <aop:pointcut id="in-door" expression="execution(public * framework.helloworld.entity.FloatCalculator.*(..))"/>
+
+    <aop:aspect ref="logAspect" order="1">
+        <aop:before  method="logBefore" pointcut-ref="in-door"/>
+        <aop:after method="logAfter" pointcut-ref="in-door"/>
+        <aop:after-returning method="logReturn" pointcut-ref="in-door" returning="result"/>
+        <aop:after-throwing method="logException" pointcut-ref="in-door" throwing="e"/>
+    </aop:aspect>
+
+    <aop:aspect ref="aroundAspect" order="2">
+   		<aop:around pointcut-ref="in-door" method="logAround"/>
+    </aop:aspect>
+</aop:config>
+```
+
 
 
 
