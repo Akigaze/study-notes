@@ -1,14 +1,16 @@
 ## Link
 
-[w3ctech- CSS 模块](<https://www.w3ctech.com/topic/1479>)
+[w3ctech  CSS 模块](<https://www.w3ctech.com/topic/1479>)
 
-[webpack- css-loader](<https://webpack.js.org/loaders/css-loader/#root>)
+[webpack  css-loader](<https://webpack.js.org/loaders/css-loader/#root>)
 
-[github- css-modules](<https://github.com/css-modules/css-modules>)
+[github  css-modules](<https://github.com/css-modules/css-modules>)
+
+[github  webpack-loader-util loader-options](<https://github.com/webpack/loader-utils#interpolatename>)
 
 **demo:**   
 
-- [github- wepack-demo](<https://github.com/css-modules/webpack-demo>)
+- [github  wepack-demo](<https://github.com/css-modules/webpack-demo>)
 
 
 
@@ -26,12 +28,107 @@
 
 ```json
 module: {
-        rules: [{
-                test: /\.css/,
-                use: ["style-loader", "css-loader?modules"],
-                exclude: /(node_modules|bower_components)/
-        }]
-    },
+    rules: [{
+        test: /\.css/,
+        use: ["style-loader", "css-loader?modules"],
+        exclude: /(node_modules|bower_components)/
+    }]
+},
 ```
 
 - `modules` : 表示开启CSS模块的开发方式
+
+
+
+## css-loader
+
+### 参数
+
+![css-loader options](E:\CssStation\css-module\css-modules-doc\pic\css-loader-options.png)
+
+#### modules
+
+是否开启CSS模块的开发方式
+
+- false：默认
+- true：默认使用 `local` 的策略
+- local
+- global
+
+#### camelCase
+
+js引入CSS模块是，类选择器的名称是否使用驼峰
+
+- false：默认
+- true：使用驼峰，当时原有的选择器名称保留
+- only：使用驼峰，并删除原有的选择器名称
+- dashes, dashesOnly
+
+#### localIdentName
+
+编译后的css选择器的命名规则
+
+相关参数和占位符：  
+
+`path` `name` `folder` `ext` `emoji` `hash:baseXX:N` ....
+
+![localIdentName options](E:\CssStation\css-module\css-modules-doc\pic\localIdentName-options.png)
+
+
+
+## 使用
+
+#### 1. 像编写普通css文件一样编写css模块文件
+
+#### 2. 使用 `composes` 引用其他类选择器
+
+`.className{ composes: className1 className2 className3 ...  }`
+
+这种方式在编译css文件时，编译后的类选择其中 `large-border` 中并不会包含 `large` 的样式，它们依然只是持有自己独有的样式，JS只是将使用 `large-border` 选择器的地方，同时将 `large` 也加到标签上了而已。
+
+#### 3. 使用 `composes` 引用其他样式文件
+
+` .className{ composes: className1 className2 className3 ... from "css module file"}`
+
+只用引用其他文件选择器的方式，编译原理和引用同一文件的选择器是一样的。
+
+#### Example
+
+```css
+/* app.css */
+.large{
+    font-size: 60px;
+}
+
+.bolder{
+    font-weight: bolder;
+}
+
+.italic{
+    font-style: italic;
+}
+
+.large-border{
+    composes: large;
+    composes: bolder italic;
+    composes: dotted-thin from "./border.css";
+    composes: blue bg-light-green from "./color.css";
+    padding: 10px 20px;
+}
+
+/* border.css */
+.dotted-thin{
+    border: 1px dotted #999;
+    border-radius: 5px;
+}
+
+/* color.css */
+.blue{
+    color: rgb(40, 181, 248);
+}
+
+.bg-light-green{
+    background-color: rgb(89, 188, 183, .1);
+}
+```
+
