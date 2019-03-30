@@ -20,6 +20,8 @@
 - Spring Cloud CLI
 
 ## Spring Cloud Netflix
+Netflix 是Spring Cloud微服务规范的一套实现方案，而Spring Cloud微服务的实现方案还有其他，包括 Spring Cloud Alibaba 等，其中 Netflix 是最成熟的一套方案。
+
 ### Netflix Eureka
 服务中心，云端服务发现，一个基于 REST 的服务，用于定位服务，以实现云端中间层服务发现和故障转移。
 
@@ -58,8 +60,8 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-    service-url:
-      default-zone: http://localhost:${server.port}/eureka/
+    #service-url:
+    #  default-zone: http://localhost:${server.port}/eureka/
 
 logging:
   level:
@@ -116,3 +118,26 @@ public interface HelloRemote {
   public String hello(@RequestParam(value = "word") String name);
 }
 ```
+
+
+
+### 修改本机的域名映射
+> ‪C:\Windows\System32\drivers\etc\hosts
+
+
+
+
+# Link
+### Spring Offical
+#### get start：service-registration-and-discovery
+https://spring.io/guides/gs/service-registration-and-discovery/
+
+### Video
+#### 尚硅谷
+https://www.bilibili.com/video/av42199337
+
+### Blog
+#### 纯洁的微笑
+http://www.ityouknow.com/spring-cloud.html
+#### Martin Fowler
+https://martinfowler.com/articles/microservices.html
