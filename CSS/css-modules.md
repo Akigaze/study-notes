@@ -8,6 +8,10 @@
 
 [github  webpack-loader-util loader-options](<https://github.com/webpack/loader-utils#interpolatename>)
 
+[掘金 CSS模块化之路1-3](<https://juejin.im/post/5b20e8e0e51d4506c60e47f5>)
+
+[阮一峰 CSS Modules 用法教程](<http://www.ruanyifeng.com/blog/2016/06/css_modules.html>)
+
 **demo:**   
 
 - [github  wepack-demo](<https://github.com/css-modules/webpack-demo>)
@@ -18,7 +22,7 @@
 
 1. 定义有意义的 **类选择器** 名称
 2. 使用 `require`  或 `import` 像引入js模块一样引入css文件
-3.  ```
+3. 为每个class选择器设置独一无二的 **哈希名称** (`[hash:base64]`)
 
 
 
@@ -44,7 +48,7 @@ module: {
 
 ### 参数
 
-![css-loader options](E:\CssStation\css-module\css-modules-doc\pic\css-loader-options.png)
+![css-loader options](.\pic\css-loader-options.png)
 
 #### modules
 
@@ -72,7 +76,7 @@ js引入CSS模块是，类选择器的名称是否使用驼峰
 
 `path` `name` `folder` `ext` `emoji` `hash:baseXX:N` ....
 
-![localIdentName options](E:\CssStation\css-module\css-modules-doc\pic\localIdentName-options.png)
+![localIdentName options](.\pic\localIdentName-options.png)
 
 
 
@@ -129,6 +133,47 @@ js引入CSS模块是，类选择器的名称是否使用驼峰
 
 .bg-light-green{
     background-color: rgb(89, 188, 183, .1);
+}
+```
+
+####  4. `:local` vs. `:global`
+
+在CSS模块的模式下
+
+- 默认的class选择器都是 `:local` 级别的，即会被 `css-loader` 解释重命名管理的
+- 使用 `:global` 可以将特定的class选择器从CSS模块中排除，保持原有的名称，使用 `className="name"` 的形式进行引用
+
+定义方式：
+
+1. `:local(.classA){....}`  `:global(.classB){...}`
+2. `:local .classA{....}`  `:global .classB{...}`
+
+引用方式：
+
+1. 对于 `:local` 的选择器，直接使用 `composes: classA` 的形式在其它选择器中引用
+2. 对于 `:global` 的选择器，要从webpack提供的 `global` 名称空间进行引用 `composes: classB from global` ，对于多个模块中的 `:global` 选择器，共用一个 `global` 名称空间
+
+#### Example
+
+```css
+/* app.css */
+:global .large{
+    font-size: 40px;
+}
+
+:global .shadow{
+    text-shadow:  #FC0 1px 0 10px;
+}
+
+.large-border{
+    composes: large shadow radius-5px from global;
+    composes: radius-5px from global;
+    padding: 10px 20px;
+}
+
+/* border.css */
+:global .radius-5px{
+    border-radius: 20px;
 }
 ```
 
