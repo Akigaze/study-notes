@@ -102,6 +102,26 @@ let run = (speed = 10, time = 10) => {
 
 1. 支持函数定义时使用等号对参数进行默认值的赋值
 
+2. 对于对象解构的参数默认值，有两种情形：
+
+   - `function func({name, age}={name:"jack", age:18}){...}` ，这种是针对整个参数的对象设置默认值，只有当方法调用的参数为空时，参数默认值才会生效
+
+   ```javascript
+   function func({name, age}={name:"jack", age:18}){...}
+   func() //默认值生效
+   func({name:"jam"}) //默认值不生效
+   ```
+
+   - `function func({name="tim", age=20}){...}` ，针对参数对象中的属性设置默认值，只有当调用参数不为空时，默认值参生效
+
+   ```javascript
+   function func({name="jack", age=18}){...}
+   func() //error：Cannot destructure property `name` of 'undefined' or 'null'
+   func({}) //默认值生效
+   func({name:"jam"}) //默认值生效
+   ```
+
+
 # ES6 - 解构
 1. 解构主要用于变量的赋值
 2. 解构表达式等号两边的结构必须一样，`[]=[]`,`{}={}`
@@ -125,6 +145,15 @@ let {name, age} = {name:"xaioming", age:18};
 let {name:myName, age:myAge} = {name:"xaioming", age:18}；
 ```
 3. 当右边的`key`和`value`是同一个变量名时，可以简写一个
+4. 可以只解构出一部分对象属性，把剩余属性赋值给一个变量：
+
+```javascript
+const {name, ...attributes} = {name:"jack", gender:"man", age:18}
+//name = "jack"
+//attributes = {gender:"man", age:18}
+```
+
+
 
 ## 数组-对象混用
 ```javascript
