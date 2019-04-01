@@ -17,23 +17,102 @@
 `.d.ts` 文件保存的是TypeScript文件中一些变量，方法等的定义
 
 ## 基本数据类型
-`any` `boolean` `number` `string` `void` `never` `Enum` `Tuple` `Array`
+`any` `boolean` `number` `string` `void` `never` `Enum` `Tuple` `Array` `null` ` undefine` `object`
 
 ### void
-表示方法没有返回值
+- 表示方法没有返回值
+- 对于一个 `void` 类型的变量，你只能为它赋予 `undefined` 或 `null`
+
+### nul & undefine
+
+- `undefined `和 `null` 两者各自有自己的类型分别叫做 `undefined` 和 `null`，和 `void` 相似
+- 默认情况下 `null` 和 `undefined` 是所有类型的子类型
+- 当指定 `--strictNullChecks` 标记，`null` 和 `undefined` 只能赋值给 `void` 和它们各自
 
 ### never
 表示方法永远不会有返回值，用于抛出异常的方法
 
-### Enum
-`Enum choose{yes, no}`
+`never`类型表示的是那些永不存在的值的类型，如：
+
+-  `never` 类型是那些总是会抛出异常
+- 不会有返回值的函数表达式或箭头函数表达式的返回值类型
+
+变量也可能是 `never`类型，当它们被永不为真的类型保护所约束时
+
+- `never` 类型是任何类型的子类型，也可以赋值给任何类型
+- 没有类型是 `never` 的子类型或可以赋值给 `never` 类型，除了 `never` 本身之外
+-  即使 `any` 也不可以赋值给 `never`
+
+```typescript
+// 返回never的函数必须存在无法达到的终点
+function error(message: string): never {
+    throw new Error(message);
+}
+
+// 推断的返回值类型为never
+function fail() {
+    return error("Something failed");
+}
+
+// 返回never的函数必须存在无法达到的终点
+function infiniteLoop(): never {
+    while (true) {
+    }
+}
+```
+
+### object
+
+`object` 表示非原始类型，也就是除 `number`，`string`，`boolean`，`symbol`，`null` 或 `undefined` 之外的类型
+
+### enum
+`enum choose{yes, no}` 或 `enum choose{yes=1, no=2}`
+
+使用枚举元素的编号可以从枚举中找到该元素的名称：
+
+```typescript
+enum Color {Red = 1, Green, Blue}
+let colorName: string = Color[2];//Green
+```
+
+对于枚举类型，TypeScript编译成JS后的实现如下：
+
+**TypeScript:**
+
+```typescript
+enum Color {
+    RED = 1,
+    YELLOW = 2,
+    BLUE = 3,
+    ORANGE = 5
+}
+```
+
+**JavaScript:**
+
+```javascript
+let Color = {};
+(function(Color){
+    COlor[Color["RED"] = 1] = "RED";
+    COlor[Color["YELLOW"] = 2] = "YELLOW";
+    COlor[Color["BLUE"] = 3] = "BLUE";
+    COlor[Color["ORANGE"] = 1] = "ORANGE";
+})(Color||Color = {});
+```
 
 ### Tuple
-类似于数组的字面量
-`["a", "b", "c", "d"]`
+- 元组类型允许表示一个已知 **元素数量** 和 **元素类型** 的 **数组** ，各元素的类型不必相同。
+- 元组的数据类型使用 `[type1, type2]` 的形式，限定一个数组的元素个数和相应位置的元素的数据类型 
+
+```typescript
+let x: [string, number] = ["hello", 1]
+```
 
 ### Array
-有两种形式：`Array<string>` 和 `string[]`
+- 数组数据类型有两种表示形式：`Array<string>` 和 `string[]`
+
+- 要求数组中每个元素的类型相同
+- 数组初始化或赋值的像是和JS的数组一样: `let arr:string[] = ["x", "y", "z"]`
 
 ### 声明变量
 在变量名后面使用 `:` 指定数据类型
