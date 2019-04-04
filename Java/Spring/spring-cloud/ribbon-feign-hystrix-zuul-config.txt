@@ -1,0 +1,124 @@
+Ribbon:
+	客户端（消费端）负载均衡（Load Balancing）
+	compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+	添加服务注册中心的URL，方便寻找服务
+	@LoadBalanced 
+		1. 轮询（默认）
+	@EnableEurekaClient
+	将请求访问的URL改成服务的名称
+	
+	多个服务提供者使用同一服务应用名称
+	
+	IRule 负载均衡算法，Ribbon有7中自带算法：
+	@RibbonClient 自定义Ribbon配置类
+		1. name 指定配置针对的微服务名称
+		2. configuration： 配置类的Class
+	
+服务消费者不必要注册到Eureka：
+	eureka.client.register-with-eureka = false
+	
+Feign:
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	客户端面向接口访问微服务
+	接口注解： @FeignClient(value = "service name")
+		添加接口方法用于访问微服务，方法写法与 Controller 层的API写法相同，url为要访问的微服务的url
+	启用Feign： @EnableFeignClient(basePackage={"Feign接口所在的包"})
+	集成了Ribbon，通过轮询实现客户端负载均衡
+
+Hystrix： 断路器，对故障和延迟进行隔离和管理，避免因为单个服务的失败引起系统的崩溃
+	作用于服务提供的一方
+	服务雪崩： 多个服务之间相互调用，形成链式调用，一旦某一服务超时无响应
+	服务熔断： 微服务链路的一种保护机制，熔断故障服务的调用，快速返回错误的响应信息（备选响应 Fallback）
+	服务降级： 关闭部分服务，以分配资源给流量高的服务，在客户端（服务消费）进行
+	
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+	@HystrixCommand(fallbackMethod="method name") 针对接口，当抛出异常时做出备选的响应
+	fallbackMethod 的参数列表与相应的API方法相同
+	启动类 @EnableCircuitBreaker
+	AOP处理接口熔断
+		将服务熔断处理放到接口
+		继承实现Feign FallbackFactory<T> 接口， T为要处理的接口
+		实现 create方法，创建一个接口的实现类（匿名），实现接口的每一个方法，该实现即为相应接口的熔断处理
+		在 @FeignClient(fallbackFactory = FallbackFactoryImp.class)
+		application.properties: feign.hystrix.enabled=true
+		
+Hystrix Dashboard:
+	spring cloud starter:
+		spring-cloud-starter-netflix-hystrix
+		spring-cloud-starter-netflix-hystrix-dashboard
+	Spring boot starter:
+		spring-boot-starter-actuator
+	主启动类注解：
+		@EnableHystrixDashboard
+	
+	访问页面： http://host-name:port/hystrix
+	监听某个微服务： http://host-name:port/actuator/hystrix.stream 必须是添加了断路器功能的微服务
+	@Bean
+    public ServletRegistrationBean getServlet(){
+        HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
+        registrationBean.setLoadOnStartup(1);
+        registrationBean.addUrlMappings("/hystrix.stream");
+        registrationBean.setName("HystrixMetricsStreamServlet");
+        return registrationBean;
+    }
+	将这段代码添加到需要监控的微服务的主启动类
+	
+Zuul: 请求路由和过滤
+	SpringCloud starter： spring-cloud-starter-netflix-zuul
+	主启动类注解： @EnableZuulProxy
+	默认情况下，外部应用使用 "http://zuul-host-name:port/service-name/..." 访问微服务的API
+	yml配置：
+		zuul:
+		  prefix:
+		  ignored-services: 
+		  ignored-patterns: 
+		  routes:
+			proxyServiceName.serviceId: 
+			proxyServiceName.path:
+			realServiceName: proxyPath
+	服务代理路径
+	隐藏真实服务名称
+	
+Cloud Config: 服务配置管理
+	GitHub： 存放.yml文件（service-name.yml / server-name-profile.yml）
+	服务端： 连接github，拉去配置信息
+		读取配置GitHub配置文件： http://config-server-host-name:port/file-name.yml
+							http://config-server-host-name:port/file-name-profile.yml
+							http://config-server-host-name:port/branch/file-name-profile.yml
+							http://config-server-host-name:port/file-name/profile/branch
+		Spring Cloud starter： 
+			spring-cloud-config-server
+		主启动类： @EnableConfigServer
+		配置： .yml
+		spring:
+		  cloud:
+			config:
+			  server:
+				git:
+				  uri: github-repository-url
+				  username: 
+				  password:
+			  profile: 
+	客户端， 获取配置信息进行配置
+		Spring Cloud starter： 
+			spring-cloud-config-client
+		配置
+			使用bootstrap.yml配置文件（外部加载配置信息，高优先级）
+		.yml
+			spring:
+			  application:
+				name: 
+			  cloud:
+				config:
+				  discovery:
+					enabled: true
+					service-id: config-server-name
+				  profile: 
+				  label: branch
+				  uri: config-server-url
+
+			eureka:
+			  client:
+				serviceUrl:
+				  defaultZone: http://localhost:8761/eureka/
