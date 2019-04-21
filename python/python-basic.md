@@ -14,11 +14,11 @@ Python基础
 
 ### 数据类型
 
-#### 1. 整数，浮点数
+#### 1. 整数(int)，浮点数(float)
 
 - python 没有 `++` 或者 `--` 的操作
 
-#### 2. 字符串
+#### 2. 字符串(str)
 
 1. python的字符串类型表示为 `str`
 2. 同时支持 **单引号** 和 **双引号** 编写字符串
@@ -46,7 +46,7 @@ Python基础
 
 ![字符串占位符](F:\学习\study-notes\Python\pic\python格式化字符串.png)
 
-#### 3. 布尔值
+#### 3. 布尔值(bool)
 
 1. `True` 和 `False`
 2. 运算符：`and` `or` `not`
@@ -57,7 +57,15 @@ Python基础
 
 #### 5. 类型转化
 
-- str --> number：`int(str)` 将字符串转化成正数，参数必须是一个整数的字符串 (异常：`ValueError`)
+- str --> int：`int(str)` 将字符串转化成正数，参数必须是一个整数的字符串 (异常：`ValueError`)
+- float --> int: `int(float)`
+- str --> float: `float(str)`
+- any --> str: `str(any)`
+- any --> bool: `bool(any)`
+
+#### 6. 类型检查
+
+`isinstance(data, (type1, type2,..))`
 
 ### 运算符
 
@@ -116,6 +124,7 @@ C = {key:value,...}
 #### dict的方法
 
 - `.pop(key)` : 删除指定 `key` 的键值对 
+- dict 的key应写成字符串形式，若直接写变量名，python会将变量的值作为key
 
 ```python
 # dist 字典,类似于json对象
@@ -176,7 +185,9 @@ print(num1 & num2)
 print(num1 | num2)
 ```
 
+### 5. 空代码块 pass
 
+因为python中没有 `{}` 表示代码块，所以要设置 **空循环体**，**方法体**，**if操作** 等，可以用 `pass` 关键字代替
 
 # 流程控制语句
 ### 1. if...else
@@ -230,7 +241,19 @@ print("result %d" % sum1)
 - `break`: 结束循环
 - `continue`: 跳过当前循环
 
-# 定义函数
+# 函数
+
+### 1. 调用
+
+- 当传参多余定义的参数数量时，会抛出异常：`TypeError`
+- 当参数的类型不对时，会抛出异常：`TypeError`
+- 与JavaScript相似，函数名只是一个变量的引用而已，可以任意赋值或者赋值给其他变量
+- python函数传参可以使用 `参数名 = 值`  的形式，为指定名称的参数赋值，这与R语言类似，但其实JavaScript也支持这样的传参方式
+
+### 2. 定义
+
+- `def funcName(args):` 形式声明一个函数
+- `return` 关键字返回值，`pass` 关键字声明空的方法体
 
 ```python
 #定义函数
@@ -249,6 +272,105 @@ def test3(a,b,c):
     return d #有返回值
 print(test2(1,2,3))
 ```
+
+#### 返回值
+
+- python的方法支持多返回值，返回值之间用逗号分隔： `return a, b, c`
+- 多返回值的实质是返回一个 **tuple**， 只是返回 tuple 时可以省略括号而已
+- 调用多返回值的函数是，可以使用一个变量接收所有返回值，此时该变量就是一个 tuple；也可以用多个变量接收返回值，多个变量用逗号分隔，分别接收每一个返回值，此时接收返回值的变量个数必须与返回值个数相同，否则抛出异常：`ValueError: too many values to unpack` 或 `ValueError: not enough values to unpack`
+
+```python
+def get_date():
+    return 2019, 4, 21
+
+one_date = get_date()
+y, m, d = get_date()
+print(one_date, y, m, d)
+
+# y, m = get_date()  ValueError: too many values to unpack
+# y, m, d, x = get_date()  ValueError: not enough values to unpack
+```
+
+#### 默认参数
+
+- 在定义参数时使用 `=` 在参数列表中为参数赋上默认值
+- 默认参数要置于非默认参数之后
+- python中方法参数列表中的参数也是变量，当多次调用函数使用默认参数时，默认参数引用的是同一个对象
+- 默认参数应该的值应该是 **不变对象**
+
+```python
+def add_end(name="Marx", li=[]):
+    li.append("end")
+    return name, li
+
+print(add_end())  # ('Marx', ['end'])
+print(add_end())  # ('Marx', ['end', 'end'])
+print(add_end())  # ('Marx', ['end', 'end', 'end'])
+```
+
+#### 可变参数
+
+- 在参数名前面加上 `*` ，表示后面的变量是一个可变参数，可以接受任意数量的参数
+- 可变参数要放在必选参数之后
+- 可变参数的参数变量在方法体中是一个 tuple
+- 在调用函数时，运行在list 或者 tuple等类型的参数前加 `*` 将其转化成多个参数，相当于 JavaScript的解构
+- `*` 的一个作用是将 `1,2,3` 形式的序列转化成tuple `(1,2,3)` ；另一个作用是将 tuple 或list `(1,2,3)` 分解成 序列 `1,2,3`
+
+```python
+def get_sum(*params):  # * 参数组装
+    sum1 = 0
+    for p in params:
+        sum1 += p
+    return sum1
+
+
+print(get_sum(1, 2, 4, 5))
+list1 = [1, 2, 3, 4]
+tuple1 = (0, 2, 4, 6, *lsit1)  # * 参数分解
+# * 参数分解
+print(get_sum(*list1))
+print(get_sum(*tuple1))
+```
+
+#### 关键字参数
+
+- 关键字参数使用 `**` 标示，同样在函数定义或者调用时可以使用
+- 与可变参数相似，但是关键字参数组装或分解的是 **dict** 结构
+- 关键字参数在调用传参时，参数要写成 `key = value` 的形式(**key不能写成字符串形式**)，方法中会将参数转化成指定key和value的一个dict
+- 在组装dict对象是，也可以使用 `**` 将另一个dict 的内容复制给目标dict：`{"name":“Marx", **dict2}`
+- `def func(name, *, age, gener)` 中的 `*,` 表示后面的参数都是关键字参数(**命名关键字参数**)，即限定了只能传某些特定关键字的参数，并且这些关键字参数也可以设置默认值
+
+```python
+# 关键字参数
+def enroll(name, gender, **other):
+    return {"name": name, "gender": gender, **other}
+
+def hello(name, *, gender, age=6):
+    return {"name": name, "gender": gender, "age": age}
+
+print(enroll("Marx", "F"))
+print(enroll("Marx", "F", age=10))
+ming = {"gender": "F", "name": "Ming", "age":10, "score": 100}
+print(enroll(**ming))
+print(hello("Ming", gender="F"))
+# print(hello("Ming", "F"))  # TypeError: hello() takes 1 positional argument but 2 were given
+# print(hello("Ming", gender="F", city="NY"))  #TypeError: hello() got an unexpected keyword argument 'city'
+```
+
+#### 组合参数
+
+python中的多种类型的参数，可以在一个方法定义中组合使用，声明的顺序是：
+
+> 必选参数、默认参数、可变参数、命名关键字参数和关键字参数
+
+```python
+def f1(a, b, c=0, *args, **kw):
+    pass
+    
+def f2(a, b, c=0, *, d, **kw):
+	pass
+```
+
 导入函数
 ```python
 import 文件名 as 自定义别名
