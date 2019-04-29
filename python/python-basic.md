@@ -4,7 +4,7 @@ Python基础
 ### 输入与输出
 
 1. 输出：`print(a, b, c, ...)`
-2. 输入：`input('tip')` ，`'tip'` 是在输入用户之前打印的文本，为可选参数 
+2. 输入：`input('tip')` ，`'tip'` 是在输入用户之前打印的文本，为可选参数
 
 ### 注释
 
@@ -119,11 +119,11 @@ C = {key:value,...}
 
 1. `[key]` : 使用索引的形式获取值，当指定的 `key` 不存在时，抛异常：`KeyError`
 2. `.get(key)` ：获取指定 `key`对应的值，当 `key` 不存在时，返回 `None`
-3. `key in dist` : 判断指定 `key`  在字典中是否存在 
+3. `key in dist` : 判断指定 `key`  在字典中是否存在
 
 #### dict的方法
 
-- `.pop(key)` : 删除指定 `key` 的键值对 
+- `.pop(key)` : 删除指定 `key` 的键值对
 - dict 的key应写成字符串形式，若直接写变量名，python会将变量的值作为key
 
 ```python
@@ -131,7 +131,7 @@ C = {key:value,...}
 persons = {"Newton": 10, "Galileo": 45, "Einstein": 57, "Edison": 67}
 
 # in 判断是否存在指定key
-print("Newton" in persons) 
+print("Newton" in persons)
 print("Marx" in persons)
 
 # [] 取值
@@ -194,7 +194,7 @@ print(num1 | num2)
 
 - 在 `if` 的条件之后或者 `else` 之后，要带上冒号 `:`
 - `else if` 在python中写成 `elif`
-- 与JavaScript相似， `if` 的判断条件不一定要是 `True` 或 `False` ，**非零数值**、**非空字符串**、**非空list**等，就判断为 `True`，否则为 `False`。
+- 与JavaScript相似， `if` 的判断条件不一定要是 `True` 或 `False` ，**非零数值**、**非空字符串**、**非空list** 等，就判断为 `True`，否则为 `False`。
 
 ```python
 age = 20
@@ -215,7 +215,7 @@ else:
 names = ["Einstein", "Newton", "Galileo", "Edison"]
 for name in names:
     print("name: %s\t length: %d" % (name, len(name)))
-    
+
 sum1 = 0
 for i in range(0, 5):
     sum1 += i
@@ -366,9 +366,91 @@ python中的多种类型的参数，可以在一个方法定义中组合使用�
 ```python
 def f1(a, b, c=0, *args, **kw):
     pass
-    
+
 def f2(a, b, c=0, *, d, **kw):
 	pass
+```
+
+## list,dict特性
+### 切面(slice)
+一种数组的截取快捷方法，使用 `list1[m:n:x]` 的形式
+- 包头不包尾
+- n > m, m 和 n 为元素索引，0 表示第一个元素，-1表示最后一个元素
+- m 省略默认是 **0**，n 省略表示 **-1+1**，指 **包括最后一个元素**
+- x 为步长，每次取值间隔的个数，从m的位置开始计算，最后一个 `:x` 省略默认是1
+- `list1[:]` 表示将原数组拷贝一份(不同实例)
+
+```python
+n100 = list(range(0, 100))
+print(n100)
+print(n100[0:10])
+print(n100[:5])
+print(n100[10:15])
+print(n100[-5:-1])
+print(n100[-1:-5]) # []
+print(n100[-4:0]) # []
+print(n100[-10:])
+print(n100[0:20:2])
+print(n100[::2])
+print(n100[-30::3])
+print(n100[:] is n100)
+```
+
+对 tuple 和 str 也适用这种操作，并且输入的数据源是什么类型的数据结构，输出的结果是相同类型的数据
+
+### 遍历(iterator)
+python 中对数组，列表或字符串的遍历是使用 `for  in` ，而没有使用索引遍历的形式，而这种遍历方式同样可以用于dict
+
+- 遍历key：`for key in dictX`
+- 遍历value：`for value in dictX.values()`
+- 遍历键值对：`for key, value in dictX.items()`
+
+```python
+nameDict = {
+    "ming": "XIAO",
+    "hong": "DA",
+    "gang": "LI",
+    "liang": "PIAO"
+}
+
+print("------- 按key进行遍历 --------")
+for name in nameDict:
+    print(name)
+
+print("------- 按value进行遍历 --------")
+for value in nameDict.values():
+    print(value)
+
+print("------- 按key, value进行遍历 --------")
+for key, value in nameDict.items():
+    print("%s : %s" % (key, value))
+```
+
+### 列表生成式(List Comprehensions)
+python中对数组的map和filter操作的一种实现，使用 `[exp for x in list1 if condition]` 的像是
+- `exp` 相当于map中的转化规则
+- `condition` 就是filter中的过滤条件
+- 先执行 **filter**， 再进行 **map**
+- 多个`for`嵌套可以用 `[exp for x in list1 for y in list2 if condition]` 的形式，**y** 是内层循环的元素
+
+![列表生成器](pic/列表生成器.png)
+```python
+n20 = list(range(0, 20))
+print("----- 类似于map操作 -----")
+halfN20 = [n/2 for n in n20]
+print(halfN20)
+
+print("----- 类似于filter操作 -----")
+evenOfN20 = [n for n in n20 if n % 2 == 0]
+print(evenOfN20)
+
+print("----- 类似于filter + map操作 -----")
+evenOfN20PlusOne = [n+1 for n in n20 if n % 2 == 0]
+print(evenOfN20PlusOne)
+
+print("----- 嵌套 -----")
+print([x + y for x in 'ABC' for y in 'XYZ'])
+print([x + y for x in 'ABC' for y in 'XYZ' if x != 'B'])
 ```
 
 导入函数
