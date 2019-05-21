@@ -107,6 +107,23 @@ B = ('a', 'b', ..)
 * 本身不排序
 * 适合存放不可变的内容
 * 定义指定长度的tuple，需要在长度后面加上逗号：`tuple1 = (4,)`
+#### 2.1利用tuple对多个变量进行赋值
+
+python的tuple中的值可以通过一个赋值表达式赋值给多个变量
+
+```python
+tuple = (1, 3, 5)
+a, b, c = tuple
+# a=1, b=3, c=5
+```
+
+这种方式可以直接省略tuple的定义，用一个等号对两边的变量和值按顺序进行赋值
+
+```python
+a, b, c = 1, 3, 5
+# a=1, b=3, c=5
+```
+
 ## 3. dict(字典)
 
 ```
@@ -453,7 +470,107 @@ print([x + y for x in 'ABC' for y in 'XYZ'])
 print([x + y for x in 'ABC' for y in 'XYZ' if x != 'B'])
 ```
 
-导入函数
+### 生成器(generator)
+
+- 一边循环一边计算
+- 减少对不必要的元素的计算和内存存储
+- 生成器类似一种数据结构，可以直接遍历
+
+#### 1. 使用列表生成式创建生成器
+
+- 将列表生成式的方括号`[]`换成tuple的圆括号`()`，返回的结果就是一个生成器对象
+
+#### 2. 函数中使用 `yield` 关键字
+
+- 在函数定义中，使用 `yield` 关键字，这样每次函数调用后不会直接返回return的值，而是返回一个生成器对象
+- `yield` 关键字的用法与 `return` 相似，它指定每次生成器迭代返回的值
+- 一个函数中可以有多个 `yield` 关键字，生成器迭代时会按顺序依次返回每个 `yield` 的值
+- 函数中 `return` 的结果将无法正常返回，只能在发生 `StopIteration`  异常时获得
+
+#### 3. `next()` 函数对生成器进行迭代
+
+- 生成器类似于游标，`next` 函数每次执行会返回生成器代签游标所在的值，在将游标向前移动一位
+- `next` 函数的参数是一个 生成器对象
+- 当前游标没有值是，会抛出 `StopIteration` 异常
+- 使用 `yield` 的生成器每次执行 `next` 函数时，会依次返回 `yield` 的值 
+
+#### 4. `for` 循环迭代生成器
+
+- 可以使用 `for` 循环像遍历列表一样遍历生成器，而且不用担心游标越界的问题
+- `for` 遍历的起点是生成器当前游标的位置
+
+#### Example
+
+```python
+g1 = (x for x in range(10) if x%2 == 0)
+print(next(g1))  # 0
+print(next(g1))  # 2
+print(next(g1))  # 4
+print("-------------")
+
+for x in g1:
+    print(x)  # 6 8
+```
+
+```python
+def fibonacci(length):
+    n, pre, cur = 0, 0, 1
+    while n < length:
+        yield cur
+        pre, cur = cur, pre + cur
+        n = n + 1
+    return "done"
+
+fib1 = fibonacci(3)
+print(next(fib1))  # 1
+print(next(fib1))  # 1
+print(next(fib1))  # 2
+# print(next(fib1))  # StopIteration: done
+
+for f in fibonacci(8):
+    print(f)  # 1 1 2 3 5 8 13 21
+```
+
+### 迭代器(Iterator)
+
+- **Iterable**: 可迭代对象，能使用 `for` 进行遍历的对象，包括： `list`，`tuple`，`dict`，`set`，`str` 和 `generator`
+- **Iterator**: 迭代器，能使用 `next()` 一次调用返回下一个值的对象，一般只有 `generator`
+- Python的 `Iterator` 对象表示的是一个数据流，可以被 `next()` 函数调用并不断返回下一个数据，直到没有数据时抛出 `StopIteration` 错误。可以把这个数据流看做是一个有序序列，但我们却不能提前知道序列的长度，只能不断通过 `next()` 函数实现按需计算下一个数据，所以 `Iterator` 的计算是 **惰性** 的，只有在需要返回下一个数据时它才会计算。
+- 迭代器可以减少内存的占用，带相对在使用时计算上会比较耗时
+
+#### isinstance函数判断对象是类型
+
+- `isinstance(对象, 类名)` 判断对象是否为指定的类型，返回 `True` 或 `False`
+
+#### iter 函数将可迭代对象转换成迭代器
+
+- `iter(对象)` 将一个可迭代对象转换成迭代器对象
+
+#### Example
+
+```python
+from collections import Iterable, Iterator
+
+list1 = range(8)
+tuple1 = ("a", "x", "h")
+str1 = "hello world"
+
+print(isinstance(list1, Iterable))  # True
+print(isinstance(tuple1, Iterable))  # True
+print(isinstance(str1, Iterable))  # True
+print(isinstance(list1, Iterator))  # False
+
+print(isinstance(iter(list1), Iterator))  # True
+print(isinstance(iter(str1), Iterator))  # True
+
+iterStr1 = iter(str1)
+print(next(iterStr1))  # h
+for s in iterStr1:
+    print(s)  # e l l o   w o r l d
+```
+
+
+
 ```python
 import 文件名 as 自定义别名
 ```
