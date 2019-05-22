@@ -12,6 +12,12 @@ Python基础
 # 这是python注释
 ```
 
+标注文档的作者：
+
+```python
+__author__ = 'Akigaze Hwang'
+```
+
 ### 数据类型
 
 #### 1. 整数(int)，浮点数(float)
@@ -388,7 +394,8 @@ def f2(a, b, c=0, *, d, **kw):
 	pass
 ```
 
-## list,dict特性
+# list, dict特性
+
 ### 切面(slice)
 一种数组的截取快捷方法，使用 `list1[m:n:x]` 的形式
 - 包头不包尾
@@ -569,7 +576,93 @@ for s in iterStr1:
     print(s)  # e l l o   w o r l d
 ```
 
+# 运行程序
 
+python中类似于 `main` 方法执行程序
+
+```python
+if __name__=='__main__':
+    test()
+    ...
+```
+
+当在命令行运行包含这个语句的模块文件时，Python解释器把一个特殊变量 `__name__` 置为 `__main__` ，这样 `if` 语句就能顺利执行，而运行其他引用该模块的模块是，则不会执行
+
+# 模块
+
+### 模块安装
+
+- python的包管理器是 **pip** , 使用方法类似于 node.js 的 **npm**
+
+- python发布的包一般都会在 **[pypi.org](https://pypi.org)** 上进行注册
+- **[Anaconda](https://www.anaconda.com)**是一个基于Python的数据处理和科学计算平台，它已经内置了许多非常有用的第三方库
+
+### 引用模块的方法
+
+#### 1. import 内置模块
+
+```python
+import sys  # 导入python内置的sys模块
+from functools import reduce  # 导入模块中的某个变量后方法
+```
+
+导入的 `sys` 相当于一个对象，通过这个对象可以访问模块中的变量和方法
+
+### 作用域
+
+- 在python中，一个文件就相当于一个模块
+- 模块中直接定义的变量或者方法都是可以被其他模块引用的
+- 正常定义的变量和方法都是 **public** 级别的，可以使用 下划线`_` 或双下划线 `__` 作为前缀定义**private** 的变量或方法
+- python中的 **private** 的并不是绝对的私有，在其他模块中依然可以引用，只是习惯将这种形式的作为私有的而已
+- 对于每个模块还有一些内置的变量或方法，以 `__` 作为开头和结束，如：`__name__` `__author__` `__doc__`
+
+
+
+# 函数式编程
+
+`map` `reduce` `filter` `sorted` 是 python的内建函数，可以从 `functools` 模块中引用得到
+
+### 1. map
+
+- `map(func, Iterable)`  => `Iterator`
+- `func` 函数接收列表中的一个元素，输出成另一个值
+
+### 2. reduce
+
+- `reduce(func, Iterable)`  => `any`
+- `func` 的第二个参数会依次接收列表中的值，第一个参数为每次函数的返回值
+
+### 3. filter
+
+- `filter(func, Iterable)`  => `Iterator`
+
+### 4. sorted
+
+- `sorted(Iterable, key=func, reverse=bool)` => `Iterable`
+- `key` 会作用于列表汇总的每个元素，再根据结果进行排序， 它并不会改变原有列表
+
+### 5. 闭包(Closure) 返回函数
+
+- python同样支持将函数作为返回值，因此可以在函数内使用 `def` 定义新的函数作为返回值
+
+- 与JS一样，python的闭包也同样好用
+
+### 6. 匿名函数 & lambda表达式
+
+- python中使用 **lambda** 关键字编写匿名函数
+
+```python
+lambda x: x * 2
+lambda x: x > 2
+lambda x, y: x + y - 2
+```
+
+- lambda 表达式使用 冒号`:` 分隔参数和方法体，左边是参数列表，右边是方法体
+- 方法体只能有一个表达式，表达式的结果就是函数的返回值，不用写 `return` 关键字
+
+
+
+------
 
 ```python
 import 文件名 as 自定义别名
