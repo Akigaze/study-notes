@@ -616,7 +616,13 @@ from functools import reduce  # 导入模块中的某个变量后方法
 - python中的 **private** 的并不是绝对的私有，在其他模块中依然可以引用，只是习惯将这种形式的作为私有的而已
 - 对于每个模块还有一些内置的变量或方法，以 `__` 作为开头和结束，如：`__name__` `__author__` `__doc__`
 
+### 内置属性
 
+#### 1. \_\_name__
+
+每个模块或方法都有一个 `__name__` 属性，方法的 `__name__` 属性是方法名，执行的模块的 `__name__` 属性是 `__main__`
+
+functools 内置模块提供了一个wrap装饰器，可以将装饰的方法的 `__name__` 属性设置为指定方法的 `__name__` 属性：`@functools.wraps(func)`
 
 # 函数式编程
 
@@ -660,7 +666,86 @@ lambda x, y: x + y - 2
 - lambda 表达式使用 冒号`:` 分隔参数和方法体，左边是参数列表，右边是方法体
 - 方法体只能有一个表达式，表达式的结果就是函数的返回值，不用写 `return` 关键字
 
+### 7. 装饰器(decorator)
 
+- 在不改变原有函数的定义语句的情况下，对函数进行进一步的封装
+- 能代码运行期间动态增加功能
+- 装饰器是一种 **接受函数** 作为参数，同时返回 **函数** 的一种函数，返回的函数对作为参数的函数功能进行了增强
+- 注释器返回的函数的参数列表通常是 `*args, **kw` , 以满足原有函数的所有参数需要
+
+```python
+# 直接接受方法的装饰器
+def log(func):
+    def wrapper(*args, **kw):
+        print('call %s():' % func.__name__)
+        return func(*args, **kw)
+    return wrapper
+
+# 代参装饰器
+def log_param(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+```
+
+- 可以调用装饰器将目标方法作为参数进行装饰，或者使用注解 `@` 将装饰器对象添加到目标方法上，这两种方式都能返回装饰后的方法
+
+```python
+adder = log(add)  # 调用函数的方式添加装饰器
+
+@log  # 注解的方式添加装饰器
+def add(a, b):
+    return a + b
+
+@log_param("加法")  # 代参的装饰器
+def add(a, b):
+    return a + b
+```
+
+- 装饰器会改变原有函数的 `__name__` 属性，因为装饰器是返回装饰后的函数，可以使用 `functools` 模块的 `wraps` 装饰器，对装饰器返回的函数进行 `__name__` 属性的绑定 ：`@functools.wraps(func)`
+
+### 8. 偏函数(Partial function)
+
+- 把一个函数的某些参数给固定住（也就是设置默认值），返回一个新的函数，调用这个新函数会更简单
+- 这个新函数同样支持固定参数值的修改，只需在调用时在参数列表中传递参数即可
+- `functools` 模块的 `partial` 函数可以直接创建偏函数： `functools.partial(函数对象, *args, **kw)`
+
+```python
+int2 = functools.partial(int, base=2)  # 固定base参数是2
+int2("101")  # 5
+
+maxStart10 = functools.partial(max, 10)  # 固定第一个参数是10
+maxStart10(3, 9, 5, 7)  # 10
+```
+
+# 面向对象(OOP)
+
+### 类与实例
+
+```python
+class Student(object):
+	def __init__(self, name, age):
+		self.name = name
+		self.age = age
+	def print_info(self):
+		print('name: %s age: %s', (self.name, self.age))
+ 
+ming = Student("ming", 18)
+ming.print_info()
+ming.id = 1234
+```
+
+- `class` 关键之定义一个类
+- 类名后的括号表示父类，没有指定的父类时，指定父类为 `object`
+- `__init__` 为构造方法，不写 `__init__` 方法时，默认有一个无参的构造方法
+- 类中定义方法与一般定义方法的方式没有区别，使用 `def` 关键字定义方法
+- 类中的每个方法一般情况下第一个参数都是 `self` ，表示类的对象本身，而在调用类的方法时，不必传递 `self` 参数
+- 创建类的对象时，直接使用 `类名(参数)` 的形式，不用 `new` 关键字
+- python 的类对象和普通对象一样，可以在类定义之外，为对象任意添加属性
 
 ------
 
