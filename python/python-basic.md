@@ -272,6 +272,7 @@ print("result %d" % sum1)
 - 当参数的类型不对时，会抛出异常：`TypeError`
 - 与JavaScript相似，函数名只是一个变量的引用而已，可以任意赋值或者赋值给其他变量
 - python函数传参可以使用 `参数名 = 值`  的形式，为指定名称的参数赋值，这与R语言类似，但其实JavaScript也支持这样的传参方式
+- 当 **tuple** 作为方法参数时，如果只有一个元素，可以省略括号
 
 ### 2. 定义
 
@@ -599,11 +600,12 @@ if __name__=='__main__':
 
 ### 引用模块的方法
 
-#### 1. import 内置模块
+#### 1. import 模块
 
 ```python
 import sys  # 导入python内置的sys模块
 from functools import reduce  # 导入模块中的某个变量后方法
+import 模块 as 模块别名  # 是指模块别名
 ```
 
 导入的 `sys` 相当于一个对象，通过这个对象可以访问模块中的变量和方法
@@ -745,18 +747,108 @@ ming.id = 1234
 - 类中定义方法与一般定义方法的方式没有区别，使用 `def` 关键字定义方法
 - 类中的每个方法一般情况下第一个参数都是 `self` ，表示类的对象本身，而在调用类的方法时，不必传递 `self` 参数
 - 创建类的对象时，直接使用 `类名(参数)` 的形式，不用 `new` 关键字
-- python 的类对象和普通对象一样，可以在类定义之外，为对象任意添加属性
+- python 的类对象和普通对象一样，可以在类定义之外，任意访问对象的属性或添加，修改属性
+- 如果访问一个不存在的属性，会抛出异常
 
-------
+### 私有属性
+
+- 在python中，使用命名的方式来是指属性的访问级别
+- 私有属性的命名，以 双下划线 `__` 开头，python的解释器会识别这样的属性名，将其设置成私有属性
+- 然而，python并没有绝对的私有属性，只是python的解释器在对外暴露属性时，给将私有属性换了个名字而已，不同的解释器更换属性名的方式不一样
 
 ```python
-import 文件名 as 自定义别名
+class Student(object):
+    def __init__(self, name, address):
+        self.name = name
+        self.__address = address  # 私有属性
+
+    def get_address(self):
+        return self.__address
+
+    def set_address(self, address):
+        self.__address = address
+
+ming = Student("小明", "广州市")
+print(ming.name)
+print(ming.get_address()
+print(ming.__address)  # Error and return None
+ming.__address = "北京市"
+print(ming.__address)  # 北京市 不是类内部的__address 属性
+print(ming._Student__address)  # 被重命名的__address 属性
 ```
 
-## 数据分析依赖：数据质量，静态特征，行为特征
-## 数据分析：
-1. 了解业务
-2. 方法论
-3. 分析方法
-4. 工具：软件，语言
-5. 统计思维
+### 继承与多态
+
+- python的继承是在类定义时，类名后面的括号指明父类
+- python的类继承同样支持多态，重载，子类可以调动，重写父类的方法
+
+### 获取对象信息
+
+#### 1. 对象类型
+
+##### 1.1 type(obj)
+
+- `type` 方法可以返回指定对象的 **Class** 类型
+- `types` 模块提供了 **Class** 类型的定义，可以与对象类型的判断：`FunctionType` `BuiltinFunctionType` `LambdaType` `GeneratorType`
+
+##### 1.2 isinstance(obj, type_tuple)
+
+- `isinstance` 方法可以判断对象是否为指定的 **Class** 类型， 返回 `True` 或 `False`
+- 第二个参数是一个tuple，所以可以传多种类型，判断是否是其中一种
+
+#### 2. 对象信息
+
+##### 2.1 dir(obj)
+
+- `dir` 方法会返回一个字符串的list，里面包含了对象所有属性的名称，包括普通属性，内置属性，私有属性和方法
+
+##### 2.2 hasattr(obj, 'attr')
+
+- 判断对象是否有指定名称的属性或方法
+
+##### 2.3 getattr(obj, 'attr')
+
+- 获取指定对象指定属性或方法的值
+- 试图获取不存在的属性，会抛出 `AttributeError` 的错误
+
+##### 2.4 setattr(obj, 'attr', value)
+
+- 为对象设置指定的属性和属性值
+
+### 类属性
+
+- 类属性类似于静态属性，但又不同于静态属性
+- 类属性的定义就是在类的作用域中定义变量，与定义局部变量的方式一样
+- 通过类或类的实例都可以访问到类属性
+- 如果实例属性和类属性同名，实力属性的优先级高于类属性
+- 类的实例可以获得类属性，但通过 `obj.classAttr = value` 的方式无法修改类属性，这种方式会添加一个域类属性同名的实例属性，将类属性屏蔽掉
+
+```python
+class Student(object):
+    school = "SCAU"  # 类属性
+
+    def __init__(self, name):
+        self.name = name
+
+ming = Student("小明")
+print(ming.school)  # SCAU
+print(Student.school)  # SCAU
+ming.school = "ABC"  # 添加实例属性，屏蔽类属性
+print(ming.school)  # ABC
+print(Student.school)  # SCAU
+del ming.school  # 删除实例属性，重新使用类属性
+Student.school = "XYZ"  # 修改类属性
+print(ming.school)  # XYZ
+print(Student.school)  # XYZ
+del Student.school  # 删除类属性
+print(ming.school)  # AttributeError
+print(Student.school)  # AttributeError
+```
+
+### 绑定属性
+
+#### 1. \_\_slots__
+
+- `__slots__` 是python类的一个内置属性，用于指定类的实例可以自定义哪些属性
+- `__slots__ = ("name", "age")` 赋值一个字符串的tuple，这样类的实例就只能定义或添加属性，添加其他属性时会抛出 `AttributeError` 异常
+- 该属性只会限制使用 `self` 添加的属性和 使用类实例动态添加的属性，而不会限制类中方法的定义和类属性的定义
