@@ -112,7 +112,7 @@ B = ('a', 'b', ..)
 * 长度不可变，索引的对象地址不变
 * 本身不排序
 * 适合存放不可变的内容
-* 定义指定长度的tuple，需要在长度后面加上逗号：`tuple1 = (4,)`
+* 创建只有一个元素的tuple时，元素后面要加逗号 `tuple1 = (4,)`
 #### 2.1利用tuple对多个变量进行赋值
 
 python的tuple中的值可以通过一个赋值表达式赋值给多个变量
@@ -137,6 +137,11 @@ C = {key:value,...}
 ```
 - 键值对的形式存储数据，类似于json对象
 - `key` 必须是不可变的值
+
+### dict()
+
+- `dict()` 创建一个空的字典对象
+- `dict([("key": value), ...])` 接收一个tuple的list，将tuple的第一个元素作为key，第二个元素为value
 
 #### 取值
 
@@ -626,6 +631,141 @@ import 模块 as 模块别名  # 是指模块别名
 
 functools 内置模块提供了一个wrap装饰器，可以将装饰的方法的 `__name__` 属性设置为指定方法的 `__name__` 属性：`@functools.wraps(func)`
 
+# 常用模块
+
+## 1. datetime
+
+`datetime` 模块中的 `datetime` 类用于创建时间的对象：`from datetime import datetime`
+
+- `datetime.now()` : 获取当前时间的datetime对象
+- `datetime(year, month, day, hour, minute, second,  millisecond)` : 创建指定时间的datetime对象
+- `datetime` 对象是有时区概念的，不指定时区的datetime对象时区是服务器时区
+
+#### 时间戳 timestamp
+
+- python的时间戳是一个浮点数，小数的部分表示毫秒数
+- 1970年1月1日 00:00:00 UTC+00:00 这个时间的时间戳记为 **0**
+- 与datetime对象不同，时间戳是没有时区概念的
+- 使用datetime对象的 `timestamp()` 方法可以获得该对象的时间戳
+- `datetime.fromtimestamp(timestamp)` : 将时间戳转成datetime对象
+- `datetime.utcfromtimestamp(timestamp)` : 将时间戳转成utc 的 datetime对象
+
+#### datetime与字符串的转换
+
+- `datetime.strptime('datetimeStr', 'format')` : 字符串转时间对象
+- `datetimeObj.strftime('format')` : 时间对象转字符串
+- 时间格式占位符：`%Y 年` `%m 月` `%d 日` `%H 小时` `%M 分钟` `%S 秒` `%a 星期` `%b 英文月份`
+
+#### datetime运算
+
+- 时间的加减需要用到 `datetime` 模块中的 `timedelta` 类：`from datetime import timedelta`
+- `timedelta` 函数提供了多种时间参数，`days` `seconds` `microseconds` `milliseconds` `minutes` `hours` `weeks` ，指定不同的时间进行加减
+- 运算时只需使用 加号或减号进行运算即可：`datetimeObj - timedelta(hours=10)`
+
+#### 时区
+
+- datetime对象的 `tzinfo` 属性记录时区信息，但是这个属性的值必须手动指定，否则为 `None`
+- `datetime` 包的 `timezone` 类用于创建timezone对象：`from datetime import timezone`
+- `timezone` 对象需要一个 `timedelta` 对象，用于指明时间差：`timezone(timedelta(hours=8))`
+- 使用datetime 对象的 `replace` 方法可以设置datetime对象的各种属性，其中就包括 `tzinfo` : `datetimeObj.replace(tzinfo=timezoneObj)`
+- `datetime.utcnow()` 方法获取当前的UTC时间对象
+- `timezone.utc` UTC的timezone对象
+- `tzinfo` 只是设置时区信息而已，并不会改变时间的表示
+- datetime对象的 `astimezone` 方法可以输出对象在不同时区的当地时间：`datetimeObj.astimezone(timezoneObj)`
+
+```python
+from datetime import datetime, timedelta, timezone
+
+now = datetime.now()
+a_datetime = datetime(2019, 1, 1, 12, 30, 10, 22)
+now_stamp = now.timestamp()
+b_datetime = datetime.fromtimestamp(10001901902.0909)
+utc_now = datetime.utcfromtimestamp(now_stamp)
+
+print(now)
+print(a_datetime)
+print(now_stamp)
+print(b_datetime)
+print(utc_now)
+print(a_datetime.astimezone())
+print("----------")
+print(now.strftime("%Y-%m-%d %H:%M:%S"))
+print(now.strftime("%a, %b %d %H:%M"))
+print(datetime.strptime("Mon, May 05 16:28", "%a, %b %d %H:%M"))
+print("----------")
+print(now - timedelta(hours=10))
+print(now.tzinfo)
+print("***********")
+# now.replace(tzinfo=timezone.utc)
+# print(now.astimezone())
+# now.replace(tzinfo=timezone(timedelta(hours=3)))
+print(now.astimezone(timezone.utc))
+print(now)
+```
+
+## 2. collections
+
+### 2.1 namedtuple()
+
+- `from collections import namedtuple` : `namedtuple` 方法可以创建具名的tuple封装类
+- 规定了tuple封装类的类名，每个值对用的属性名
+- 用一个对象接受 `namedtuple` 函数返回的类，就可以创建具名的tuple对象了
+- `ClassName = namedtuple("ClassName", ["field1", "field2", ...])`
+- 使用tuple封装类创建tuple对象的方法和创建类的对象一样
+- 可以使用索引访问tuple中的元素，也可已使用属性名
+- 具名的tuple对象的 `_asdict()` 方法可以将tuple对象转成一个 `OrderedDict` 对象
+
+```python
+from collections import namedtuple
+
+Point = namedtuple("Points", ["x", "y"])
+p1 = Point(x=1, y=3)
+
+print(p1)
+print(p1.y + p1.x)
+print(p1[0] - p1[1])
+print(p1._asdict())
+```
+
+### 2.2 deque()
+
+- `deque` 方法可以把一个list对象转成一个队列
+- 队列对象除了 `append()` 和 `pop()` 外，还支持 `appendleft()` 和 `popleft()` ，从头部添加或删除元素
+
+```python
+from collections import deque
+
+queue = deque([2, 4, 6, 1])
+
+queue.pop()
+queue.append("x")
+queue.appendleft("Y")
+print(queue)
+queue.popleft()
+print(queue)
+```
+
+### 2.3 defaultdict
+
+- `from collections import defaultdict` 
+- `defaultdict` 类用于创建字典对象
+- 接收一个函数作为参数，当访问的属性在创建的字典对象中不存在时，会执行该函数
+- 作为参数的函数貌似不能接收任何参数
+- 只在使用索引访问属性时生效，使用 `get` 方法不生效
+
+### 2.4 OrderedDict
+
+- `from collections import OrderedDict`
+- 普通的字典对象中的键值对是会根据key进行排序，而 `OrderedDict` 类可以根据键值对设置的顺序，创建键值对有序的字典对象
+
+### 2.5 ChainMap
+
+- `from collections import ChainMap`
+
+### 2.6 Counter
+
+`from collections import Counter`
+
 # 函数式编程
 
 `map` `reduce` `filter` `sorted` 是 python的内建函数，可以从 `functools` 模块中引用得到
@@ -852,3 +992,275 @@ print(Student.school)  # AttributeError
 - `__slots__` 是python类的一个内置属性，用于指定类的实例可以自定义哪些属性
 - `__slots__ = ("name", "age")` 赋值一个字符串的tuple，这样类的实例就只能定义或添加属性，添加其他属性时会抛出 `AttributeError` 异常
 - 该属性只会限制使用 `self` 添加的属性和 使用类实例动态添加的属性，而不会限制类中方法的定义和类属性的定义
+
+### 方法装饰器 @property
+
+- `@property` 装饰器，能够将类的方法转换成属性，在类的内部或者是实例都变成了属性使用
+- `@property` 装饰后的属性名与方法名相同，所以方法名通常定义成属性名
+- `@property` 装饰一个方法的同时，会自动生成一个与该方法同名的装饰器，新的装饰器提供了 `setter` 等装饰器，用于为属性指定setter方法
+- 通常 `@属性名装饰器.setter` 这个装饰器装饰的方法名，与属性名相同，这样才能保持属性的访问和赋值时名称的一致
+- `@property` 装饰的一般是属性的getter方法， `@属性名装饰器.setter` 装饰setter方法，这种情况下，这两个方法可以同名
+- `@property` 装饰后的方法将不能在当做方法使用
+
+```python
+class Book(object):
+    def __init__(self, name, price):
+        self.name = name
+        self.__price = price
+
+    @property  # 提供属性访问器
+    def price(self):
+        return self.__price
+
+    @price.setter  # 提供属性设置器，并有校验条件
+    def price(self, price):
+        if isinstance(price, int):
+            if price <= 0:
+                raise ValueError('price must bigger than 0!')
+            else:
+                self.__price = price
+        else:
+            raise ValueError('price must be an integer!')
+            
+     def reset(self):
+        self.price = 100  # OK
+        self.price(100)  # TypeError: 'int' object is not callable
+
+
+book1 = Book("东野圭吾", 100)
+print(book1.name)
+print(book1.price)
+book1.name = "米泽"
+book1.price = 100.1  # 异常：price must bigger than 0!
+print(book1.name)
+print(book1.price)
+book1.price(20)  # TypeError: 'int' object is not callable
+```
+
+### 多重继承
+
+- python的类是支持多继承的，只需在类名后面的括号用逗号分隔多个父类即可
+- 当多个父类有相同属性或方法时，按继承的顺序从 **左到右**，优先级逐渐降低
+- 设计多继承时，会考虑一个主要的父类，其他的父类相当于是功能的辅助，在python中称为 `MixIn`，就是在类命名时以 `MixIn` 结尾，依次类表示是一种辅助型的父类
+
+#### 1. super()
+
+- 在子类中，可以使用 `super()` 方法获取父类对象的引用，以此来调用父类的方法
+- `super()` 实际是 `super(子类, self)` 的简写，第一个参数是一个类，第二个参数是该类的一个实例，`super` 方法会返回给定类的一个父类实例
+
+### 定制类，内置属性和方法
+
+- python的类有许多内置的属性和方法，这些其实都是继承自 `object` 基类的，都可以重写以更好的定制类
+
+#### 1. \__str__()
+
+`__str__` 类似于 `toString` 方法
+
+#### 2. \__repr__()
+
+`__repr__` 的默认实现是对 `__str__` 方法的调用，可以在不用 `print` 方法的情况下输出对象的信息
+
+#### 3. \__len__()
+
+python内置的 `len()` 方法，返回对象的长度，实际上就是调用对象的 `__len__` 方法
+
+#### 4. \_\_iter__() 与 \_\_next\_\_()
+
+如果一个类想要支持 `for...in...` 的遍历，就必须实现 `__iter__`  和 `__next__` 方法
+
+-  `__iter__`  用于返回一个 `Iterator` 对象，当变量被放到 `for...in...` 的 `in` 之后时，就回调用该变量的 `__iter__` 方法，返回一个可遍历的对象
+-  `__next__` 方法作用域 `for...in...` 的 `for` 和 `in` 之间，每次迭代时，会调用 `__iter__` 方法返回的对象的 `__next__` 方法，获取当前遍历的值，直到遇到 `StopIteration` 异常为止
+- 所以想要实现一个支持 `for...in...` 的类，需要同时实现 `__iter__` 和 `__next__` 方法， 且 `__iter__` 方法通常返回 `self` ，这样才能保证在迭代时调用的是该类的 `__next__` 方法
+
+```python
+class Fibonacci(object):
+    def __init__(self, length=0):
+        self.pre = 0
+        self.cur = 1
+        self.cursor = 0
+        self.length = length
+
+    def __iter__(self):
+        # return iter([1, 2, 3])
+        return self
+
+    def __next__(self, i):
+        if self.cursor >= self.length:
+            self.cursor = 0
+            raise StopIteration()
+        else:
+            self.pre, self.cur = self.cur, self.pre + self.cur
+            self.cursor += 1
+            return self.pre
+
+
+fib = Fibonacci(10)
+for f in fib:
+    print(f)
+```
+
+![](F:\学习\study-notes\Python\pic\iter and next.png)
+
+#### 5. \__getitem__(n)
+
+- `__getitem__` 方法可以实现对象像列表那样支持使用索引(`[index]`)或切片(`[a:b]`)取值
+
+- 参数 `n` 可以是一个数字 `int` ，也可以是一个切片`slice`，所以需要在方法内部进行判断，选择处理方式
+
+```python
+class Fibonacci(object):
+    def __getitem__(self, item):
+        a, b = 1, 1
+        # 普通索引取值
+        if isinstance(item, int):
+            for n in range(item):
+                a, b = b, a + b
+            return a
+        # 切片取值
+        if isinstance(item, slice):
+            start = item.start
+            stop = item.stop
+            if start is None:
+                start = 0
+            result = []
+            for n in range(stop):
+                if n >= start:
+                    result.append(a)
+                a, b = b, a + b
+            return result
+        
+
+fib = Fibonacci()
+print(fib[0])  # 1
+print(fib[1])  # 1
+print(fib[2])  # 2
+print(fib[2:10])  # [2, 3, 5, 8, 13, 21, 34, 55]
+```
+
+与 `__getitem__()` 一起的，还有 `__setitem__()` 和 `__delitem__()` 等方法
+
+#### 6. \__getattr__(n)
+
+- python的对象可以直接用 `obj.attr` 的形式访问属性值，而当访问的属性不存在时，会抛出 `AttributeError` 异常
+- `__getattr__` 方法只在访问的属性不存在时别调用，可用于处理对不存在的属性的访问
+- 参数 `n` 是访问的属性名的字符串
+
+```python
+class Book(object):
+    def __init__(self, name, price):
+        self.name = name
+        self.__price = price
+
+    def __getattr__(self, item):
+        if item == "real_price":
+            return 10000
+        # return 0
+        raise AttributeError('%s no attribute %s' % (self.__class__.__name__, item))
+
+        
+book1 = Book("东野圭吾", 100)      
+print(book1.name)  # 东野圭吾
+print(book1.real_price)  # 10000
+print(book1.abc)  # AttributeError
+```
+
+#### 7. \__call__(*args, **kwargs)
+
+- python中处理函数可以调用之外，对象也是可以被调用的，即把对象当成方法，此时只需要实现 `__call__` 方法即可
+
+- 使用python内置的 `callable(obj)` 函数可以判断一个对象是否可以被调用
+
+```python
+class Book(object):
+    def __init__(self, name, price):
+        self.name = name
+        self.__price = price
+        
+    def __call__(self, *args, **kwargs):
+        print("%s's price is %d, %s, %s" % (self.name, self.__price, args, kwargs))
+        
+book1 = Book("东野圭吾", 100)
+book1("123", a=100)  # 东野圭吾's price is 100, ('123',), {'a': 100}
+```
+
+### 枚举(Enum)
+
+- python 的枚举类位于 `enum` 包中：` from enum import Enum`
+- `Enum` 也是一个类，所以要得到一个枚举类型，就要编写一个继承 `Enum` 的类， 或直接使用 `Enum` 的构造方法创建枚举类型
+
+#### 1. 直接使用 `Enum` 构造枚举
+
+`Enum("enum_name", ("member1", "member2", ...))`
+
+```python
+Month_12 = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+```
+
+`Month_12` 只是对枚举类的引用，正面的枚举名称是 `Month`
+
+#### 2. 继承 `Enum` 类
+
+```python
+from enum import Enum, unique
+
+@unique
+class Weekday(Enum):
+    SUN = 0
+    MON = 1
+    TUE = 2
+    WEN = 3
+    THU = 4
+    FRI = 5
+    SAT = "6"
+    
+print(Weekday.WEN)  # Weekday.WEN
+print(Weekday["FRI"])  # Weekday.FRI
+print(Weekday("6"))  # Weekday.SAT
+print(Weekday(1))  # Weekday.MON
+```
+
+- 直接像定义类属性一样，定义枚举的成员
+- `enum` 包的 `@unique` 装饰器可以检查是否有值重复的枚举成员
+
+#### 3. 获取枚举成员
+
+- `枚举类.成员名称`
+- `枚举类.["成员名称"]`
+- `枚举类(成员的值)`
+- `Weekday.__members__["成员名称"]` : 枚举类的 `__members__`  属性可以返回所有成员的一个 `OrderedDict` 对象
+
+#### 4. 获取枚举成员的值
+
+通过枚举成员的 `value` 属性可以获取成员的值
+
+#### 5. 枚举类的属性
+
+- `__member__` : 返回所以成员的一个 `OrderedDict` 对象，这种字典类型是有序的，且只能用索引的方式取值
+
+### 元类
+
+#### 1. type()
+
+- `type()` 函数不仅可以获取对象的类型，还能用于创建类
+- `AClass = type("className", (superClass1, superClass2,...), {attr1: value1, attr2: value2,...})`
+
+```python
+def fn(self, name="world"):
+    print("hello %s" % name)
+
+Hello = type('Hello', (object,), {"hello": fn})
+
+h1 = Hello()
+h1.hello()
+h1.hello("QQ")
+```
+
+#### 2. metaclass
+
+- python的metaclass使用与动态定制类的，在实现 **ORM** 框架是有重要作用
+- **metaclass** 也是一种类，只是它继承的是 `type` 父类，而不是 `object` ，一般元类命名会以 **MetaClass** 结尾
+- 元类可以在类定义时动态地为类添加属性和方法，可以理解为元类是类的构造方法
+- 类定义时在父类列表后面添加 `metaClass` 参数指定元类
+- 在元类中需要实现 `__new__` 方法对要创建的类进行处理
+
+![](F:\学习\study-notes\Python\pic\metaclass.png)
