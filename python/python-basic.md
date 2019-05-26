@@ -1464,3 +1464,125 @@ connect = pymysql.connect(**connect_config)
 - 获取 select 的结果，可以用 `fetchone()` `fetchall()` ` fetchmany(size)` 三个方法，这些方法只是针对上一次 `execute` 的结果进行获取，每行记录为一个tuple
 
 - `rowcount` : 获取上一次 `execute` 影响的行数
+
+# Web开发
+
+### WSGI接口
+
+Web Server Gateway Interface，网络通信的实现方式吧
+
+python内置的 `wsgiref` 模块了提供了 WSGI 接口的实现，`simple_server` 就是一个简单的Http Server
+
+使用`make_server` 方法创建简单的HTTPServer：`from wsgiref.simple_server import make_server`
+
+##### 简单的Web application
+
+```python
+# 简单的Web application
+# server会将所有请求和相响应的方法传递给该方法，在方法内部编写请求信息的解析处理，业务逻辑，并作出响应
+def application(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    who = environ.get("PATH_INFO")[1:] or "Web"
+    for key, value in environ.items():
+        print("%s : %s" % (key, value))
+    print("************************")
+    body = "<h1>Hello, %s!</h1>" % who
+    return [body.encode("utf-8")]
+```
+
+- `environ` : 包含了web请求的所有信息，是一个字典，部分属性：`COMPUTERNAME` `USERNAME` `SERVER_PORT` `SERVER_PROTOCOL` `SERVER_SOFTWARE` `REQUEST_METHOD` `PATH_INFO` `HTTP_HOST`
+- `start_response` : 有web server 提供的响应web 请求的方法，在一次请求处理中，只能执行一次，主要设置响应状态信息和头信息
+- `body` : 响应的body部分就是方法return的内容
+
+##### 简单的web Server
+
+```python
+from wsgiref.simple_server import make_server
+from web.webapp import application
+
+http_server = make_server("localhost", 12000, application)  # 创建Http server
+print("Server Open")
+http_server.serve_forever()  # 启动该server
+```
+
+- `make_server` : 创建一个web server，需要指定主机，端口和请求的处理函数，每次有请求时，会将请求的信息和一个响应的函数传递给请求处理函数
+- `.serve_forever()` : 启动Server， 保持监听状态
+
+### web框架
+
+**Flask**, **Django**, **web.py**, **Bottle**, **Tornado**
+
+### Flask 框架
+
+#### 1. 安装依赖
+
+> pip install flask
+
+#### 2 引用依赖
+
+```python
+from flask import Flask
+from flask import request
+# request 获取请求信息
+# request.args  get请求参数 dict
+# request.get_json()  获取post请求参数
+```
+
+- `Flask` ：用于创建Server和请求分发管理
+- `request` 对象在每次请求时，接收请求的相关参数，在每个请求处理函数中使用 `request` 对象能获取到相应请求的所有参数信息
+  - `.args` get请求参数 dict
+  - `get_data` 获取Post请求参数的字节码， `.get_json()`  获取post请求参数的JSON格式
+
+#### 3 创建Web Server
+
+- 创建一个 `Flask` 的对象，参数为当前模块的 `__name__` ，固定写法
+
+```python
+app = Flask(__name__)
+```
+
+- 同时，`Flask` 对象也是一个装饰器，可用于请求路由的分发
+
+#### 4 请求处理函数
+
+- `Flask` 对象(**app**) 提供了一个 `route` 装饰器，可以指定某个请求路径和请求方式的处理函数：
+
+  `app.route("path", methods=["POST", "GET"])`
+
+- 可以将一个路径的多种请求方式指定为同一个处理函数，只需在 `methods` 参数中指明请求方式即可
+
+- 在处理函数中，通过`request` 对象获取请求的参数信息
+
+#### 5 启动Server
+
+调用 `Flask` 对象的 `run` 方法启动Server，在方法中可以指定 主机，端口等信息
+
+```python
+from flask import Flask
+from flask import request
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def home(*args, **keywords):
+    return '<h1>Home</h1>'
+
+@app.route('/signin', methods=['GET'])
+def signin_form(*args, **keywords):
+    return '''<form action="/signin" method="post">
+              <p><input name="username"></p>
+              <p><input name="password" type="password"></p>
+              <p><button type="submit">Sign In</button></p>
+              </form>'''
+
+@app.route('/signin', methods=['POST'])
+def signin(*args, **keywords):
+    # 需要从request对象读取表单内容：
+    if request.form['username']=='admin' and request.form['password']=='password':
+        return '<h3>Hello, admin!</h3>'
+    return '<h3>Bad username or password.</h3>'
+    
+if __name__ == '__main__':
+    app.run(host="localhost", port=13000)
+```
+
