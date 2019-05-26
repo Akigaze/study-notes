@@ -269,6 +269,60 @@ print("result %d" % sum1)
 - `break`: 结束循环
 - `continue`: 跳过当前循环
 
+# 语法糖
+
+### 1 with语句
+
+> with 语句是从 Python 2.5 开始引入的一种与异常处理相关的功能。with 语句适用于对资源进行访问的场合，确保不管使用过程中是否发生异常都会执行必要的“清理”操作，释放资源，比如文件使用后自动关闭、线程中锁的自动获取和释放等。
+
+#### 相关概念
+
+- **上下文管理协议（Context Management Protocol）**: 包含方法 `__enter__()` 和 `__exit__()`
+- **上下文管理器（Context Manager）**
+- **运行时上下文（runtime context）**
+- **上下文表达式（Context Expression）**
+- **语句体（with-body）**
+
+#### 基本语法
+
+```python
+# [] 表示可选部分
+with context_expression [as target]:
+    with-body	
+```
+
+- **context_expression** 要返回一个上下文管理器对象，该对象并不赋值给 `as` 子句中的 **target**，如果指定了 `as `子句的话，会将上下文管理器的 ` __enter__() ` 方法的返回值赋值给 **target**。**target** 可以是单个变量，或者是元组。
+
+- Python 对一些内建对象进行改进，加入了对上下文管理器的支持，可以用于 with 语句中，比如可以自动关闭文件、线程锁的自动获取和释放等。
+
+#### *with语句执行过程*
+
+```python
+context_manager = context_expression
+exit = type(context_manager).__exit__  
+value = type(context_manager).__enter__(context_manager)
+exc = True   # True 表示正常执行，即便有异常也忽略；False 表示重新抛出异常，需要对异常进行处理
+try:
+    try:
+        target = value  # 如果使用了 as 子句
+        with-body     # 执行 with-body
+    except:
+        # 执行过程中有异常发生
+        exc = False
+        # 如果 __exit__ 返回 True，则异常被忽略；如果返回 False，则重新抛出异常
+        # 由外层代码对异常进行处理
+        if not exit(context_manager, *sys.exc_info()):
+            raise
+finally:
+    # 正常退出，或者通过 statement-body 中的 break/continue/return 语句退出
+    # 或者忽略异常退出
+    if exc:
+        exit(context_manager, None, None, None) 
+    # 缺省返回 None，None 在布尔上下文中看做是 False
+```
+
+
+
 # 函数
 
 ### 1. 调用
@@ -765,6 +819,96 @@ print(queue)
 ### 2.6 Counter
 
 `from collections import Counter`
+
+## 3. urllib
+
+`urllib` 包提供了一系列文本请求的类和方法：`request` `parse` `Request`
+
+#### Get请求
+
+`request.urlopen()` 方法默认发送一个Get请求: 
+
+```python
+def urlopen(url, data=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, *, cafile=None, capath=None, cadefault=False, context=None)
+```
+
+- `url` 参数可以只是一个url的字符串，也可以是一个`Request` 对象
+- 返回一个web请求的上下文管理器，所以通常 `with` 语句进行管理
+
+#### Post请求
+
+- 默认情况下，使用`request.urlopen()` 不指定 `data` 参数的情况下为Get请求，指定 `data` 即为post请求
+- 可以使用 `parse.urlecode()` 方法对请求的参数进行格式化，使用用一个tuple的list传递参数，将参数转换成 `key=value&key=value` 的字符串形式
+- 同时，c传递给 `request.urlopen()` 的 `data` 要指定编码的字符集 
+
+#### Request 类
+
+- 通过 `request.Request` 可以获取 `Request` 类，创建 Request对象时可以传递的参数：`url` `header={}` `data=None` `method=None`  `origin_req_host=None` 等
+- `Request` 类提供了 `add_header` `set_proxy` `get_method` `_parse` 等对请求信息访问和操作的函数
+
+```python
+from urllib import request, parse
+
+with request.urlopen("https://mock.biaoyansu.com/") as resp:
+    data = resp.read()  # data为字节类型，需要decode解码
+    print("URL: %s" % resp.url)
+    print("%s : %s" % (resp.status, resp.reason))
+    for key, value in resp.getheaders():
+        print("%s : %s" % (key, value))
+    print("data: %s" % data.decode("utf-8"))
+
+
+req = request.Request("https://biaoyansu.com/$/search")
+params = parse.urlencode([("keyword", "css")])
+with request.urlopen(req, params.encode("utf-8")) as resp:
+    data = resp.read()  # data为字节类型，需要decode解码
+    print("URL: %s" % resp.url)
+    print("%s : %s" % (resp.status, resp.reason))
+    for key, value in resp.getheaders():
+        print("%s : %s" % (key, value))
+    print("data: %s" % data.decode("utf-8"))
+```
+
+#### 请求响应
+
+`request.urlopen` 返回一个带响应信息的上下文管理器，通过它的方法和属性可以获取到响应信息：
+
+- `.read()` 方法返回响应的 `data` 的字节码，因此在输出结果时要进行解码 `.decode()`
+- `.status` 和 `.reason`
+- `.getHeaders` 响应头信息的tuple列表
+
+## 4. requests
+
+`requests` 是一个第三方包，与 `urllib` 功能相似，都是处理web请求的，它提供了比 `urllib` 简便的写法：`import requests`
+
+- 不需要使用 `with` 语句
+- RESTful风格的请求方法：`.get()` `.post()` `.put()` `.patch()` `.delete()`
+  - `get(url, params=None, **kwargs)` : `params` 参数是指个体请求的url参数，是一个dict
+  - `post(url, data=None, json=None, files=None, **kwargs)` : `data` 参数是post请求的请求体参数，如果是json格式，也可以直接用 `json` 参数，`files` 参数可以传递文件数据的dict
+  - 还可以设置 `headers={}` `cookies=[]` `timeout` 等请求参数
+- 请求结果的属性和方法：
+  - `status_code` `reason`
+  - `headers` dict
+  - `content` 响应数据的字节码， `text` 将响应数据转成文本形式， `json()` 将响应数据转成JSON形式
+
+```
+import requests
+
+resp = requests.get("https://mock.biaoyansu.com/")
+print(resp.content.decode("utf-8"))
+print(resp.text)
+print(resp.status_code)
+print(resp.reason)
+for key, value in resp.headers.items():
+    print("%s : %s" % (key, value))
+
+print("-----------")
+post_resp = requests.post("https://biaoyansu.com/$/search", data={"keyword": "css"})
+print(post_resp.text)
+print(post_resp.json())
+```
+
+
 
 # 函数式编程
 
@@ -1264,3 +1408,59 @@ h1.hello("QQ")
 - 在元类中需要实现 `__new__` 方法对要创建的类进行处理
 
 ![](F:\学习\study-notes\Python\pic\metaclass.png)
+
+# Python 连接数据库
+
+## 1. 连接MySQL
+
+相关包：
+
+- mysql-connect-python
+- mysql-connect
+- PyMySQL
+- SQLAlchemy
+
+### PyMySQL
+
+#### 1 安装包：*pip install pymysql*
+
+#### 2 导入依赖： `import pymysql`
+
+#### 3 创建连接：
+
+```python
+connect_config = {
+    "host": "localhost",
+    "port": 3306,
+    "user": "akigaze",
+    "password": "akigaze",
+    "database": "python-connect"
+}
+
+# 创建DB连接
+connect = pymysql.connect(**connect_config)
+```
+
+`connect` 方法会创建一个`connections.Connection` 对象
+
+#### 4 Connection 对象的方法：
+
+- `close()` : 关闭连接
+- `commit()`
+- `rollback()`
+- `cursor()` : 获取一个操作`Cursor`对象，执行SQL语句或者DB的操作都是有游标对象来完成的
+
+#### 5 Cursor 对象
+
+-  `execute(query, args=None)` : 可以执行任何SQL语句，但不会直接返回执行结果
+
+  - `query` : SQL语句的字符串，可以使用 **%xxx** 作为占位符
+  - `args` : SQL语句的参数，可以是 list，tuple或dict，list和tuple要使用 **%s** 作为占位符，dict则使用 **%key** 作为占位符
+
+  游标默认是没有自动commit， 所以执行 `insert` `update` 或 `delete` 时需要手动执行 `Connection` 对象的 `commit` 方法
+
+- `close()` : 关闭游标
+
+- 获取 select 的结果，可以用 `fetchone()` `fetchall()` ` fetchmany(size)` 三个方法，这些方法只是针对上一次 `execute` 的结果进行获取，每行记录为一个tuple
+
+- `rowcount` : 获取上一次 `execute` 影响的行数
