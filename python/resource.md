@@ -8,3 +8,5 @@
 
 #### 4. [IBM - 浅谈 Python 的 with 语句](<https://www.ibm.com/developerworks/cn/opensource/os-cn-pythonwith/>)
 
+#### 5. [Python之flask框架配置接口，处理跨域](<https://blog.csdn.net/weixin_40970987/article/details/86064245>)
+
