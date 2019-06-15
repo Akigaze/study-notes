@@ -212,14 +212,54 @@ ZipFile(filepath, mode="r", compression=ZIP_STORED, allowZip64=True)
 - `file_size` : 压缩前的文件大小
 - `compress_size` : 压缩后的文件大小
 
+## BZip2 算法
 
+BZip2 是一种 Zip文件的压缩算法，python 中由 `bz2` 模块提供相应的API
 
+#### 安装与导入
 
+> pip install bz2file
 
+```python
+import bz2
+```
 
+#### bz2 模块包含：
+
+- 用于读写压缩文件的 [`open()`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.open) 函数和 [`BZ2File`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.BZ2File) 类。
+- 用于增量压缩和解压的 [`BZ2Compressor`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.BZ2Compressor) 和 [`BZ2Decompressor`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.BZ2Decompressor) 类。
+- 用于一次性压缩和解压的 [`compress()`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.compress) 和 [`decompress()`](https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2#bz2.decompress) 函数。
+
+### 1. bz2.open() & BZ2File
+
+这两个都提供了bz2压缩文件的读或写的功能，返回 `BZ2File` 对象，`BZ2File` 对象有读写文件常用的 `read` 和 `write` 方法
+
+- `bz2.open(filename, mode='r', compresslevel=9, encoding=None, errors=None, newline=None)`
+  - `compresslevel` 是压缩等级，可取值为 **1~9**
+  - `filename` 不仅可以是文件路径的字符串，也可以是其他已打开的文件对象
+- `BZ2File` 的构造方法与 `bz.open` 相似
+
+### 2. bz.compress() 和 bz.decompress()
+
+- `bz2.compress(data, compresslevel=9)` 
+  - `data` 为二进制的数据，`compress` 方法一次性对二进制数据进行压缩，返回压缩后的二进制数据结果
+- `bz2.decompress(data)` : 对二进制数据进行一次性解压，返回解压后的二进制数据
+
+通常使用 `compress` 对数据进行压缩，再用 `decompress` 对结果进行解压检验
+
+### 3. bz2.BZ2Compressor 和 bz2.BZ2Decompressor
+
+- `BZ2Compressor(compresslevel=9)` 类提供了增量压缩的方法，即多次添加需要压缩的数据
+  - `compress(data)` : 传入需要压缩的数据，返回压缩数据的数据块
+  - `flush()` : 结束压缩进程，返回内部缓冲中剩余的压缩完成的数据。
+- `BZ2Decompressor()` 类提供了增量解压缩的方法，可以多次调用解压方法，对需要解压的所有数据解压
+  - `decompress(data, max_length=-1)` : 返回解压后的二进制数据，若多次调用，会与前一次调用的数据进行整合，返回新的解压结果
 
 
 
 ## Link
 
 #### [zipfile 模块](<https://docs.python.org/zh-cn/3.7/library/zipfile.html?highlight=zipfile#>)
+
+#### [对 bzip2压缩算法的支持](<https://docs.python.org/zh-cn/3.7/library/bz2.html?module-bz2>)
+

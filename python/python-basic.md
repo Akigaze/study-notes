@@ -1590,3 +1590,34 @@ def signin(*args, **keywords):
 if __name__ == '__main__':
     app.run(host="localhost", port=13000)
 ```
+
+## 虚拟环境Virtualenv
+
+python的 `virtualenv` 包可以为每个python项目提供独立的python环境，包括python的版本，解释器和第三方包等
+
+#### 1. 安装virtualenv
+
+> pip install virtualenv
+
+#### 2. 创建虚拟环境
+
+在项目工程的根目录，执行以下 `virtualenv` 命令，在指定目录下创建虚拟环境：
+
+> virtualenv venvpath
+
+这样会在 *venvpath* 目录下创建如下文件：![](F:\学习\study-notes\Python\pic\venv.png)
+
+执行 *Scripts* 目录下的 ***activate*** 脚本可以进入虚拟环境，这样在这个环境下可以任意安装包或者更改python设置，都不会影响全局的python环境，相关命令：
+
+> .\venvpath\Scripts\activate 或 activate
+
+同样执行 *Scripts* 目录下的 ***deactivate*** 脚本则可以退出虚拟环境，相关命令：
+
+> .\venvpath\Scripts\deactivate 或 deactivate
+
+#### 3. 创建虚拟环境的相关参数
+
+- *--system-site-packages*
+- *--no-site-packages*
+- *-p **python-version***
+
