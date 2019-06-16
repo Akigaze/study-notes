@@ -1621,3 +1621,73 @@ python的 `virtualenv` 包可以为每个python项目提供独立的python环境
 - *--no-site-packages*
 - *-p **python-version***
 
+## 异常处理
+
+### 1. try...except...finally
+
+```python
+try:
+    print('try...')
+    r = 10 / int('2')
+    print('result:', r)
+except ValueError as e:
+    print('ValueError:', e)
+except ZeroDivisionError as e:
+    print('ZeroDivisionError:', e)
+else:
+    print('no error!')
+finally:
+    print('finally...')
+print('END')
+```
+
+`except` 会捕获指定的 异常类型，使用 `except ErrorType as errorobj:` 的形式，同时可以添加多个 `except` 语句，捕获多种类型的异常
+
+在 `except` 语句之后，还可以添加一个 `else` 语句，用于在没有发生异常的情况下执行操作
+
+对于python的异常类型，全部都是继承了 `BaseException` 类
+
+### 2. raise 抛出异常
+
+python 中使用 `raise` 关键字来抛出一个异常，有两种使用形式：
+
+- `raise errorobj` ：抛出指定的异常对象
+
+  ```python
+  class FooError(ValueError):
+      pass
+  
+  def foo(s):
+      n = int(s)
+      if n==0:
+          raise FooError('invalid value: %s' % s)
+      return 10 / n
+  ```
+
+- `raise` : 在 `except` 语句块中，直接使用 `raise` 关键字，可以把 `except` 捕获的异常对象抛出
+
+## 调试
+
+#### 1. print()
+
+#### 2. assert 断言
+
+使用 `assert` 语句可以判断指定表达式的结果是否为 `True` ，否则抛出 `AssertionError` 异常：`assert expression, 'error message'`
+
+```python
+assert n != 0, 'n is zero!'
+```
+
+#### 3. logging 日志
+
+`logging` 模块提供了日志记录的功能，可以指定日志的级别和输出的位置
+
+```python
+import logging
+```
+
+- 日志级别：`debug`，`info`，`warning`，`error` ，在 `logging` 模块中提供了相应的常量和输出日志的方法，使用 `logging.basicConfig()` 方法对日志输出进行设置
+
+  ```python
+  logging.basicConfig(level=logging.INFO)
+  ```
