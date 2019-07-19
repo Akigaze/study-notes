@@ -908,6 +908,10 @@ print(post_resp.text)
 print(post_resp.json())
 ```
 
+### pygame 游戏开发模块
+
+### random 随机数模块
+
 
 
 # 函数式编程

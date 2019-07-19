@@ -10,3 +10,5 @@
 
 #### 5. [Python之flask框架配置接口，处理跨域](<https://blog.csdn.net/weixin_40970987/article/details/86064245>)
 
+### 6. [pygame 游戏模块](<https://www.pygame.org/news>)
+
