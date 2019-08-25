@@ -205,3 +205,290 @@ eg <- expand.grid(x=x, y=y) # expand.grid()会生成包含所有x，y组合的�
 eg$z <- eg$x^2 + eg$x * eg$y
 wireframe(z ~ x+y, eg, shade = TRUE) # wireframe()根据指定的变量关系和数值，绘制3D图像
 
+### from R in Action ###
+
+?mtcars
+mtcars
+
+drawmtcars <- function(){
+  attach(mtcars)
+  plot(wt, mpg)
+  abline(lm(mpg~wt))
+  title("Regression of MPG on Weight")
+  detach(mtcars)
+}
+
+pdf("mtcars-mpg-wt.pdf")
+drawmtcars()
+dev.off()
+
+savetopdf <- function(name, draw){
+  fullname <- paste(name, "pdf", sep = ".")
+  pdf(fullname)
+  draw()
+  dev.off()
+}
+
+savetopng <- function(name, draw){
+  fullname <- paste(name, "png", sep = ".")
+  png(fullname)
+  draw()
+  dev.off()
+}
+
+savetopdf("mtcars-mpg-wt", drawmtcars)
+savetopng("mtcars-mpg-wt", drawmtcars)
+
+### example ###
+dose <- c(20,30,40,45, 60)
+druga <- c(16, 20, 27, 40, 60)
+drugb <- c(15, 18, 25, 31, 40)
+dev.new()
+plot(dose, druga, type = "b", main = "Drug A", ylim = c(0, 60))
+dev.new()
+opar <- par(no.readonly = TRUE) # no.readonly = TRUE 参数可以复制一份当前全局图像参数的设置
+par(lty=2, pch=17) # par函数会修改全局的图像参数
+plot(dose, drugb, type = "b", main = "Drug B", ylim = c(0, 60))
+par(opar) # 将图形参数设置还原成最开始的
+dev.off()
+
+### R color ###
+
+colors() # 查看内置颜色
+# R 中有丰富的生成不同模式的颜色的函数
+rainbow(7) # 生成指定数量的彩虹颜色
+heat.colors(3)
+terrain.colors(3)
+topo.colors(3)
+cm.colors(3)
+
+# 设置颜色的属性
+# col
+# col.main, col.axis, col.lab, col.sub, bg, fg
+
+n <- 14
+barplot(rep(1, n), col=rainbow(n), main = "Hello world", col.main="#FF8000FF", col.axis="#FF8000FF") #barplot() 绘制柱状图
+mycolors <- rainbow(n)
+pie(1:n, col = mycolors, labels = mycolors) #pie() 绘制饼图
+
+### R 文字 ###
+opar <- par(no.readonly = TRUE)
+par(cex=3, cex.main=4, cex.axis=2, cex.lab=2)     # cex 参数主要是设置字号
+par(font=4, font.main=3, font.axis=2, font.lab=5) # font 参数是设置字体样式
+plot(dose, druga, type = "b", main = "Drug A")
+text(locator(1), "A point")
+par(opar)
+
+### 尺寸 ###
+dev.new()
+opar <- par(no.readonly = TRUE)
+par(pin=c(2,3), mai=c(5,2,2,5))
+par(lwd=2, cex=1.5)
+par(cex.axis=.75, font.axis=3)
+plot(dose, druga, type = "b", pch=19, lty=2, col="red")
+
+plot(dose, drugb, type = "b", pch=23, lty=6, col="blue", bg="green")
+par(opar)
+dev.off()
+### 标题，坐标轴 ###
+hist(
+  drugb, 
+  col = "red",
+  main = "Clinical Trials for Drug B", 
+  sub="This is hypothetical data", 
+  xlab = "Dosage", 
+  ylab = "Drug Response", 
+  xlim = c(0, 60),
+  ylim = c(-10, 60)
+)
+
+### title ###
+hist(drugb, ann=FALSE)
+# title() 不仅设置所有和标题相关的内容和参数，包括主标题，副标题，坐标轴标题等
+title(
+  col.main="orange",
+  main = "Clinical Trials for Drug B", 
+  sub="This is hypothetical data", 
+  xlab = "Dosage", 
+  ylab = "Drug Response",
+  col.iab="blue"
+)
+
+### 禁用绘图的默认设置 ###
+# ann=FALSE 禁用标题
+# axes=FALSE 禁用坐标轴和边框
+# frame.plot = FALSE 禁用边框，对边框控制的优先级高于axes 
+# xaxt="n", yaxt="n" 禁用指定坐标轴
+plot(dose, druga, type = "b", ann=FALSE, axes = FALSE)
+plot(dose, druga, type = "b", frame.plot = FALSE)
+plot(dose, druga, type = "b", xaxt="n")
+plot(dose, druga, type = "b", yaxt="n")
+
+### 坐标轴 ###
+# axis() 添加坐标轴
+# side参数设置坐标轴的位置：1下，2左，3上，4右
+# at参数设置刻度的位置，同时也限定了轴的范围
+# labels刻度上的文本
+x = c(20, 30, 40, 50, 60)
+z = c(20, 30, 40, 50, 50)
+opar <- par(no.readonly = TRUE)
+par(mar=c(5,4,4,8) + 0.1)
+plot(dose, druga, type = "b", pch=21, lty=3, col="red", ann=FALSE, yaxt="n")
+lines(x, z, type = "b", pch=22, col="blue", lty=2)
+axis(2, at=druga, labels = druga, col="yellow", lty=5, col.axis="red", las=2)
+axis(4, at=z, labels = z, col="green", col.axis="blue", las=2, cex.axis=0.7, tck=-0.01)
+mtext("y=1/x", side = 4, line = 3, cex.lab=1, las=2, col="blue")
+title("An Example of Creative Axes", xlab = "X value", ylab = "Y = X")
+par(opar)
+dev.off()
+
+### abline 参考线 ###
+plot(dose, druga, type = "b", pch=21, lty=3, col="red", main="Test Line of Reference")
+abline(h=c(30, 50), col="blue", lty=3) # h 参数指定水平参考线
+abline(v=c(25, 40), col="green", lty=4) # v 参数指定竖直参考线
+abline(a=0, b=1, col="pink") # a, b 代表截距和斜率
+abline(c(60, -1), col="orange") # 截距和斜率
+
+### Hmisc 次级刻度线 ###
+install.packages("Hmisc")
+library()
+### legend 图例 ###
+opar <- par(no.readonly = TRUE)
+par(lwd=2, cex=1.5, font.lab=2)
+plot(dose, druga, type = "b", pch=15, lty=1, col="red", ylim = c(0, 60), xlab = "Drug Dosage", ylab = "Drug Response")
+lines(dose, drugb, type = "b", pch=17, col="blue", lty=2)
+abline(h=30, lwd=1.5, lty=2, col="grey")
+title(main = "Drug A vs. Drug B")
+legend("topleft", inset = 0.05, title = "Drug Type", legend = c("A", "B"), lty=c(1, 2), col=c("red", "blue"), pch = c(15, 17))
+# legend() 通过 x, y 参数指定图例的位置， 也可以使用locator(), 或者"topleft" 这样的定位方式
+# legend参数指定图例的数量，顺序和名称， 在指定其他相关属性时也必须按该顺序和数量来设置
+par(opar)
+dev.off()
+
+### text/mtext 文本标注 ###
+attach(mtcars)
+plot(wt, mpg, main = "Mileage vs. Car Weight", xlab = "Weight", ylab = "Mileage", pch=18, col="blue")
+text(wt, mpg, row.names(mtcars), cex=0.6, pos=4, col="red")
+# pos 参数可以设置文本相对于坐标的方位：1下，2左，3上，4右
+detach(mtcars)
+# mtext() 可以在图标边框外添加文本
+
+### 图形组合 ###
+mfrowexample <- function(){
+  attach(mtcars)
+  oper <- par(no.readonly = TRUE)
+  par(mfrow=c(2,2)) # mfrow 可以将绘图区划分成指定行数和列数，每次绘制图形时往不同区域填充图形，mfrow 指定按行填充，mfcol 指定按列填充
+  plot(wt, mpg, main = "1. Mileage vs. Car Weight")
+  plot(wt, disp, main = "2. Displacement  vs. Car Weight")
+  hist(wt, main = "3. Histogram of Weight")
+  boxplot(wt, main = "4. Boxplot of Weight")
+  par(opar)
+  detach(mtcars)
+}
+
+multiplot <- function(mf, draw){
+  opar <- par(no.readonly = TRUE)
+  par(mfrow=mf) # mfrow 可以将绘图区划分成指定行数和列数，每次绘制图形时往不同区域填充图形，mfrow 指定按行填充，mfcol 指定按列填充
+  draw()
+  par(opar)
+}
+dev.new()
+multiplot(c(3,1), function(){
+  attach(mtcars)
+  hist(mpg)
+  boxplot(disp)
+  pie(wt, pin=c(3,4))
+  detach(mtcars)
+})
+
+layoutplot <- function(mx, draw, ws=NULL, hs=NULL){
+  layout(mx, widths = ws, heights = hs)
+  draw()
+}
+
+plotdistribution <- c(1,1,2,3,4,4)
+layoutplot(
+  matrix(plotdistribution, 3,2, byrow = TRUE),
+  function(){
+    attach(mtcars)
+    hist(mpg)
+    boxplot(disp)
+    pie(wt, )
+    plot(wt, gear)
+    detach(mtcars)
+  }
+)
+
+layoutplot(
+  matrix(c(1,2), nrow = 1),
+  function(){
+    plot(1:8, 8:1)
+    layoutplot(
+      matrix(plotdistribution, 3,2, byrow = TRUE),
+      function(){
+        attach(mtcars)
+        hist(mpg)
+        boxplot(disp)
+        pie(wt, )
+        plot(wt, gear, cex=9)
+        detach(mtcars)
+      }
+    )
+  }
+)
+
+layoutplot(
+  matrix(plotdistribution, 3,2, byrow = TRUE),
+  function(){
+    attach(mtcars)
+    hist(mpg)
+    boxplot(disp)
+    pie(wt)
+    plot(wt, gear)
+    detach(mtcars)
+  },
+  ws=c(3,1), 
+  hs=c(1,2,1)
+)
+
+sort(mtcars$disp)
+median(mtcars$disp)
+max(mtcars$disp)
+boxplot(mtcars$disp)
+layout(matrix(1, 1,1))
+
+layout(matrix(c(1,2,3,0,2,3,0,0,3),nrow =3))
+layout.show(4)
+layout(matrix(1))
+
+figexample <- function(){
+  opar <- par(no.readonly = TRUE)
+  par(fig = c(0, 0.8, 0, 0.8))  # (x1, x2, y1, y2) 按百分百从这个绘图区域选出指定的范围进行绘图，绘图一般是居中绘制的
+  plot(mtcars$wt, mtcars$mpg, ylab = "Miles Per Gallon", xlab = "Weight of Car")
+  par(fig = c(0, 0.8, 0.65, 1), new=TRUE) # new 参数让par函数冉伟当前图像就是一个新开的图像
+  boxplot(mtcars$wt, horizontal = TRUE, axes=FALSE)
+  par(fig = c(0.65,1, 0, 0.8), new=TRUE)
+  boxplot(mtcars$mpg, axes=FALSE)
+  mtext("Enhanced Scatterplots", side = 3, line = -3, outer = TRUE, font=2)
+  par(opar)
+}
+
+figexample()
+
+
+symbolschart <- function(){
+  attach(mtcars)
+  r <- sqrt(disp/pi)
+  symbols(wt, mpg, circle = r, inches = 0.1, fg="aliceblue", bg="lightblue", ann=FALSE) 
+  title(main="Bubble Plot", xlab = "Weight of Car", ylab = "Miles Per Gallon")
+  text(wt, mpg, row.names(mtcars), cex=0.4)
+  detach(mtcars)
+}
+pdf("bubble.pdf")
+symbolschart()
+dev.off()
+
+cs <- colors()
+csblue <- cs[endsWith(cs, "blue")]
+barplot(1:length(csblue), col = csblue, names.arg=1:length(csblue))
+axis(side = 1, at)

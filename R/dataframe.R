@@ -165,3 +165,19 @@ kMap <- soundMap(canMAns, "Man cons", "Can cons", "k")
 kMap
 
 nchar(c("2","123"))
+
+### from R in Action ###
+
+myDataFrame <- data.frame(age=numeric(0), gender=character(0), weight=numeric(0))
+myDataFrame <- edit(myDataFrame) # 传入的参数是数据框，edit() 会调用相应的泛型函数，使用表格形式输入值
+methods(edit)
+
+myDataFrameStr <- "
+age gender  weight
+1   F       2
+2   M       4
+"
+myDataFrame <- read.table(text=myDataFrameStr, header = TRUE) # read.table() 可以通过text参数从字符串中提取数据
+myDataFrame
+# read.table() 只能从存文本文件中提取数据
+str(myDataFrame)

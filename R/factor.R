@@ -46,3 +46,34 @@ names(abalone) <- c("Gender", "Diameter", "Length")
 head(abalone)
 by(abalone, abalone$Gender, function(df) lm(df[,2]~df[,3])) # by() 与tapply相似，但是可以输入数据框
 # by() 会将数据框按因子分组成不同的子数据框，在执行函数
+
+
+### from R in Action ###
+
+diabetes <- c('Type2', 'Type1', 'Type1', 'Type2')
+diabetesTypes <- factor(diabetes)
+diabetesTypes
+levels(diabetesTypes) # 默认情况下因子的水平按字母数字顺序排序
+
+status <- c('ailing', 'improved', 'excellent', 'ailing')
+statusTypes <- factor(status, order = TRUE, levels = c('excellent', 'improved', 'ailing'))
+statusTypes 
+# order参数可以指定因子记住水平的顺序
+# levels 指定因子的水平和顺序，但是有在order=TRUE是，因子对象才会记住顺序
+
+statusTypes <- factor(status, order = TRUE, levels = c('excellent', 'improved', 'ailing'), labels = c('E', 'I', 'A'))
+# labels 可以为水平命名
+# 默认情况下，根据levels参数或向量数据的值为水平命名
+# 使用[index]为因子添加数据时，只能添加与水平名称相同的值
+statusTypes
+statusTypes[5] <- 'A'
+statusTypes[6] <- 'excellent'
+
+sexes <- c(1,2,1,1,2,2,1)
+sexTypes <- factor(sexes, levels = c(1,2), labels = c("Male", "Female"))
+sexTypes
+sexTypes[8] <- 2
+sexes <- c("Male", "Female", "Male", "Female")
+sexTypes <- factor(sexes, levels = c(1,2), labels = c("Male", "Female"))
+# factor() 会根据levels参数从数据中提取因子数据，然后再根据labels为水平命名
+sexTypes
