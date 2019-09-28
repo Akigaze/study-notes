@@ -1,0 +1,87 @@
+code {
+    background-color: #e8e8e8;
+}
+
+.opening {
+    font-size: 24px;
+}
+
+.top-box {
+    width: 300px;
+    height: 50px;
+    margin: 5px auto;
+    border: 1px solid #91827e;
+    border-radius: 5px;
+    background-color: #faa492;
+}
+
+.bottom-box {
+    width: 300px;
+    height: 50px;
+    margin: 5px auto;
+    border: 1px solid #3d7e9a;
+    border-radius: 5px;
+    background-color: #85d7fb;
+}
+
+.relative-box {
+    width: 300px;
+    height: 50px;
+    margin: 5px auto;
+    border: 5px solid #60967b;
+    border-radius: 5px;
+    background-color: #6ff5a1;
+    /* relative position will keep the original position of the box */
+    position: relative;
+    top: -20px;
+    left: -20px;
+    /*top and left have higher priority*/
+    right: 50px;
+    bottom: 50px;
+}
+
+.fixed-box {
+    width: 300px;
+    height: 50px;
+    /* when margin is auto, it will be no impact when only set one of left or right */
+    /* if set both left and right, margin auto will work */
+    margin: 5px auto;
+    border: 5px solid #fc1266;
+    border-radius: 5px;
+    background-color: #fa7cab;
+    /* fixed position will lose the original position of the box */
+    position: fixed;
+    /* when set the top, left, bottom or right, the box will be offset from the browser window */
+    /* if don't set anyone of top, left, bottom or right, the box will move to left */
+    top: 50px;
+    left: 50px;
+    /*top and left have higher priority*/
+    /* right: 50px; */
+    /* bottom: 50px; */
+}
+
+.parent {
+    position: relative;
+}
+
+.absolute-box {
+    width: 300px;
+    height: 50px;
+    /* when margin is auto, it will be no impact when only set one of left or right */
+    /* if set both left and right, margin auto will work */
+    /* this is same to fixed */
+    margin: 5px auto;
+    border: 5px solid #fdc72f;
+    border-radius: 5px;
+    background-color: #f6d883;
+    /* absolute position will lose the original position of the box */
+    /* it will change the position based on its nearest positioned parent or the body */
+    position: absolute;
+    /* when set the top, left, bottom or right, the box will be offset from the browser window */
+    /* if don't set anyone of top, left, bottom or right, the box will move to left */
+    top: 20px;
+    left: 20px;
+    /*top and left have higher priority*/
+    /* right: 50px; */
+    /* bottom: 50px; */
+}

@@ -1,0 +1,63 @@
+/** challenge.html **/
+body * {
+    box-sizing: border-box;
+}
+
+span {
+    position: absolute;
+}
+
+.container {
+    box-sizing: content-box;
+    position: relative;
+    height: 450px;
+    border: 2px solid #fe8666;
+}
+.container > span {
+    background-color: #fe8666;
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 200px;
+    width: 200px;
+    border: 2px solid #18c0cb;
+}
+nav > span {
+    background-color: #18c0cb;
+}
+nav li > a {
+    color: #18c0cb;
+    text-decoration: none;
+}
+
+section {
+    margin-left: 200px;
+    height: 150px;
+    border: 2px solid #ffd541;
+}
+section > span {
+    background-color: #ffd541;
+}
+section code {
+    background-color: #e8e8e8;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    height: 100px;
+    border: 2px solid #31f8c9;
+    width: 100%;
+}
+footer > p {
+    text-align: center;
+}
+footer > span {
+    background-color: #31f8c9;
+}
+footer code {
+    background-color: #e8e8e8;
+}

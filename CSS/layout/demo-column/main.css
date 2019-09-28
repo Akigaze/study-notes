@@ -1,0 +1,28 @@
+code {
+  background-color: #e8e8e8;
+}
+
+.container {
+  position: relative;
+  width: fit-content;
+}
+
+.three-columns {
+  width: 500px;
+  padding: 1em 1em 2em 1em;
+  border: 2px solid #fc8576;
+  column-count: 3;
+  column-gap: 1em;
+}
+
+.three-columns-title {
+  background-color: #fc8576;
+  position: absolute;
+  top: 0;
+}
+
+.three-columns-desc {
+  background-color: #fc8576;
+  float: right;
+  margin-top: -20px;
+}

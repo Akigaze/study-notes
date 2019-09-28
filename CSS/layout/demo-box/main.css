@@ -1,0 +1,35 @@
+code {
+    background-color: #e8e8e8;
+}
+
+.thin {
+    width: 500px;
+    height: 150px;
+    margin: 5px auto;
+    border-radius: 5px;
+    background-color: #f58ab2;
+    border: 1px solid #999;
+}
+
+.fat {
+    /* as default, the total size of the box is `width + padding + border` */
+    width: 500px;
+    height: 150px;
+    margin: 5px auto;
+    border-radius: 5px;
+    background-color: #8ff3d8;
+    border: 20px solid #555;
+    padding: 20px;
+}
+
+.box-fat{
+    /* "box-sizing: border-box" can prevent the impact of padding and border to size */
+    width: 500px;
+    height: 150px;
+    margin: 5px auto;
+    border-radius: 5px;
+    background-color: #8ff3d8;
+    border: 20px solid #555;
+    padding: 20px;
+    box-sizing: border-box;
+}

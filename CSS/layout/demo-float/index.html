@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo 3</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h4>a little example</h4>
+      <p>
+        <img src="image\ilta.png" alt="missing ilta" />
+        <code>float</code>
+        的元素会失去文档流的位置，基于父元素进行偏移；它的位置会被兄弟元素占领，
+        但是兄弟元素的子元素无法占领。<br />
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
+        imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae
+        scelerisque enim ligula venenatis dolor. Maecenas nisl est, ultrices nec
+        congue eget, auctor vitae massa. Fusce luctus vestibulum augue ut
+        aliquet. Mauris ante ligula, facilisis sed ornare eu, lobortis in odio.
+        Praesent convallis urna a lacus interdum ut hendrerit risus congue.
+      </p>
+    </div>
+    <div class="box-container">
+      <div class="first-man">
+        <span>&lt;div class="first-man"&gt;</span>
+        <p>后面的 <code>float: left</code> 的元素对我没有影响</p>
+      </div>
+      <div class="box">
+        <span>&lt;div class="box"&gt;</span>
+        <p>我感觉好像我在漂浮！</p>
+      </div>
+      <section>
+        <span>&lt;section&gt;</span>
+        <p>
+          在这个例子中， <code>section</code> 元素实际上是在
+          <code>div</code> 之后的（译注：DOM结构上）。然而 div
+          元素是浮动到左边的，于是 section 中的文字就围绕了
+          <code>div</code> ，并且
+          <code>section</code> 元素包围了整个元素。如果我们想让
+          <code>section</code> 显示在浮动元素之后呢？
+        </p>
+      </section>
+    </div>
+    <div class="clear-container">
+      <div class="box">
+        <span>&lt;div class="box"&gt;</span>
+        <p>
+          我感觉好像我在漂浮！<br />
+          <code>float</code> 的元素会相互阻挡，就行这个元素被上一个
+          <code>div</code> 的浮动元素堵住了
+        </p>
+      </div>
+      <section class="after-box">
+        <span>&lt;section class="after-box"&gt;</span>
+        <p>
+          使用 <code>clear</code> 我们就可以将这个段落移动到浮动元素
+          <code>div</code> 下面。你需要用
+          <code>left</code> 值才能清除元素的向左浮动。你还可以用
+          <code>right</code> 或
+          <code>both</code> 来清除向右浮动或同时清除向左向右浮动。
+        </p>
+      </section>
+    </div>
+    <div class="container">
+      <h4>floater higher than parent</h4>
+      <p>
+        <img src="image\ilta.png" alt="missing ilta" /> ... ...Lorem ipsum dolor
+        sit amet, consectetur adipiscing elit. The ilte is big than me.
+      </p>
+    </div>
+    <div class="container">
+      <h4>overflow can fix the problem</h4>
+      <p class="overflow-fix">
+        <span>&lt;p class="overflow-fix"&gt;</span>
+        <img src="image\ilta.png" alt="missing ilta" /> ... ...Lorem ipsum dolor
+        sit amet, consectetur adipiscing elit. The ilte is big than me. <br/>
+        <code>overflow</code> 用于父元素，可以防止子元素溢出，一般用于处理高度溢出的问题
+      </p>
+    </div>
+  </body>
+</html>

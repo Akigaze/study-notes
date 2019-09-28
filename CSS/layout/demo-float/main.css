@@ -1,0 +1,77 @@
+code {
+    background: #eee;
+}
+
+body > div {
+    margin-bottom: 10px;
+}
+
+.container {
+    overflow: auto;
+}
+
+.container > p {
+    width: 500px;
+    margin: auto;
+    color: #734161;
+    background-color: #e8e8e8;
+    font-size: 18px;
+    padding: 0 0 1em 0;
+}
+
+p > img {
+    float: right;
+    margin: 0 0 1em 1em;
+}
+
+.first-man {
+    height: 60px;
+    border: 2px solid #3ee5b4;
+}
+.first-man > span {
+    background-color: #3ee5b4;
+}
+
+.box {
+    /* the float element will lose its original position, the new position basing on its parent */
+    /* its brother element will occupy the position, but their children can not */
+    /* but those float element will block each other if they overlap */
+    float: left;
+    border: 2px solid #83cdf9;
+    height: 100px;
+    width: 200px;
+    margin: 30px;
+    box-sizing: border-box;
+}
+.box > span {
+    background-color: #83cdf9;
+}
+
+section {
+    border: 2px solid #9894fb;
+    height: 100px;
+}
+
+.box-container section > span {
+    background-color: #9894fb;
+    margin-left: -260px;
+}
+.clear-container section > span {
+    background-color: #9894fb;
+}
+
+.after-box {
+    /* clear can prevent the impact from float element,
+    so that the element will not occupy the position of the specific float element */
+    clear: left;
+}
+
+.overflow-fix {
+    /* overflow can be used in parent element to prevent the float children overflow */
+    /* it always use to fix height issue */
+    overflow: auto;
+}
+.overflow-fix > span {
+    color: #f0f0f0;
+    background-color: #262445;
+}

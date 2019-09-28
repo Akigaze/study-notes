@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo 2</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <p class="opening">
+      If the position is not <strong>static(default)</strong>, we say that
+      element is <strong>positioned</strong>
+    </p>
+    <div>
+      <p>position relative</p>
+      <div class="top-box"></div>
+      <div class="relative-box">
+        使用<code>position: relative</code>
+        的元素，文档流会保留该元素原有的位置不被其他文档流中的元素占领，同时
+        <code>top</code>，<code>left</code> 等属性设置的是相对于原有位置的偏移
+      </div>
+      <div class="bottom-box"></div>
+    </div>
+    <hr />
+    <div>
+      <p>position fixed</p>
+      <div class="top-box"></div>
+      <div class="fixed-box">
+        使用<code>position: fxed</code>
+        的元素会失去在文档流中的位置而被其他文档流中的元素占领，同时
+        <code>top</code>，<code>left</code>
+        等属性设置的是相对于浏览器窗口的位置偏移 <br />
+        <code>margin: auto</code> 在左右方向要生效只有同时设置了
+        <code>left</code> 和 <code>right</code> 才行. <br />
+        当没有设置 <code>left</code> 或
+        <code>right</code> 时，元素会紧靠父元素的左边；当没有设置
+        <code>top</code> 或 <code>bottom</code> 时，元素会保持原有所在高度
+      </div>
+      <div class="bottom-box"></div>
+    </div>
+    <hr />
+    <div class="parent">
+      <p>position absolute</p>
+      <div class="top-box"></div>
+      <div class="absolute-box">
+        <code>position: absolute</code> 的定位方式与
+        <code>fixed</code> 有些相似，它是以最近的一个
+        <code>positioned</code> 的父元素或 <code>body</code> 为基准进行偏移的
+      </div>
+      <div class="bottom-box"></div>
+    </div>
+  </body>
+</html>

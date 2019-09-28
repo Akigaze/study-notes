@@ -1,0 +1,196 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+code {
+    background: #eee;
+}
+
+.container span {
+    display: inline-block;
+}
+
+@keyframes longer {
+    0% { width: 0; padding: 5px 0; }
+    100% { width: 120px; }
+}
+
+@keyframes rainbow {
+    0% { background-color: #FFFFFF; }
+    5% { background-color: #fd4140; }
+    20% { background-color: #fca507; }
+    35% { background-color: #f0ff00; }
+    50% { background-color: #24ee8e; }
+    65% { background-color: #0ba5aa; }
+    80% { background-color: #9400d3; }
+    95% { background-color: #6535d9; }
+    100% { background-color: #FFFFFF; }
+}
+
+.longer-box {
+    padding: 0 10px 10px 0 ;
+    box-sizing: border-box;
+    border: 2px solid #1bba8e;
+}
+.longer-box > span:first-child {
+    background-color: #1bba8e;
+}
+
+.longer-box  > * {
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.fade-out {
+    animation: 2s longer forwards;
+
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    background-color: #feb055;
+}
+
+.behind-fade-out {
+    height: 40px;
+    border: 2px solid #95adfc;
+    background-color: #FFF;
+}
+
+.after-fade-out {
+    height: 40px;
+    border: 2px solid #23c7c1;
+    background-color: #FFF;
+}
+
+
+.shorter-box {
+    margin-top: 10px;
+    padding: 0 10px 10px 0 ;
+    box-sizing: border-box;
+    border: 2px solid #e84988;
+}
+.shorter-box > span:first-child {
+    background-color: #e84988;
+}
+
+.shorter-box  > * {
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.fade-in {
+    animation: 1.6s longer forwards reverse;
+
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    background-color: #feb055;
+}
+
+.behind-fade-in {
+    height: 40px;
+    border: 2px solid #95adfc;
+    background-color: #FFF;
+}
+
+.after-fade-in {
+    height: 40px;
+    border: 2px solid #23c7c1;
+    background-color: #FFF;
+}
+
+
+.flexible-box {
+    margin-top: 10px;
+    padding: 0 10px 10px 0 ;
+    box-sizing: border-box;
+    border: 2px solid #b8e6d0;
+}
+.flexible-box > span:first-child {
+    background-color: #b8e6d0;
+}
+
+.flexible-box  > * {
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.flexible-man {
+    /* two implementation */
+    animation: 2s longer alternate 2 forwards;
+    /* animation: 2s longer forwards, 1.6s 2s longer forwards reverse; */
+
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    background-color: #feb055;
+}
+
+.behind-man {
+    height: 40px;
+    border: 2px solid #95adfc;
+    background-color: #FFF;
+}
+
+.after-man {
+    height: 40px;
+    border: 2px solid #23c7c1;
+    background-color: #FFF;
+}
+
+
+.rainbow-come-box {
+    margin-top: 10px;
+    padding: 0 10px 10px 0 ;
+    box-sizing: border-box;
+    border: 2px solid #b8e6d0;
+}
+.rainbow-come-box > span:first-child {
+    background-color: #b8e6d0;
+}
+
+.rainbow-come-box  > * {
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.rainbow-box {
+    animation: 2s longer forwards alternate 2, 4s rainbow forwards;
+
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+}
+
+.behind-rainbow {
+    height: 40px;
+    border: 2px solid #95adfc;
+    background-color: #FFF;
+}
+
+.after-rainbow {
+    height: 40px;
+    border: 2px solid #23c7c1;
+    background-color: #FFF;
+}

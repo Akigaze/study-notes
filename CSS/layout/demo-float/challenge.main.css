@@ -1,0 +1,47 @@
+/** challenge.html **/
+body * {
+    box-sizing: border-box;
+}
+
+span {
+    position: absolute;
+}
+
+.container {
+    box-sizing: content-box;
+    min-height: 400px;
+    border: 2px solid #fe8666;
+    overflow: auto;
+}
+.container > span {
+    background-color: #fe8666;
+    margin-left: -200px;
+}
+
+nav {
+    /* if there is an in-line element behind the floater,
+    that element will cover the floater and all block elements*/
+    float: left;
+    height: 200px;
+    width: 200px;
+    border: 2px solid #18c0cb;
+    background-color: aliceblue;
+}
+nav > span {
+    background-color: #18c0cb;
+}
+nav li > a {
+    color: #18c0cb;
+    text-decoration: none;
+}
+
+section {
+    margin-left: 200px;
+    border: 2px solid #ffd541;
+}
+section > span {
+    background-color: #ffd541;
+}
+section code {
+    background-color: #e8e8e8;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo 1</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <div>
+      <p>old box</p>
+      <div class="thin"></div>
+      <div class="fat">
+        <span>
+          默认情况，下一个盒子的总宽度，是 <code>width</code> +
+          <code>padding</code> + <code>border</code>，高度同理.
+      </span>
+      </div>
+    </div>
+    <div>
+      <p>box-sizing</p>
+      <div class="thin"></div>
+      <div class="box-fat">
+        <span>
+          <code>box-sizing</code> 样式可以设置盒子大小计算方式，值
+          <code>border-box</code> 就是将
+          <code>width</code> 的值作为盒子的最终宽度，消除 <code>border</code> 和
+          <code>padding</code> 的影响.
+      </span>
+      </div>
+    </div>
+  </body>
+</html>

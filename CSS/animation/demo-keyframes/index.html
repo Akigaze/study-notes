@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo 4 Animation</title>
+    <link rel="stylesheet" href="animation.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="longer-box">
+        <span>fade out Animation</span><br />
+        <span class="behind-fade-out"> I am the previous. </span>
+        <span class="fade-out"> I can fade out! </span>
+        <span class="after-fade-out"> I am the next. </span> 使用
+        <code>@keyframes</code> 关键字定义一个动画，再通过
+        <code>animation</code> 属性在样式表中添加应用指定动画
+      </div>
+      <div class="shorter-box">
+        <span>fade in Animation</span><br />
+        <span class="behind-fade-in"> I am the previous. </span>
+        <span class="fade-in"> I can fade in! </span>
+        <span class="after-fade-in"> I am the next. </span> 定义动画
+        <code>
+          @keyframes longer { 0% { width: 0; padding: 5px 0; } 100% { width:
+          120px; } }
+        </code>
+        前面的百分数是指动画的进度
+      </div>
+      <div class="flexible-box">
+        <span>fade out and fade in Animation</span><br />
+        <span class="behind-man"> I am the previous. </span>
+        <span class="flexible-man"> I a flexible box! </span>
+        <span class="after-man"> I am the next. </span> 应用一个动画
+        <code>.fade-out { animation: 2s longer forwards;}</code>
+        这样动画就回自动执行，而不需要任何事件类触发动画
+      </div>
+      <div class="rainbow-come-box">
+        <span>fade out with rainbow colors in Animation</span><br />
+        <span class="behind-rainbow"> I am the previous. </span>
+        <span class="rainbow-box"> I a rainbow box! </span>
+        <span class="after-rainbow"> I am the next. </span>
+        <div style="text-align: left">
+          <code>animation</code> 的各个属性: <br />
+          <code>animation-name: rainbow;</code><br />
+          <code>animation-duration: 1s;</code><br />
+          <code>animation-timing-function: linear;</code><br />
+          <code>animation-delay: 1s;</code><br />
+          <code>animation-fill-mode: none/forwards/backwards/both;</code><br />
+          <code>animation-direction: normal/alternate/reverse/alternate-reverse;</code><br />
+          <code>animation-iteration-count: 3;</code><br />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
