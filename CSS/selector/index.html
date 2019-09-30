@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>selector demo</title>
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <div id="div1">
+            <p class="first">I am a <code>&lt;p&gt;</code> I have a class <code>first</code></p>
+            <ul >
+                <li class="first">I am an <code>&lt;li&gt;</code>, I have a class <code>first</code>.</li>
+                <li>I am an <code>&lt;li&gt;</code>, I don't have any class.</li>
+                <li>I am an <code>&lt;li&gt;</code>, I don't have any class.</li>
+                <li class="last">I am an <code>&lt;li&gt;</code>, I have a class <code>last</code>.</li>
+            </ul>
+        </div>
+        <div id="big-father">
+            <p>I am a <code>&lt;p&gt;</code>. My father is a <code>&lt;div&gt;</code>.</p>
+            <ul >
+                <li>
+                    I am an <code>&lt;li&gt;</code>. I <code>#big-father</code>'s grand-child, I have a child <code>&lt;p&gt;</code>.
+                    <p>I am a <code>&lt;p&gt;</code></p>
+                </li>
+                <li>I am an <code>&lt;li&gt;</code>.</li>
+            </ul>
+            <ul>
+                I am the last child, I am a <code>&lt;ul&gt;</code>
+            </ul>
+        </div>
+
+        <div>
+            <p>Attribute Selector</p>
+            <ul >
+                <li>I don't have <code>title</code></li>
+                <li title="good">I have <code>title="good"</code>, I match <code>E[att]</code></li>
+                <li title="bad">I have <code>title="bad"</code>, I match <code>E[att=val]</code></li>
+                <li title="very beautiful">I have <code>title="very beautiful"</code>, I match <code>E[att~=val]</code></li>
+                <li title="very-beautiful">I have <code>title="very-beautiful"</code>, I match <code>E[att|=val]</code></li>
+                <li title="nobody">I have <code>title="nobody"</code>, I match <code>E[att^="val"]</code></li>
+                <li title="abcxyz">I have <code>title="abcxyz"</code>, I match <code>E[att$="val"]</code></li>
+                <li title="flower">I have <code>title="flower"</code>, I match <code>E[att*="val"]</code></li>
+            </ul>
+        </div>
+
+        <div>
+            <p>Pesudo Element</p>
+            <div id="pesudo-1">
+                Manage your showings wherever you are! Take CSS on the road with our CSS Mobile App available for Android & Apple. Create appointments and manage listings and showings from your mobile device.
+                Give your sellers the ease of approving their showings right from their phones via text messaging. Within seconds, your seller can approve or decline showings.
+            </div>
+            <div id="pesudo-2">
+                My first letter is yellow.
+            </div>
+            <div id="pesudo-3">
+                I have a pseudo element before me.
+            </div>
+            <div id="pesudo-4">
+                I have a pseudo element after me, like my feet.
+            </div>
+            <div id="pesudo-5">
+                Call CSS anytime to schedule showing appointments! Live customer service representatives are available 24/7/365 to handle your showing requests. You can even book appointments online with Showings.com.
+                We’re ready when you are!
+            </div>
+        </div>
+    </body>
+</html>

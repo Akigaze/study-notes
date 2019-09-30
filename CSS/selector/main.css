@@ -1,0 +1,134 @@
+code{
+    background-color: #bbb;
+}
+
+#div li{
+    color: #4461f2;
+}
+
+.first{
+    font-size: 20px;
+}
+
+/* 选择同时是li元素且class属性包含first值的元素 */
+li.first{
+    border: 1px solid #45d826;
+    border-radius: 2px;
+}
+
+/* 选择同时是li元素且class属性包含first值的元素 */
+li.last{
+    background: linear-gradient(to right, pink, orange, skyblue);
+    width: 400px;
+}
+
+#big-father{
+    border: 2px solid #8bc34a;
+    border-radius: 10px;
+}
+
+/* 后代选择器，选择 big-father 的后代中的所有 p 标签 */
+#big-father p{
+    background: linear-gradient(to right, pink, #2196F3, #4CAF50);
+}
+
+/* 子元素选择器，选择 big-father 的子元素中所有 p 标签 */
+#big-father > p{
+    font-size: 20px;
+    color: #FFF;
+}
+
+/* 相邻选择器，选择紧挨在 p 标签之后的 ul 标签 */
+#big-father p + ul {
+    border: 3px solid #f44336;
+    border-radius: 10px;
+}
+
+/* 同级选择器，选择在 p 标签之后所有同级的 ul 标签 */
+#big-father p ~ ul {
+    font-style: italic;
+}
+
+/* 属性选择器，为含有指定属性和值的元素添加样式 */
+ li[title]{ /*有 title 属性的 li */
+    font-size: 20px;
+}
+
+li[title=bad]{ /*有 title 属性且值等于 bad 的 li */
+    color: #2196F3;
+}
+
+li[title~=beautiful]{ /*有 title 属性且使用空格分隔不同的值，其中包含 beautiful 的 li */
+    border: 2px solid #4CAF50;
+}
+
+li[title|=very]{ /*有 title 属性且值使用中划线连接单词，其中以 very 开头的 li */
+    border: 2px solid red;
+}
+
+li[title^=no]{ /*有 title 属性且值以 no 做为值开头的 li */
+    background: #FFC107;
+}
+
+li[title$=xyz]{ /*有 title 属性且值以 xyz 作为结尾的 li */
+    background: #26edfe;
+}
+
+li[title*=ow]{ /*有 title 属性且值包含 ow 的 li */
+    background: #6764dd;
+}
+
+/* 伪元素 */
+#pesudo-1::first-line{ /* 对元素在浏览器展示时，文本的第一行添加样式 */
+    background: linear-gradient(to right, skyblue, green, pink, yellow)
+}
+
+#pesudo-2::first-letter{ /* 对元素在浏览器展示时，文本的第一行添加样式 */
+    color: gold;
+}
+
+#pesudo-3{
+    border: 1px solid pink;
+    border-radius: 5px;
+    background-color: pink;
+    width: 150px;
+    height: 60px;
+    position: relative;
+    margin-top: 10px;
+}
+#pesudo-3::before{ /* 在元素之前添加伪元素 */
+    content: "";
+    border-bottom: 10px solid pink;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top-width: 0;
+    position: absolute;
+    top: -10px;
+    left: 70px;
+}
+
+#pesudo-4{
+    border: 1px solid orange;
+    border-radius: 5px;
+    background-color: orange;
+    width: 150px;
+    height: 60px;
+    position: relative;
+    margin-top: 10px;
+}
+#pesudo-4::after{ /* 在元素之后添加伪元素 */
+    content: "";
+    border-top: 3px solid orange;
+    border-left: 5px solid orange;
+    border-right: 5px solid orange;
+    border-bottom: 15px solid transparent;
+    width: 100px;
+    display: inline-block;
+    position: absolute;
+    top: 60px;
+    left: 18px;
+}
+#pesudo-5::selection{ /* 文本被选中的部分添加样式 */
+    background: #34b489;
+    color: #fff;
+}
