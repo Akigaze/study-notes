@@ -42,16 +42,16 @@
 
 采用 flex 布局的元素，称为 flex 容器。容器默认存在两根轴：
 
-1. 水平的主轴（main axis）：主轴开始位置（与边框的交叉点）叫做 `main start`，结束位置叫做 `main end`
-2. 垂直的交叉轴（cross axis）：交叉轴的开始位置叫做 `cross start`，结束位置叫做 `cross end`
+1. 水平的主轴（main axis）：主轴开始位置（与边框的交叉点）叫做 **main start **，结束位置叫做 **main end**
+2. 垂直的交叉轴（cross axis）：交叉轴的开始位置叫做 **cross start** ，结束位置叫做 **cross end**
 
-flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主轴空间叫做 `main size`，占据的交叉轴空间叫做 `cross size`。
+flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主轴空间叫做 **main size** ，占据的交叉轴空间叫做 **cross size** 。
 
 
 
 ### 3. flex容器的属性
 
-在flex容器上可以通过一下6个属性来调节容器内元素的排布方式
+在flex容器上可以通过一下 **6** 个属性来调节容器内元素的排布方式
 
 >- flex-direction
 >- flex-wrap
@@ -72,6 +72,8 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 ```
 
 它有4个可选的值：`row`（默认） 、`row-reverse` 、 `column` 、`column-reverse`
+
+`row` 表示容器中的元素是沿着行的方向排列，即从左到右排；`column` 表示容器中的元素是沿着列的方向排列，即从上到下排；
 
 #### 3.2  flex-wrap
 

@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.demo-flex-direction {
+    display: flex;
+    padding: 10px;
+}
+
+.demo-flex-direction > div{
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: skyblue;
+}
+
+.demo-flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.demo-flex-wrap > div{
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: palevioletred;
+}
+
+.demo-justify-content {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.demo-justify-content > div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background: lightgreen;
+}
+
+.demo-justify-content > #div-2 {
+    width: 200px;
+}
+.demo-justify-content > #div-4 {
+    width: 150px;
+}
+
+.demo-align-items {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.demo-align-items > div {
+    width: 100px;
+    height: 100px;
+    background-color: pink;
+    margin: 5px;
+}
+
+.demo-align-items > #div-2 {
+    height: 50px;
+}
+.demo-align-items > #div-3 {
+    height: auto;
+}
+.demo-align-items > #div-4 {
+    height: 150px;
+}
+.demo-align-items > #div-5 {
+    height: 200px;
+}
+
+.demo-align-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    padding: 10px;
+    height: 300px;
+    background-color: #ddd;
+}
+
+.demo-align-content > div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: orange;
+}
+.demo-align-content > #div-2,
+.demo-align-content > #div-12 {
+    height: auto;
+}
+
+.demo-flex-flow {
+    display: flex;
+    flex-flow: column wrap;
+    padding: 10px;
+    background: darkslategrey;
+    height: 300px;
+}
+
+.demo-flex-flow > div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: lightgoldenrodyellow;
+}
