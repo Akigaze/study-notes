@@ -73,7 +73,7 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 
 它有4个可选的值：`row`（默认） 、`row-reverse` 、 `column` 、`column-reverse`
 
-`row` 表示容器中的元素是沿着行的方向排列，即从左到右排；`column` 表示容器中的元素是沿着列的方向排列，即从上到下排；
+`row` 表示容器中的元素是沿着行的方向排列，即从左到右排；`column` 表示容器中的元素是沿着列的方向排列，即从上到下排
 
 #### 3.2  flex-wrap
 
@@ -187,9 +187,11 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 
 ```css
 .item {
-  order: <integer>;
+  order: <integer>; /* default 0 */
 }
 ```
+
+`order` 的默认值是 **0** ，可以设置为负数
 
 #### 4.2 flex-grow
 
@@ -218,11 +220,13 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 `flex-shrink` 的默认值是 **1**，一行的空间不足时，flex容器就要压缩元素的大小。压缩步骤如下：
 
 1. 计算所有元素的完全大小之和，减去一行的大小，算出要被压缩掉的大小 `W`
-2. 计算每个元素的权重：`n1 = (flex-shrink1) * width1 / [(flex-shrink1)*width1 + (flex-shrink2)*width3 + ...]` 
+2. 计算每个元素的权重：`n1 : n2 : ... = (flex-shrink1)*width1 ： (flex-shrink2)*width2 ： ...` 
 3. 
 4. 为每个元素分配压缩的大小：`reduce1 = [W / (n1 + n2 +...)] * n1`
 
 *注意*，当flex容器的 `flex-wrap` 设置为换行模式时，该属性无效；**负数** 对该属性无效
+
+当把设置 `flex-shrink` 为 **0** , 则该元素不会被压缩，而当所有元素的 `flex-shrink` 都设置为 **0**  时，所有元素都不压缩，flex容器反而会被撑大。
 
 #### 4.4 flex-basis
 
@@ -242,7 +246,7 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 
 ```css
 .item {
-  flex: none | auto | [ flex-grow flex-shrink? || flex-basis ]
+  flex: none | auto | [ flex-grow flex-shrink? || flex-basis ] /* default 0 1 auto */
 }
 ```
 
@@ -263,6 +267,6 @@ flex容器中的元素 **默认沿主轴排列**。单个子元素占据的主�
 }
 ```
 
-`align-seft` 的属性值基本与 `align-items` 一样，多了一个 `auto`；
+`align-self` 的属性值基本与 `align-items` 一样，多了一个 `auto`；
 
 默认值为`auto`，表示继承父元素的 `align-items` 属性

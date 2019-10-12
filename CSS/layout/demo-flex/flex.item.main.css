@@ -1,0 +1,137 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.demo-order {
+    display: flex;
+    margin-top: 10px;
+}
+.demo-order > div {
+    width: 100px;
+    height: 100px;
+    background-color: aliceblue;
+    margin: 5px;
+}
+.demo-order > #div-3 {
+    order: 1;
+}
+.demo-order > #div-4 {
+    order: -1;
+}
+
+.demo-flex-grow {
+    display: flex;
+    margin-top: 10px;
+    width: 1000px;
+    /* width: 250px;
+    flex-wrap: wrap; */
+}
+.demo-flex-grow > div {
+    width: 100px;
+    height: 100px;
+    flex-grow: 1;
+}
+.demo-flex-grow > div:nth-child(2n) {
+    background-color: skyblue;
+}
+.demo-flex-grow > div:nth-child(2n+1) {
+    background-color: hotpink;
+}
+.demo-flex-grow > #div-5 {
+    flex-grow: 2;
+}
+.demo-flex-grow > #div-1 {
+    flex-grow: unset;
+}
+
+.demo-flex-shrink {
+    display: flex;
+    margin-top: 10px;
+    width: 500px;
+    /* flex-wrap: wrap; */
+}
+.demo-flex-shrink > div {
+    width: 100px;
+    height: 100px;
+}
+.demo-flex-shrink > div:nth-child(2n) {
+    background-color: khaki;
+}
+.demo-flex-shrink > div:nth-child(2n+1) {
+    background-color: lavender;
+}
+.demo-flex-shrink > #div-9{
+    width: 200px;
+    flex-shrink: 2;
+}
+.demo-flex-shrink > #div-1{
+    flex-shrink: 0;
+}
+
+.demo-flex-basis {
+    display: flex;
+    margin-top: 10px;
+    width: 1000px;
+}
+.demo-flex-basis > div {
+    width: 100px;
+    height: 100px;
+    flex-grow: 1;
+}
+.demo-flex-basis > div:nth-child(2n) {
+    background-color: darkturquoise;
+}
+.demo-flex-basis > div:nth-child(2n+1) {
+    background-color: darkseagreen;
+}
+.demo-flex-basis > #div-4 {
+    flex-basis: 200px;
+}
+
+.demo-item-flex {
+    display: flex;
+    margin-top: 10px;
+    width: 1200px;
+    /* width: 500px; */
+}
+.demo-item-flex > div {
+    width: 100px;
+    height: 100px;
+    /* flex: 1 0 auto; */
+    /* flex: auto; */
+    flex: none;
+}
+.demo-item-flex > div:nth-child(2n) {
+    background: lemonchiffon;
+}
+.demo-item-flex > div:nth-child(2n+1) {
+    background: lightblue;
+}
+.demo-item-flex > #div-0 {
+    flex: 1 1 auto;
+}
+.demo-item-flex > #div-2 {
+    flex: 2 1 auto;
+}
+
+.demo-align-self {
+    display: flex;
+    margin-top: 10px;
+    height: 150px;
+    background-color: whitesmoke;
+}
+.demo-align-self > div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: #40a977;
+}
+.demo-align-self > #div-2 {
+    height: auto;
+    align-self: center;
+}
+.demo-align-self > #div-4 {
+    height: auto;
+    align-self: baseline;
+}
