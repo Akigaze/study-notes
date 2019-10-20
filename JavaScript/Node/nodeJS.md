@@ -4,6 +4,7 @@
 * events
 * util
 * fs
+* assert
 
 # 导出模块
 ## module.exports
@@ -53,7 +54,7 @@ var greet = require('./hello');
 ```
 模块名不用带扩展名，而且要使用相对路径的形式
 
-由于 require 导入的是 `module.exports` 对象，若要使用 目标模块的多个对象的话，就要使用JS的结构赋值
+由于 require 导入的是 `module.exports` 对象，若要使用目标模块的多个对象的话，就要使用JS的解构赋值
 
 ```javascript
 const {a, b} = require('module');
@@ -99,8 +100,8 @@ e1.on("eventName", function(eventParameter){});
 ```javascript
 e1.emit("eventName",eventParameter);
 ```
-4. 使用`util`实现时间继承
-`util` 模块的`inherits(subClass,superClass)` 方法可实现类或对象之间的继承  
+4. 使用`util` 实现时间继承
+`util` 模块的 `inherits(subClass,superClass)` 方法可实现类或对象之间的继承  
 ```javascript
 const events = require("events");
 const util = require("util");
@@ -124,10 +125,12 @@ util.inherits(Person,events.EventEmitter);
 
 然后一路回车即可
 ### dependencies和devDependencies
-`dependencies`是记录项目的所有依赖，使用`--save`参数可以在安装依赖时将依赖记录到`dependencies`的值中。
+`dependencies` 是记录项目的所有依赖，使用`--save`参数可以在安装依赖时将依赖记录到`dependencies`的值中。
+
 > npm install --save **moduleName**
 
-`devDependencies`是记录开发环境的依赖，使用`--save-dev`可以记录依赖
+`devDependencies` 是记录开发环境的依赖，使用`--save-dev` (`-D`)可以记录依赖
+
 > npm install --save-dev **moduleName**
 
 ### scripts
