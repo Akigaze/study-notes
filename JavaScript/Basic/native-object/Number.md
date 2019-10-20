@@ -1,3 +1,6 @@
+# Link
+[JavaScript.info - Numbers](https://zh.javascript.info/number)
+
 # 数字类型 Number
 
 - 直接使用数字字面量创建数字

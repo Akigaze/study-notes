@@ -1,5 +1,7 @@
-# Primitives 基本类型
+# Link
+1. [JavaScript.info - Methods of primitives](https://zh.javascript.info/primitives-methods)
 
+# Primitives 基本类型
 
 ## 一、基本类型
 

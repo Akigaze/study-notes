@@ -47,7 +47,7 @@ JavaScript是一种 *弱类型* 或者说 *动态语言*
       };
 ```
 
-* typeof操作符
+* typeof 操作符
 对一个值使用typeof操作符可能返回下列某个字符串：
   * 'undefined' —— 未定义
   * 'boolean' —— 布尔值
@@ -273,3 +273,7 @@ let newstr = str.replace(re, "$2, $1");
 console.log(newstr); //output: "Smith, John"
 ```
 `````
+
+
+
+nf-mdi-music_note_quarter
