@@ -1,5 +1,6 @@
 # Link
-[JavaScript.info - Numbers](https://zh.javascript.info/number)
+1. [JavaScript.info - Numbers](https://zh.javascript.info/number)
+2. [MDN - Math](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Math)
 
 # 数字类型 Number
 
@@ -164,3 +165,58 @@ parseInt('0xdfdfdf', 36) // 72645698067
 2. `Math.max(...args)`：提取最大值，自动隐式转化，参数包含 `NaN` 时返回 `NaN`
 3. `Math.min(...args)`：提取最小值，自动隐式转化，参数包含 `NaN` 时返回 `NaN`
 4. `Math.pow(n, power)`：指数运算，`n` 为底数，`power` 为指数
+
+
+## Math 对象
+> `Math` 是一个内置对象， 它具有数学常数和函数的属性和方法。不是一个函数对象。
+
+### 1. 常量
+- `Math.E` : **欧拉常数**，也是自然对数的底数, 约等于 **2.718**.
+- `Math.LN2` : 2 的自然对数, 约等于 **0.693**.
+- `Math.LN10` : 10 的自然对数, 约等于 **2.303**.
+- `Math.LOG2E` : 以 2 为底 E 的对数, 约等于 **1.443**.
+- `Math.LOG10E` : 以 10 为底 E 的对数, 约等于 **0.434**.
+- `Math.PI` : **圆周率**，一个圆的周长和直径之比，约等于 **3.14159**.
+- `Math.SQRT1_2` : 1/2 的平方根, 约等于 **0.707**.
+- `Math.SQRT2` : 2 的平方根,约等于 **1.414**.
+
+```javascript
+Math.PI  // 3.141592653589793
+Math.E  // 2.718281828459045
+Math.LN2  // 0.6931471805599453
+Math.LN10  // 2.302585092994046
+Math.LOG2E  // 1.4426950408889634
+Math.LOG10E  // 0.4342944819032518
+Math.SQRT2  // 1.4142135623730951
+Math.SQRT1_2  // 0.7071067811865476
+```
+
+### 2. 方法
+**精度问题：**
+
+![](./pic/method of Math.png)
+
+- `Math.abc(x)` : 取绝对值
+- `Math.exp(x)` : 返回 **E^x**, 当x为参数,  **E** 是欧拉常数, 自然对数的底.
+- `Math.log(x)` : 返回一个数的自然对数（**loge**， 即 **ln**）.
+- `Math.max(...args)` : 返回0个到多个数值中最大值.
+- `Math.min(...args)` : 返回0个到多个数值中最小值.
+- `Math.pow(x,y)` : 幂运算，返回 x 的 y 次幂.
+- `Math.sqrt(x)` : 返回x的平方根.
+
+**三角函数：使用弧度制**
+
+![](./pic/trigonometric function of Math.png)
+
+- `Math.acos(x)` : **arccos**, 返回x的反余弦值.
+- `Math.asin(x)` : **arcsin**, 返回x的反正弦值.
+- `Math.atan(x)` : **arctan**, 以介于 -PI/2 与 PI/2 弧度之间的数值来返回 x 的反正切值.
+- `Math.atan2(y, x)` : 返回 y/x 的反正切值.
+- `Math.cos(x)` : **cos**, 返回x的余弦值.
+- `Math.sin(x)` : **sin**, 返回正弦值.
+- `Math.tan(x)` : **tan**, 返回x的正切值.
+
+```javascript
+Math.sin((1/6) * Math.PI)  // 0.49999999999999994
+Math.tan((1/4) * Math.PI) // 0.9999999999999999
+```

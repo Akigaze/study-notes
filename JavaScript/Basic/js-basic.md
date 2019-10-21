@@ -26,14 +26,14 @@
 ---
 ## 数据类型
 JavaScript是一种 *弱类型* 或者说 *动态语言*  
-* 原始类型
+### 1. 原始类型
     1. Boolean（布尔类型）：包括true和false
     2. Null类型：null，表示空值
     3. Undefined类型：Undefined，表示未定义或未赋值
     4. Number(数字类型)：除了数字还包括 **+Infinity**（正无穷），**-Infinity**（负无穷）和 **NaN**（非数字）
     5. String（字符串类型）：用 **""**（双引号）或 **''**（单引号）包起来
 
-* 对象类型：Object
+### 2. 对象类型：Object
   1. 使用构造函数创建对象
 ```javascript
       var o = new Object();
@@ -47,7 +47,7 @@ JavaScript是一种 *弱类型* 或者说 *动态语言*
       };
 ```
 
-* typeof 操作符
+### 3. typeof 操作符
 对一个值使用typeof操作符可能返回下列某个字符串：
   * 'undefined' —— 未定义
   * 'boolean' —— 布尔值
@@ -56,13 +56,49 @@ JavaScript是一种 *弱类型* 或者说 *动态语言*
   * 'object' —— 对象或null
   * 'function' —— 函数
 
-  使用typeof的示例：
-  ```javascript
-    var message = 'some string';
-    alert(typeof message); // "string"
-    alert(typeof(message)); // "string"
-    alert(typeof 95); // number
+使用 `typeof` 的示例：
+```javascript
+var message = 'some string';
+alert(typeof message); // "string"
+alert(typeof(message)); // "string"
+alert(typeof 95); // number
 ```
+
+|类型                       |结果       |
+|:--------------------------|:----------|
+|数字，Number，NaN，Infinity |'number'   |
+|布尔，Boolean               |'boolean'  |
+|字符串，String              |'string'   |
+|方法，Function              |'function' |
+|Symbol                     |'symbol'   |
+|undefined                  |'undefined'|
+|null                       |'object'   |
+|其他                       |'object'   |
+
+### 4. instanceof 操作符
+> `instanceof` 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上。
+
+该操作符并不是简单判断函数的 `prototype` 属性对象是否在对象的原型链上，而要求要使用 `Object.create` 或构造方法；使用字面量创建的基本数据类型的对象，并不算其包装类型的实例，因为不是用构造方法创建的
+
+```javascript
+let primitiveStr = 'I am string'
+Object.getPrototypeOf(primitiveStr) === String.prototype //true
+primitiveStr instanceof String  //false
+primitiveStr instanceof Object  //false
+
+let objStr = new String('I am string')
+objStr instanceof String  //true
+objStr instanceof Object  //true
+
+let obj = {}
+obj instanceof Object  //true
+let noPrototype = Object.create(null)
+noPrototype instanceof Object  // false
+
+let sp = Object.create(String.prototype)
+sp instanceof String  // true
+```
+
 ---
 ## 运算符
 * 算数运算符
