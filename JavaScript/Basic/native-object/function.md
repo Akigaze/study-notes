@@ -7,7 +7,7 @@
 ### 2. Function.prototype.apply(obj, [...args])
 强制执行一个函数，将 `obj` 参数作为函数中的 `this` 引用，`[...args]` 部分为调用函数所需的参数，它会将列表中的元素按顺序作为函数的形参
 
-**\*** `call` 与 `apply` 的作用基本相同，只是传递函数参数的方式不同
+**\*** `call` 与 `apply` 的作用基本相同，只是传递函数参数的方式不同；从性能上说， `call` 的运行要比 `apply` 快
 
 ### 3. Function.prototype.bind(obj, ...args)
 绑定函数调用时 `this` 所引用的对象 `obj` ，返回绑定后原函数的拷贝，不改变原有函数；
