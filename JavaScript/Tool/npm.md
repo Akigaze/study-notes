@@ -57,6 +57,15 @@ windows 合并命令的 & 与 && 的区别
 `&&`: will execute command 2 when command 1 is complete providing it didn't fail.(若有一个命令执行的结果是fail，包括测试结果，则后面的命令不在执行)  
 `&` : will execute regardless.
 
+## 设置镜像代理
+### 安装包时添加临时代理
+> npm --registry=https://registry.npm.taobao.org install webpack 
+
+### 设置全局代理
+npm config set registry https://registry.npm.taobao.org
+
+
+
 # Link
 ### 表严肃
 npm常用命令速查表  
