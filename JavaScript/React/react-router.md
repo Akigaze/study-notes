@@ -128,7 +128,14 @@ const history = createBrowserHistory();
 
 #### 1.8 \<Prompt>
 
+> Used to prompt the user before navigating away from a page
 
+当用户要跳转离开某个页面时，可以使用该组件弹窗提示用户
+
+**属性：**
+
+- `when` : 当用户要离开时，且 `when` 的值为 true 就打开弹窗
+- `message` : string | func,当为函数时，可以获取到新的 location
 
 ### 2. 属性props
 
@@ -185,7 +192,58 @@ const history = createBrowserHistory();
 
 若 `Route` 使用 `children` 属性添加UI部分，则不论path 是否匹配url，都会渲染UI的部分，当path不匹配时，传递给UI组件的 `match` 的值会是 `null`
 
-### 3. hook 方法
+
+
+### 3. 方法
+
+#### 3.1 matchPath
+
+使用与 `Route` 匹配 path一样的规则去匹配两个给定的path
+
+```js
+import { matchPath } from "react-router";
+
+const match = matchPath("/users/123", {
+  path: "/users/:id",
+  exact: true,
+  strict: false
+});
+```
+
+**参数： **
+
+- `pathname` : 被比较的path
+
+- `pathprops` : 用于比较的path，可以设置与 `Route` 一样的参数
+
+  ```js
+  {
+    path, // like /users/:id; either a single string or an array of strings
+    strict, // optional, defaults to false
+    exact, // optional, defaults to false
+  }
+  ```
+
+**返回值：**
+
+```js
+//成功匹配:
+{
+	isExact: true
+	params: {
+		id: "2"
+	}
+	path: "/users/:id"
+	url: "/users/2"
+}
+
+//匹配失败
+null
+```
+
+
+
+### 4. hook 方法
 
 
 
@@ -242,4 +300,30 @@ const history = createBrowserHistory();
 - `location` 
 
 ## 四、history 管理
+
+
+
+
+
+## 五、webpack 配置
+
+在使用 `webpack-dev-server` 运行react router的项目是，若是直接在地址栏输入路径直接请求，是无法导航到想要的页面的，因为 `webpack-dev-server` 依赖的是配置目录下的静态文件来相应请求，当请求一个 `localhost:8888/rgb` 的路径时，在配置目录下是没有这样的资源文件的，所以结果只能是 **404**
+
+通过在 webpack 配置文件的 `devServer` 属性中配置url路径与资源文件的映射，可以实现react router的完整功能
+
+### 1. historyApiFallback
+
+`historyApiFallback` 默认为 `false` ，当被启用是，会当请求的url资源不存在时，使用指定的文件资源代替相应，设置为 `true` 或者没有配置具体映射时，默认都是 `index` 进行响应 
+
+```js
+historyApiFallback: {
+    rewrites: [
+        { from: /^\/hsl\/\d+\/\d+\/\d+/, to: "/index.html" },
+        { from: /^\/rgb\/\d+\/\d+\/\d+/, to: "/index.html" },
+        { from: /./, to: "/404.html" }
+    ]
+}
+```
+
+资料：[webpack - devServer](<https://www.webpackjs.com/configuration/dev-server/#devserver-before>) , [github - connect-history-api-fallback](<https://github.com/bripkens/connect-history-api-fallback>)
 
