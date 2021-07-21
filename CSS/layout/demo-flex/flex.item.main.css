@@ -100,7 +100,7 @@ body {
     height: 100px;
     /* flex: 1 0 auto; */
     /* flex: auto; */
-    flex: none;
+    flex: none; /* 0 0 auto */
 }
 .demo-item-flex > div:nth-child(2n) {
     background: lemonchiffon;
@@ -109,7 +109,7 @@ body {
     background: lightblue;
 }
 .demo-item-flex > #div-0 {
-    flex: 1 1 auto;
+    flex: auto; /* 1 1 auto */
 }
 .demo-item-flex > #div-2 {
     flex: 2 1 auto;
