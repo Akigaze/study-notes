@@ -75,3 +75,30 @@ http://biaoyansu.com/20.0
 ### Blog
 利用npm安装/删除/发布/更新/撤销发布包  
 https://www.cnblogs.com/penghuwan/p/6973702.html
+
+
+## 2022-02-09
+
+[npm 官网](https://www.npmjs.com/)
+[npm 官方文档](https://docs.npmjs.com/)
+
+### 语义版本控制
+[NPM Semantic Versioning](https://docs.npmjs.com/about-semantic-versioning)
+[Semantic Versioning](https://semver.org/)
+
+`x.y.z`  
+- x: major 
+- y: minor 
+- z: patch
+
+1. Caret Dependencies
+   `^1.1.1`: 只更新左侧第一个非0版本之后的版本号
+2. Tilde Dependencies
+   `~1.1.1`: 只更新右侧版本号
+
+
+### package-lock.json
+[package-lock.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-lock-json)
+
+记录执行 `npm install` 时各个模块的依赖关系，构成一个依赖树
+当执行 `npm install` 时所安装的最新版本的包与 `package-lock.json` 中记录的版本不兼容时，则会更新 `package-lock.json`
