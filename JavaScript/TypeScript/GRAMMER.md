@@ -1,23 +1,16 @@
-## 安装
-
-- typescript: TypeScript解释器
-- ts-node: 直接执行TypeScript文件的工具
-
-> npm install --save typescript ts-node
-
-### 执行.ts文件
-> ts-node xxx.ts
-
-### 编译.ts文件
-> tsc xxx.ts
-
-生成 `.d.ts` 文件  
-> tsc xxx.ts -d
-
-`.d.ts` 文件保存的是TypeScript文件中一些变量，方法等的定义
-
 ## 基本数据类型
-`any` `boolean` `number` `string` `void` `never` `Enum` `Tuple` `Array` `null` ` undefine` `object`
+- `any` 
+- `boolean`
+- `number` 
+- `string` 
+- `void` 
+- `never` 
+- `Enum` 
+- `Tuple` 
+- `Array` 
+- `null` 
+- `undefine` 
+- `object`
 
 ### void
 - 表示方法没有返回值
@@ -93,10 +86,10 @@ enum Color {
 ```javascript
 let Color = {};
 (function(Color){
-    COlor[Color["RED"] = 1] = "RED";
-    COlor[Color["YELLOW"] = 2] = "YELLOW";
-    COlor[Color["BLUE"] = 3] = "BLUE";
-    COlor[Color["ORANGE"] = 1] = "ORANGE";
+    Color[Color["RED"] = 1] = "RED";
+    Color[Color["YELLOW"] = 2] = "YELLOW";
+    Color[Color["BLUE"] = 3] = "BLUE";
+    Color[Color["ORANGE"] = 1] = "ORANGE";
 })(Color||Color = {});
 ```
 
@@ -253,12 +246,12 @@ mySearch = function(source: string, subString: string) {
   ......
 }
 // ---------------------  
-interface Study {
+interface Student {
     sleep(hours: number);
     read(word: string): string;
 }
 
-let ming: Study;
+let ming: Student;
 function sleep(hours: number) {
     ......
 }
@@ -387,7 +380,3 @@ class Image implements SelectableControl {
 
 ### | 或
 用于数据类型之间，表示可以是两种类型中的一种
-
-## Link
-[TypeScript精通指南](https://nodelover.gitbook.io/typescript/)  
-[Github TypeScript 精通指南](https://github.com/MiYogurt/nodelover-books/tree/master/typescript)
