@@ -56,7 +56,7 @@ $ npm install --save-dev babel-preset-stage-3
 }
 ```
 
-可以说，`presets`是`plugins`的集成，为了引入方便，Babel团队将ES2015的很多个transform plugin集成到babel-preset-es2015，所以你这需要引入es2015，大大降低了引入成本
+可以说，`presets`是`plugins`的集成，为了引入方便，Babel团队将ES2015的很多个transform plugin集成到babel-preset-es2015，所以你只需要引入es2015，大大降低了引入成本
 
 plugin和preset运行顺序：
 * plugin 会运行在 preset 之前
@@ -72,10 +72,17 @@ plugin和preset运行顺序：
 * babel-loader
 
 ## babel presets
-* babel-preset-env
-* babel-preset-es2015
-* babel-preset-react
-* babel-preset-stage-0 (0-3)
+> Deprecated  
+ ~~babel-preset-env~~  
+ ~~babel-preset-es2015~~  
+ ~~babel-preset-react~~  
+ ~~babel-preset-stage-0 (0-3)~~  
+
+
+- `@babel/preset-env` for compiling ES2015+ syntax
+- `@babel/preset-typescript` for TypeScript
+- `@babel/preset-react` for React
+- `@babel/preset-flow` for Flow
 
 ## babel plugins
 

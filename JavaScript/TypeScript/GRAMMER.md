@@ -361,7 +361,35 @@ class Image implements SelectableControl {
 }
 ```
 
+## 类型 type
+`type` 和 `interface` 有些类似，也可以用来声明类型，结构，但是 `type` 还可以给类型其别名，将多种类型或多个值声明成一种类型
 
+```typescript
+// 方向类型
+type Direction = 'top' | 'right' | 'bottom' | 'left';
+// 某种类型的对象
+type Human = {
+    name: string
+    earnMoney: () => number
+}
+// 某种类型的方法
+type Scream = (target: Human) => string
+
+type Money = number | string
+
+type Angle = number | 'x'| 'y'
+```
+
+`type` 可以使用 `&` 实现类似 `interface` 继承的效果
+```typescript
+interface Foo {
+    name: string
+}
+
+type Bar = Foo & {
+    size: number
+}
+```
 
 ## 属性修饰符
 ### readonly
